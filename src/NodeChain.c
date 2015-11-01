@@ -12,7 +12,6 @@ Node* createNode(char* thisExpression, int thisRank){
   return newNode;
 }
 
-
 NodeChain* createNodeChain(){
   NodeChain* newChain = malloc(sizeof(NodeChain));
   
@@ -22,3 +21,25 @@ NodeChain* createNodeChain(){
   
   return newChain;
 }
+
+Node* findUnion(Node* nodeA, Node* nodeB){
+  if(nodeA == NULL | nodeB == NULL)
+    ThrowError(ERR_NULL_NODE, "Input node cannot be NULL!");
+  else if(nodeA->parent == NULL | nodeB->parent == NULL)
+    ThrowError(ERR_NO_PARENT, "Input node does not have a parent!");
+  else{
+    Node* parentA = nodeA->parent;
+    Node* parentB = nodeB->parent;
+    while(parentA != parentB){
+      if(parentA->rank > parentB->rank)
+        parentA = parentA->parent;
+      else
+        parentB = parentB->parent;
+    }
+    return parentA;
+  }
+}
+
+
+
+

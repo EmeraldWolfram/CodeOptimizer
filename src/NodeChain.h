@@ -1,6 +1,9 @@
 #ifndef NodeChain_H
 #define NodeChain_H
 
+#include "ErrorObject.h"
+
+
 typedef struct Node_t Node;
 struct Node_t{
   char* expression;
@@ -17,5 +20,7 @@ typedef struct {
 
 Node* createNode(char* thisExpression, int thisRank);
 NodeChain* createNodeChain();
+Node* findUnion(Node* nodeA, Node* nodeB);
+
 
 #endif // NodeChain_H

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void customTestAssertNode(char* expectedExpression, int expectedRank, Node* expectedParent, Node* actualNode, int lineNumber){
+void customTestAssertNodeData(char* expectedExpression, int expectedRank, Node* expectedParent, Node* actualNode, int lineNumber){
 
   if(actualNode == NULL){
     CUSTOM_TEST_FAIL(lineNumber, "NULL input detected");
@@ -22,12 +22,12 @@ void customTestAssertNode(char* expectedExpression, int expectedRank, Node* expe
   }
 }
 
-void customTestAssertChain(Node* expectedChain, Node* actualChain, int lineNumber){
-  if(actualChain == NULL || expectedChain == NULL){
+void customTestAssertNodeAddress(Node* expectedNode, Node* actualNode, int lineNumber){
+  if(actualNode == NULL || expectedNode == NULL){
     CUSTOM_TEST_FAIL(lineNumber, "NULL input detected");
   }
   else{
-    if(actualChain != expectedChain)
-      CUSTOM_TEST_FAIL(lineNumber, "Expected Node pointer point to 0x%X was 0x%X", expectedChain, actualChain);
+    if(actualNode != expectedNode)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected Node pointer point to 0x%X was 0x%X", expectedNode, actualNode);
   }
 }
