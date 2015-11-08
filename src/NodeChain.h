@@ -3,23 +3,27 @@
 
 #include "ErrorObject.h"
 
+typedef struct {
+  char* string;
+  int data;
+}Block;
 
 typedef struct Node_t Node;
 struct Node_t{
-  char* expression;
   int rank;
-  Node* parent;
-  Node* next[0];
+  Block* block;
+  Node* trueParent;
+  int numberOfParent;
+  Node** imdParent;
+  int numberOfChild;
+  Node** imdChild;
 };
 
-typedef struct {
-  Node* hook;
-  Node* tail;
-  int length;
-}NodeChain;
+Node* createNode(int thisRank);
+Block* createBlock(char* string, int data);
+void addChild(Node** parentNode, Node** childNode);
 
-Node* createNode(char* thisExpression, int thisRank);
-NodeChain* createNodeChain();
+
 Node* findUnion(Node* nodeA, Node* nodeB);
 
 
