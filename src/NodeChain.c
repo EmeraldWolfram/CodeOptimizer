@@ -61,27 +61,53 @@ void addChild(Node** parentNode, Node** childNode){
   }
 }
 
-// Node* setParent(Node* rootNode){
-  
-  // return rootNode;
-// }
-
+void setParent(Node** rootNode){
+  LinkedList* tempList = createLinkedList();
+  addListLast(tempList, createListElement(*rootNode));
+  ListElement* tempElement = tempList->head;
+  Node* tempNode = tempElement->node;
+  int i, k;
+/**************************************************
+ *  Assemble the tree into a LinkedList           *
+ **************************************************/
+  while(tempNode->numberOfChild != 0 && tempElement != NULL){
+    int j = tempNode->numberOfChild;
+    for(i = 0; i < j; i++){
+      addListLast(tempList, createListElement(tempNode->imdChild[i]));
+    }
+    tempElement = tempElement->next;
+    tempNode = tempElement->node;
+  }
+/****************************************************
+ *  With the LinkedList, find and assign trueParent *
+ *  of each node in the Node tree                   *
+ ****************************************************/
+  tempElement = tempList->head->next;
+  while(tempElement != NULL){
+    tempNode = tempElement->node;
+    if(tempNode->numberOfParent == 1){
+      if(tempNode->imdParent[0]->numberOfChild   > 1 || \
+         tempNode->imdParent[0]->numberOfParent == 0){
+        tempNode->trueParent = tempNode->imdParent[0];
+      }
+      else
+        tempNode->trueParent = tempNode->imdParent[0]->trueParent;
+    }
+    else{
+      i = tempNode->numberOfParent;
+      Node* highRankParent = tempNode->imdParent[0]->trueParent;
+      for(k = 0; k < i; k++){
+        if((tempNode->imdParent[k]->trueParent->rank) < (highRankParent->rank))
+          highRankParent = tempNode->imdParent[k]->trueParent;
+      }
+      tempNode->trueParent = highRankParent;
+    }
+    tempElement = tempElement->next;
+  }   
+}
 
 Node* findUnion(Node* nodeA, Node* nodeB){
-  if(nodeA == NULL | nodeB == NULL)
-    ThrowError(ERR_NULL_NODE, "Input node cannot be NULL!");
-  else if(nodeA->imdParent == NULL | nodeB->imdParent == NULL)
-    ThrowError(ERR_NO_PARENT, "Input node does not have a parent!");
-  else{
-    Node* parentA = (*nodeA->imdParent);
-    // Node* parentB = nodeB->parent;
-    // while(parentA != parentB){
-      // if(parentA->rank > parentB->rank)
-        // parentA = parentA->parent;
-      // else
-        // parentB = parentB->parent;
-    return parentA;
-  }
+  return nodeA;
 }
 
 

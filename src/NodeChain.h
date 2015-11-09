@@ -2,13 +2,14 @@
 #define NodeChain_H
 
 #include "ErrorObject.h"
+typedef struct Node_t Node;
+#include "LinkedList.h"
 
 typedef struct {
   char* string;
   int data;
 }Block;
 
-typedef struct Node_t Node;
 struct Node_t{
   int rank;
   Block* block;
@@ -22,7 +23,7 @@ struct Node_t{
 Node* createNode(int thisRank);
 Block* createBlock(char* string, int data);
 void addChild(Node** parentNode, Node** childNode);
-// void findParent(Node** rootNode);
+void setParent(Node** rootNode);
 
 
 Node* findUnion(Node* nodeA, Node* nodeB);

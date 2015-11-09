@@ -2,9 +2,10 @@
 #define ErrorObject_H
 
 typedef enum{
-  ERR_NULL_CHAIN,
-  ERR_NULL_NODE,
-  ERR_NO_PARENT
+  ERR_NULL_ELEMENT,
+  ERR_NULL_LIST,
+  ERR_EMPTY_LIST,
+  ERR_NULL_NODE
 } ErrorCode;
 
 

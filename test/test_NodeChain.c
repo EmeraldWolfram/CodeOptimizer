@@ -2,6 +2,7 @@
 #include "NodeChain.h"
 #include "ErrorObject.h"
 #include "customAssertion.h"
+#include "LinkedList.h"
 #include "CException.h"
 // TEST_ASSERT_NODE_DATA(char* expectExpress, int expectRank, Node* expectParent, Node* actualNode)
 // TEST_ASSERT_NODE_DATA use to test internal data of the Node, not necessary to be the same node
@@ -112,69 +113,157 @@ void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above
   TEST_ASSERT_EQUAL(0, childNodeD->numberOfChild);
 }
 
-// void test_findUnion_given_NULL_Node_should_Throw_ERR_NULL_NODE(void){
-  // ErrorObject* err;
-  // Try{
-    // Node* testNode = findUnion(NULL, createNode("3 + 4", 0));
-    // TEST_FAIL_MESSAGE("Expecting ERR_NULL_NODE but none thrown.");
-  // }Catch(err){
-    // TEST_ASSERT_EQUAL(ERR_NULL_NODE, err->errorCode);
-    // TEST_ASSERT_EQUAL_STRING("Input node cannot be NULL!",  err->errorMsg);
-    // freeError(err);
-  // }
-// }
+/**
+ *  setParent will assign trueParent to all the node in the tree
+ *  This test test assign of true parent for the following tree
+ *
+ *      [parent]
+ *         |
+ *        [B]
+ *
+ **/
+void test_setParent_with_one_child_only(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
 
-// void test_findUnion_given_root_should_Throw_ERR_NO_PARENT(void){
-  // ErrorObject* err;
-  // Node* parentNode  = createNode("3 + 4", 0);
-  // Node* childNode   = createNode("2 * 5", 1);
-  // childNode->parent = parentNode;
-  // Try{
-    // Node* testNode = findUnion(childNode, parentNode);
-    // TEST_FAIL_MESSAGE("Expecting ERR_NO_PARENT but none thrown.");
-  // }Catch(err){
-    // TEST_ASSERT_EQUAL(ERR_NO_PARENT, err->errorCode);
-    // TEST_ASSERT_EQUAL_STRING("Input node does not have a parent!",  err->errorMsg);
-    // freeError(err);
-  // }
-// }
+  addChild(&parentNode, &childNodeB);
+  
+  setParent(&parentNode);
+  
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
+}
 
 /**
- *  fingUnion should find the Union Node that split the two node
+ *  setParent will assign trueParent to all the node in the tree
+ *  This test test assign of true parent for the following tree
  *
- *        [p]
- *        / \
- *      [a] [b]
- */
-// void test_findUnion_given_two_rank_1_Node_should_return_their_union_node(void){
-  // Node* parentNode = createNode("p", 0);
-  // Node* childNodeA = createNode("a", 1);
-  // Node* childNodeB = createNode("b", 1);
-  // childNodeA->parent = parentNode;
-  // childNodeB->parent = parentNode;
+ *      [parent]
+ *        /  \
+ *      [B]  [C]
+ *
+ **/
+void test_setParent_with_two_child_only(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
   
-  // Node* testNode  = findUnion(childNodeA, childNodeB);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, testNode);
-// }
+  setParent(&parentNode);
+  
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->trueParent);
+}
 
 /**
- *  fingUnion should find the Union Node that split the two node
+ *  setParent will assign trueParent to all the node in the tree
+ *  This test test assign of true parent for the following tree
+ *  TreeA
  *
- *        [p]
- *        / \
- *      [a] [b]
- *           |
- *          [c]
- */
-// void test_findUnion_given_two_different_rank_Node_should_return_their_union_node(void){
-  // Node* parentNode = createNode("p", 0);
-  // Node* childNodeA = createNode("a", 1);
-  // Node* childNodeB = createNode("b", 1);
-  // Node* childNodeC = createNode("c", 2);
-  // childNodeA->parent = parentNode;
-  // childNodeB->parent = parentNode;
-  // childNodeC->parent = childNodeB;
+ *     [parent]
+ *       /  \
+ *     [B]  [C]
+ *       \  / 
+ *       [D] 
+ *
+ **/
+void test_setParent_with_treeA_shown_above(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeD);
   
-  // Node* testNode  = findUnion(childNodeA, childNodeC);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, testNode);
-// }
+  setParent(&parentNode);
+  
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->trueParent);
+}
+
+/**
+ *  setParent will assign trueParent to all the node in the tree
+ *  This test test assign of true parent for the following tree
+ *  TreeB
+ *
+ *     [parent]
+ *      /   \
+ *    [B]   [C]
+ *      \   / \
+ *       [D]  [E]
+ *
+ **/
+void test_setParent_with_treeB_shown_above(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+  Node* childNodeE  = createNode(2);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeD);
+  addChild(&childNodeC, &childNodeE);
+  
+  setParent(&parentNode);
+  
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(childNodeC, childNodeE->trueParent);
+}
+
+/**
+ *  setParent will assign trueParent to all the node in the tree
+ *  This test test assign of true parent for the following tree
+ *  TreeC
+ *
+ *     [parent]
+ *      /   \
+ *    [B]   [C]
+ *    / \   /
+ *  [E]  [D]
+ *   |    |
+ *  [F]  [G]
+ *   \   /
+ *    [H]
+ **/
+void test_setParent_with_treeC_shown_above(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+  Node* childNodeE  = createNode(2);
+  Node* childNodeF  = createNode(3);
+  Node* childNodeG  = createNode(3);
+  Node* childNodeH  = createNode(4);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeE);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeD);
+  addChild(&childNodeE, &childNodeF);
+  addChild(&childNodeD, &childNodeG);
+  addChild(&childNodeF, &childNodeH);
+  addChild(&childNodeG, &childNodeH);
+  
+  setParent(&parentNode);
+  
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeE->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeF->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeG->trueParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeH->trueParent);
+}
+
+
+
