@@ -53,9 +53,9 @@ void test_addChild_given_parentNode_and_childNode_should_link_it_as_tree_above(v
  *  Given Node parentNode (a) with child (b) add childNode (c)
  *  addChild should link them as shown below
  *
- *          [a] rank 0
- *          / \
- *        [b] [c] rank 1
+ *    [a]      [a] rank 0
+ *     |  >>   / \
+ *    [b]    [b] [c] rank 1
  ***************************************/
 void test_addChild_given_parentNode_with_childB_and_childNodeC_should_link_it_as_tree_above(void){
   Node* parentNode  = createNode(0);
@@ -76,7 +76,40 @@ void test_addChild_given_parentNode_with_childB_and_childNodeC_should_link_it_as
   TEST_ASSERT_NODE_ADDRESS(childNodeB, parentNode->imdChild[0]);
   TEST_ASSERT_NODE_ADDRESS(childNodeC, parentNode->imdChild[1]);
   TEST_ASSERT_EQUAL(1, childNodeC->numberOfParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->imdParent[0]);
+}
+
+/***************************************
+ *  Forming the following tree with addChild function only
+ *
+ *           [parent]
+ *            /    \
+ *          [B]    [C]
+ *            \    /
+ *              [D]
+ ***************************************/
+void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+  
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeD);
+  
+  TEST_ASSERT_EQUAL(2, parentNode->numberOfChild);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, parentNode->imdChild[0]);
+  TEST_ASSERT_NODE_ADDRESS(childNodeC, parentNode->imdChild[1]);
+  TEST_ASSERT_EQUAL(1, childNodeB->numberOfParent);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->imdParent[0]); 
+  TEST_ASSERT_EQUAL(1, childNodeC->numberOfParent);
   TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->imdParent[0]); 
+  TEST_ASSERT_EQUAL(2, childNodeD->numberOfParent);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeD->imdParent[0]); 
+  TEST_ASSERT_NODE_ADDRESS(childNodeC, childNodeD->imdParent[1]); 
+  TEST_ASSERT_EQUAL(0, childNodeD->numberOfChild);
 }
 
 // void test_findUnion_given_NULL_Node_should_Throw_ERR_NULL_NODE(void){

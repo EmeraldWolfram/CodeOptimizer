@@ -35,7 +35,8 @@ void addChild(Node** parentNode, Node** childNode){
  ***************************************************/
     (*parentNode)->numberOfChild++;
     int i = (*parentNode)->numberOfChild;
-    Node* childArr[i];
+    Node** childArr;
+    childArr = malloc(sizeof(Node*) * i);
     for(k = 0; k < (i-1); k++){
       childArr[k] = (*parentNode)->imdChild[k];
     }
@@ -48,26 +49,23 @@ void addChild(Node** parentNode, Node** childNode){
  ***************************************************/
     (*childNode)->numberOfParent++;
     int j = (*childNode)->numberOfParent;
-    Node* parentArr[j];
+    Node** parentArr;
+    parentArr = malloc(sizeof(Node*) * j);
+
     for(k = 0; k < (j-1); k++){
       parentArr[k] = (*childNode)->imdParent[k];
-    }
+    } 
     free((*childNode)->imdParent);
     (*childNode)->imdParent = parentArr;
     (*childNode)->imdParent[j-1] = *parentNode;
   }
 }
 
-// Node* findUnion(Node* nodeA, Node* nodeB);
-// NodeChain* createNodeChain(){
-  // NodeChain* newChain = malloc(sizeof(NodeChain));
+// Node* setParent(Node* rootNode){
   
-  // newChain->hook    = NULL;
-  // newChain->tail    = NULL;
-  // newChain->length  = 0;
-  
-  // return newChain;
+  // return rootNode;
 // }
+
 
 Node* findUnion(Node* nodeA, Node* nodeB){
   if(nodeA == NULL | nodeB == NULL)

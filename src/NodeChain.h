@@ -22,6 +22,7 @@ struct Node_t{
 Node* createNode(int thisRank);
 Block* createBlock(char* string, int data);
 void addChild(Node** parentNode, Node** childNode);
+// void findParent(Node** rootNode);
 
 
 Node* findUnion(Node* nodeA, Node* nodeB);
