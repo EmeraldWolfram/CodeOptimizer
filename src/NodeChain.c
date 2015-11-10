@@ -23,42 +23,78 @@ Block* createBlock(char* thisString, int thisData){
   return newBlock;
 }
 
+
+/*
+ * brief @ Add a new child to a node as shown below.
+ * Example:
+ *              Before      [b]         After
+ *           [a] rank 0    ---->       [a] rank 0
+ *                                      |
+ *                                     [b] rank 1
+ *
+ * brief @ The imdChild of the node(Node a in example) will assign to the added child(Node b in example).
+ * brief @ The imdParent of the added child(Node b in example) will assign to the node(Node a in th example).
+ *
+ * param @ parentNode - The node that is going to add a new child(imdChild), it also will be the imdParent
+ *                       of the child.
+ * param @ childNode - The node that is going to be added to a node(imdParent), it also will be the imdChild
+ *                       of the node.
+ * retval@ void  - Nothing to return.
+ */
 void addChild(Node** parentNode, Node** childNode){
   int k = 0;
   if(*parentNode == NULL)
     ThrowError(ERR_NULL_NODE, "Input parent node is NULL!");
-  else if(*childNode == NULL)
+  
+  if(*childNode == NULL)
     ThrowError(ERR_NULL_NODE, "Input child node is NULL!");
-  else{
-/***************************************************
- *  Link Child to parentNode                       *
- ***************************************************/
-    (*parentNode)->numberOfChild++;
-    int i = (*parentNode)->numberOfChild;
-    Node** childArr;
-    childArr = malloc(sizeof(Node*) * i);
-    for(k = 0; k < (i-1); k++){
-      childArr[k] = (*parentNode)->imdChild[k];
-    }
-    free((*parentNode)->imdChild);
-    (*parentNode)->imdChild = childArr;
-    (*parentNode)->imdChild[i-1] = *childNode;
+  
+  /*$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  Hello,I reduced codes below by using realloc(reallocate), by Louise 
+
+  int i = (*parentNode)->numberOfChild;  
+  Node** childArr;
+  childArr = malloc(sizeof(Node*) * i);
     
+  for(k = 0; k < (i-1); k++){
+    childArr[k] = (*parentNode)->imdChild[k];
+  }
+    
+  free((*parentNode)->imdChild);
+  (*parentNode)->imdChild = childArr;
+  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  */
+
+  /***************************************************
+  *  Link Child to parentNode                       *
+  ***************************************************/
+ 
+ (*parentNode)->numberOfChild++;
+  
+  // $$$$$$$$$$$$ expand array with one more item $$$$$$$$$$$$$$$
+  //array U want to expand =(type cast)realloc (data within old array, new Size( sizeof(size u want to expand))) ;
+  (*parentNode)->imdChild = (Node**)realloc((*parentNode)->imdChild, (sizeof(Node*) * ((*parentNode)->numberOfChild)));
+  (*parentNode)->imdChild[((*parentNode)->numberOfChild) - 1] = *childNode;
+    
+  /*$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  int j = (*childNode)->numberOfParent;
+  Node** parentArr;
+  parentArr = malloc(sizeof(Node*) * j);
+
+  for(k = 0; k < (j-1); k++){
+    parentArr[k] = (*childNode)->imdParent[k];
+  } 
+    
+  free((*childNode)->imdParent);
+  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  */
 /***************************************************
  *  Link Parent to childNode                       *
  ***************************************************/
-    (*childNode)->numberOfParent++;
-    int j = (*childNode)->numberOfParent;
-    Node** parentArr;
-    parentArr = malloc(sizeof(Node*) * j);
-
-    for(k = 0; k < (j-1); k++){
-      parentArr[k] = (*childNode)->imdParent[k];
-    } 
-    free((*childNode)->imdParent);
-    (*childNode)->imdParent = parentArr;
-    (*childNode)->imdParent[j-1] = *parentNode;
-  }
+  (*childNode)->numberOfParent++;
+  (*childNode)->imdParent = (Node**)realloc((*childNode)->imdParent, (sizeof(Node*) * ((*childNode)->numberOfParent)));
+  (*childNode)->imdParent[((*childNode)->numberOfParent) - 1] = *parentNode;
+  
 }
 
 void setParent(Node** rootNode){
