@@ -23,11 +23,12 @@
 // }
 
 void customTestAssertNodeAddress(Node* expectedNode, Node* actualNode, int lineNumber){
-  if(actualNode == NULL || expectedNode == NULL){
-    CUSTOM_TEST_FAIL(lineNumber, "NULL input detected");
-  }
-  else{
-    if(actualNode != expectedNode)
-      CUSTOM_TEST_FAIL(lineNumber, "Expected Node pointer point to 0x%X was 0x%X", expectedNode, actualNode);
-  }
+  if(!actualNode && expectedNode)
+    CUSTOM_TEST_FAIL(lineNumber, "Expected Node was 0x%X but actual was NULL", expectedNode);
+  
+  if(actualNode && !expectedNode)
+    CUSTOM_TEST_FAIL(lineNumber, "Expected Node was NULL but actual was 0x%X", actualNode);
+  
+  if(actualNode != expectedNode)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected Node pointer point to 0x%X but actual was 0x%X", expectedNode, actualNode);
 }
