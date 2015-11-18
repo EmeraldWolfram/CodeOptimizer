@@ -13,17 +13,19 @@ typedef struct {
 struct Node_t{
   int rank;
   Block* block;
-  Node* trueParent;
-  int numberOfParent;
-  Node** imdParent;
-  int numberOfChild;
-  Node** imdChild;
+  Node* parent;
+  Node* lastBrhDom;
+  Node* imdDom;
+  int numOfDom;
+  Node** doms;
+  int numOfChild;
+  Node** children;
 };
 
 Node* createNode(int thisRank);
 Block* createBlock(char* string, int data);
 void addChild(Node** parentNode, Node** childNode);
-void setParent(Node** rootNode);
+void setLastBrhDom(Node** rootNode);
 
 
 Node* findUnion(Node* nodeA, Node* nodeB);
