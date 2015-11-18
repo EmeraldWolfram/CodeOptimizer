@@ -26,6 +26,7 @@ void test_createNode(void){
   TEST_ASSERT_EQUAL(0, testNode->rank);
   TEST_ASSERT_EQUAL(0, testNode->numOfChild);
   TEST_ASSERT_EQUAL(0, testNode->numOfDom);
+  TEST_ASSERT_EQUAL(0, testNode->numOfParent);
   TEST_ASSERT_NULL(testNode->parent);
   TEST_ASSERT_NULL(testNode->lastBrhDom);
   TEST_ASSERT_NULL(testNode->imdDom);
@@ -49,6 +50,7 @@ void test_addChild_given_parentNode_and_childNode_should_link_it_as_tree_above(v
 
   TEST_ASSERT_EQUAL(1, parentNode->numOfChild);
   TEST_ASSERT_NODE_ADDRESS(childNode, parentNode->children[0]);
+  TEST_ASSERT_EQUAL(1, childNode->numOfParent);
   TEST_ASSERT_NODE_ADDRESS(parentNode, childNode->parent);
 }
 
@@ -104,11 +106,12 @@ void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above
   TEST_ASSERT_NODE_ADDRESS(childNodeD, childNodeB->children[0]);
   TEST_ASSERT_EQUAL(1, childNodeC->numOfChild);
   TEST_ASSERT_NODE_ADDRESS(childNodeD, childNodeC->children[0]);
+  TEST_ASSERT_EQUAL(2, childNodeD->numOfParent);
   TEST_ASSERT_NODE_ADDRESS(childNodeC, childNodeD->parent);
 }
 
 /**
- *  setParent will assign trueParent to all the node in the tree
+ *  setParent will assign lastBrhDom to all the node in the tree
  *  This test test assign of true parent for the following tree
  *
  *      [parent]
@@ -116,43 +119,43 @@ void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above
  *        [B]
  *
  **/
-// void test_setLastBrhDom_with_one_child_only(void){
-  // Node* parentNode  = createNode(0);
-  // Node* childNodeB  = createNode(1);
+void test_setLastBrhDom_with_one_child_only(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
 
-  // addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeB);
 
-  // setLastBrhDom(&parentNode);
+  setLastBrhDom(&parentNode);
 
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->lastBrhDom);
-// }
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->lastBrhDom);
+}
 
 /**
- *  setParent will assign trueParent to all the node in the tree
- *  This test test assign of true parent for the following tree
+ *  setParent will assign lastBrhDom to all the node in the tree
+ *  This test test assign of lastBrhDom for the following tree
  *
  *      [parent]
  *        /  \
  *      [B]  [C]
  *
  **/
-// void test_setParent_with_two_child_only(void){
-  // Node* parentNode  = createNode(0);
-  // Node* childNodeB  = createNode(1);
-  // Node* childNodeC  = createNode(1);
+void test_setLastBrhDom_with_two_child_only(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
 
-  // addChild(&parentNode, &childNodeB);
-  // addChild(&parentNode, &childNodeC);
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
 
-  // setParent(&parentNode);
+  setLastBrhDom(&parentNode);
 
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->trueParent);
-// }
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->lastBrhDom);
+}
 
 /**
- *  setParent will assign trueParent to all the node in the tree
- *  This test test assign of true parent for the following tree
+ *  setParent will assign lastBrhDom to all the node in the tree
+ *  This test test assign of lastBrhDom for the following tree
  *  TreeA
  *
  *     [parent]
@@ -162,27 +165,27 @@ void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above
  *       [D]
  *
  **/
-// void test_setParent_with_treeA_shown_above(void){
-  // Node* parentNode  = createNode(0);
-  // Node* childNodeB  = createNode(1);
-  // Node* childNodeC  = createNode(1);
-  // Node* childNodeD  = createNode(2);
+void test_setLastBrhDom_with_treeA_shown_above(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
 
-  // addChild(&parentNode, &childNodeB);
-  // addChild(&parentNode, &childNodeC);
-  // addChild(&childNodeB, &childNodeD);
-  // addChild(&childNodeC, &childNodeD);
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeD);
 
-  // setParent(&parentNode);
+  setLastBrhDom(&parentNode);
 
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->trueParent);
-// }
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->lastBrhDom);
+}
 
 /**
- *  setParent will assign trueParent to all the node in the tree
- *  This test test assign of true parent for the following tree
+ *  setParent will assign lastBrhDom to all the node in the tree
+ *  This test test assign of lastBrhDom for the following tree
  *  TreeB
  *
  *     [parent]
@@ -192,30 +195,30 @@ void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above
  *       [D]  [E]
  *
  **/
-// void test_setParent_with_treeB_shown_above(void){
-  // Node* parentNode  = createNode(0);
-  // Node* childNodeB  = createNode(1);
-  // Node* childNodeC  = createNode(1);
-  // Node* childNodeD  = createNode(2);
-  // Node* childNodeE  = createNode(2);
+void test_setLastBrhDom_with_treeB_shown_above(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+  Node* childNodeE  = createNode(2);
 
-  // addChild(&parentNode, &childNodeB);
-  // addChild(&parentNode, &childNodeC);
-  // addChild(&childNodeB, &childNodeD);
-  // addChild(&childNodeC, &childNodeD);
-  // addChild(&childNodeC, &childNodeE);
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeD);
+  addChild(&childNodeC, &childNodeE);
 
-  // setParent(&parentNode);
+  setLastBrhDom(&parentNode);
 
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(childNodeC, childNodeE->trueParent);
-// }
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeC, childNodeE->lastBrhDom);
+}
 
 /**
- *  setParent will assign trueParent to all the node in the tree
- *  This test test assign of true parent for the following tree
+ *  setParent will assign lastBrhDom to all the node in the tree
+ *  This test test assign of lastBrhDom for the following tree
  *  TreeC
  *
  *     [parent]
@@ -228,36 +231,36 @@ void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above
  *   \   /
  *    [H]
  **/
-// void test_setParent_with_treeC_shown_above(void){
-  // Node* parentNode  = createNode(0);
-  // Node* childNodeB  = createNode(1);
-  // Node* childNodeC  = createNode(1);
-  // Node* childNodeD  = createNode(2);
-  // Node* childNodeE  = createNode(2);
-  // Node* childNodeF  = createNode(3);
-  // Node* childNodeG  = createNode(3);
-  // Node* childNodeH  = createNode(4);
+void test_setLastBrhDom_with_treeC_shown_above(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+  Node* childNodeE  = createNode(2);
+  Node* childNodeF  = createNode(3);
+  Node* childNodeG  = createNode(3);
+  Node* childNodeH  = createNode(4);
 
-  // addChild(&parentNode, &childNodeB);
-  // addChild(&parentNode, &childNodeC);
-  // addChild(&childNodeB, &childNodeE);
-  // addChild(&childNodeB, &childNodeD);
-  // addChild(&childNodeC, &childNodeD);
-  // addChild(&childNodeE, &childNodeF);
-  // addChild(&childNodeD, &childNodeG);
-  // addChild(&childNodeF, &childNodeH);
-  // addChild(&childNodeG, &childNodeH);
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeE);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeD);
+  addChild(&childNodeE, &childNodeF);
+  addChild(&childNodeD, &childNodeG);
+  addChild(&childNodeF, &childNodeH);
+  addChild(&childNodeG, &childNodeH);
 
-  // setParent(&parentNode);
+  setLastBrhDom(&parentNode);
 
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeE->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeF->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeG->trueParent);
-  // TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeH->trueParent);
-// }
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeD->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeE->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeF->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeG->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeH->lastBrhDom);
+}
 
 
 

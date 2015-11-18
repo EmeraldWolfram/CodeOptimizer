@@ -13,9 +13,10 @@ typedef struct {
 struct Node_t{
   int rank;
   Block* block;
-  Node* parent;
   Node* lastBrhDom;
   Node* imdDom;
+  int numOfParent;
+  Node* parent;
   int numOfDom;
   Node** doms;
   int numOfChild;

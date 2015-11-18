@@ -7,12 +7,13 @@ Node* createNode(int thisRank){
   newNode->rank   = thisRank;
   newNode->block  = NULL;
   newNode->parent = NULL;
-  newNode->lastBrhDom = NULL;
-  newNode->imdDom     = NULL;
-  newNode->numOfDom   = 0;
-  newNode->doms       = NULL;
-  newNode->numOfChild = 0;
-  newNode->children   = NULL;
+  newNode->lastBrhDom   = NULL;
+  newNode->imdDom       = NULL;
+  newNode->numOfParent  = 0;
+  newNode->numOfDom     = 0;
+  newNode->doms         = NULL;
+  newNode->numOfChild   = 0;
+  newNode->children     = NULL;
   
   return newNode;
 }
@@ -53,16 +54,14 @@ void addChild(Node** parentNode, Node** childNode){
   /***************************************************
   *  Link Child to parentNode                       *
   ***************************************************/
- 
   (*parentNode)->numOfChild++;
   (*parentNode)->children = (Node**)realloc((*parentNode)->children, (sizeof(Node*) * ((*parentNode)->numOfChild)));
   (*parentNode)->children[((*parentNode)->numOfChild) - 1] = *childNode;
-    
 /***************************************************
  *  Link Parent to childNode                       *
  ***************************************************/
   (*childNode)->parent = *parentNode;
- // (*childNode)->numberOfParent++;
+  (*childNode)->numOfParent++;
   // (*childNode)->imdParent = (Node**)realloc((*childNode)->imdParent, (sizeof(Node*) * ((*childNode)->numberOfParent)));
   // (*childNode)->imdParent[((*childNode)->numberOfParent) - 1] = *parentNode;
   
@@ -72,48 +71,41 @@ void setLastBrhDom(Node** rootNode){
   if(*rootNode == NULL)
     ThrowError(ERR_NULL_NODE, "Empty Tree input detected!");
   
-  // LinkedList* tempList = createLinkedList();
-  // ListElement* tempElement = tempList->head;
-  // Node* tempNode = tempElement->node;
-  // int i, k;
-  // addListLast(tempList, createListElement(*rootNode));
+  LinkedList* tempList = createLinkedList();
+  addListLast(tempList, createListElement(*rootNode));
+  ListElement* tempElement = tempList->head;
+  Node** reservedNode;
+  Node* tempNode = tempElement->node;
+  int i, k;
 /**************************************************
  *  Assemble the tree into a LinkedList           *
  **************************************************/
-  // while(tempNode->numOfChild != 0 && tempElement != NULL){
-    // int j = tempNode->numOfChild;
-    // for(i = 0; i < j; i++){
-      // addListLast(tempList, createListElement(tempNode->imdChild[i]));
-    // }
-    // tempElement = tempElement->next;
-    // tempNode = tempElement->node;
-  // }
+  while(tempNode->numOfChild != 0 && tempElement != NULL){
+    int j = tempNode->numOfChild;
+    for(i = 0; i < j; i++){
+      if(tempList->tail->node != tempNode->children[i])
+        addListLast(tempList, createListElement(tempNode->children[i]));
+    }
+    tempElement = tempElement->next;
+    tempNode = tempElement->node;
+  }
 /****************************************************
- *  With the LinkedList, find and assign trueParent *
+ *  With the LinkedList, find and assign lastBrhDom *
  *  of each node in the Node tree                   *
  ****************************************************/
-  // tempElement = tempList->head->next;
-  // while(tempElement != NULL){
-    // tempNode = tempElement->node;
-    // if(tempNode->numberOfParent == 1){
-      // if(tempNode->imdParent[0]->numOfChild   > 1 || \
-         // tempNode->imdParent[0]->numberOfParent == 0){
-        // tempNode->trueParent = tempNode->imdParent[0];
-      // }
-      // else
-        // tempNode->trueParent = tempNode->imdParent[0]->trueParent;
-    // }
-    // else{
-      // i = tempNode->numberOfParent;
-      // Node* highRankParent = tempNode->imdParent[0]->trueParent;
-      // for(k = 0; k < i; k++){
-        // if((tempNode->imdParent[k]->trueParent->rank) < (highRankParent->rank))
-          // highRankParent = tempNode->imdParent[k]->trueParent;
-      // }
-      // tempNode->trueParent = highRankParent;
-    // }
-    // tempElement = tempElement->next;
-  // }   
+  tempElement = tempList->head->next;
+  while(tempElement != NULL){
+    tempNode = tempElement->node;
+    
+    if(tempNode->parent == NULL)
+      tempNode->lastBrhDom = NULL;            //For ROOT, last Branch is NULL
+    else if((tempNode->parent->numOfChild > 1 && tempNode->numOfParent < 2) || tempNode->parent->parent == NULL)
+      tempNode->lastBrhDom = tempNode->parent;
+    else
+      tempNode->lastBrhDom = tempNode->parent->lastBrhDom;
+
+    tempElement = tempElement->next;
+  }
 }
 
 // Node* findUnion(Node* nodeA, Node* nodeB){
