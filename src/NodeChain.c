@@ -74,7 +74,7 @@ void setLastBrhDom(Node** rootNode){
   LinkedList* tempList = createLinkedList();
   addListLast(tempList, createListElement(*rootNode));
   ListElement* tempElement = tempList->head;
-  Node** reservedNode;
+  Node *highRankNode, *testRankNode_1, *testRankNode_2;
   Node* tempNode = tempElement->node;
   int i, k;
 /**************************************************
@@ -93,16 +93,56 @@ void setLastBrhDom(Node** rootNode){
  *  With the LinkedList, find and assign lastBrhDom *
  *  of each node in the Node tree                   *
  ****************************************************/
-  tempElement = tempList->head->next;
+  tempElement = tempList->head;
   while(tempElement != NULL){
     tempNode = tempElement->node;
+    k = tempNode->numOfChild;
+    for(i = 0; i < k; i++){
+      //This is to handle ROOT Node
+      if(tempNode->parent == NULL){
+        tempNode->lastBrhDom = NULL;
+      }//Following use to handle if the child only have 1 parent (no assign to lastBrhDom yet)
+      if(tempNode->children[i]->lastBrhDom == NULL){
+        if(tempNode->numOfChild > 1 || tempNode->parent == NULL)
+          tempNode->children[i]->lastBrhDom = tempNode;
+        else if(tempNode->lastBrhDom != NULL)
+          tempNode->children[i]->lastBrhDom = tempNode->lastBrhDom;
+      }//Following use to handle if the child have more than 1 parent (lastBrhDom assigned during prev parent)
+      else{
+        highRankNode = tempNode->children[i]->lastBrhDom;
+        if(tempNode->numOfChild > 1){
+          if(tempNode->rank < highRankNode->rank){
+            tempNode->children[i]->lastBrhDom = tempNode;
+          }
+        }
+        else if(tempNode->lastBrhDom != NULL){
+          if(tempNode->lastBrhDom->rank < highRankNode->rank){
+            if(highRankNode->lastBrhDom == tempNode->lastBrhDom)
+              tempNode->children[i]->lastBrhDom = tempNode->lastBrhDom;
+            else{
+              //LOOP until 2 lastBrhDom is the same
+              tempNode->children[i]->lastBrhDom = tempNode->lastBrhDom;
+            }
+          }
+          else if(tempNode->lastBrhDom->rank == highRankNode->rank){
+            testRankNode_1 = tempNode->lastBrhDom;
+            testRankNode_2 = highRankNode;
+            while(testRankNode_1 != testRankNode_2){
+              testRankNode_1 = testRankNode_1->lastBrhDom;
+              testRankNode_2 = testRankNode_2->lastBrhDom;
+            }
+            tempNode->children[i]->lastBrhDom = testRankNode_1;
+          }
+        } 
+      }
+    }
+    //*********************************************************
     
-    if(tempNode->parent == NULL)
-      tempNode->lastBrhDom = NULL;            //For ROOT, last Branch is NULL
-    else if((tempNode->parent->numOfChild > 1 && tempNode->numOfParent < 2) || tempNode->parent->parent == NULL)
-      tempNode->lastBrhDom = tempNode->parent;
-    else
-      tempNode->lastBrhDom = tempNode->parent->lastBrhDom;
+      // tempNode->lastBrhDom = NULL;            //For ROOT, last Branch is NULL
+    // else if((tempNode->parent->numOfChild > 1 && tempNode->numOfParent < 2) || tempNode->parent->parent == NULL)
+      // tempNode->lastBrhDom = tempNode->parent;
+    // else
+      // tempNode->lastBrhDom = tempNode->parent->lastBrhDom;
 
     tempElement = tempElement->next;
   }

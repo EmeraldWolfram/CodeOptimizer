@@ -146,7 +146,6 @@ void test_setLastBrhDom_with_two_child_only(void){
 
   addChild(&parentNode, &childNodeB);
   addChild(&parentNode, &childNodeC);
-
   setLastBrhDom(&parentNode);
 
   TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->lastBrhDom);
