@@ -262,4 +262,62 @@ void test_setLastBrhDom_with_treeC_shown_above(void){
 }
 
 
+/**
+ *  setParent will assign lastBrhDom to all the node in the tree
+ *  This test test assign of lastBrhDom for the following tree
+ *  TreeC
+ *
+ *        [A]
+ *       /   \
+ *    [B]    [C]
+ *    / \     |
+ *  [D] [E]  [F]
+ *  /  \ /    |
+ *[G]--[H]---[I]
+ * |    ^
+ * |    ^
+ *[J]--[K]
+ *
+ **/
+void test_setLastBrhDom_with_treeD_shown_above(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+  Node* childNodeE  = createNode(2);
+  Node* childNodeF  = createNode(2);
+  Node* childNodeG  = createNode(3);
+  Node* childNodeH  = createNode(3);
+  Node* childNodeI  = createNode(3);
+  Node* childNodeJ  = createNode(4);
+  Node* childNodeK  = createNode(5);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeE);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeF);
+  addChild(&childNodeD, &childNodeG);
+  addChild(&childNodeD, &childNodeH);
+  addChild(&childNodeE, &childNodeH);
+  addChild(&childNodeF, &childNodeI);
+  addChild(&childNodeI, &childNodeH);
+  addChild(&childNodeG, &childNodeH);
+  addChild(&childNodeG, &childNodeJ);
+  addChild(&childNodeJ, &childNodeK);
+  addChild(&childNodeK, &childNodeH);
+
+  setLastBrhDom(&parentNode);
+
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeD->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeE->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeF->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeD, childNodeG->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeH->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeI->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeG, childNodeJ->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeG, childNodeK->lastBrhDom);
+}
 

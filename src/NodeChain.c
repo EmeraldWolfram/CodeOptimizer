@@ -1,5 +1,6 @@
 #include "NodeChain.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 Node* createNode(int thisRank){
   Node* newNode = malloc(sizeof(Node));
@@ -80,15 +81,18 @@ void setLastBrhDom(Node** rootNode){
 /**************************************************
  *  Assemble the tree into a LinkedList           *
  **************************************************/
-  while(tempNode->numOfChild != 0 && tempElement != NULL){
+  // while(tempNode->numOfChild != 0 && tempElement != NULL){
+  while(tempElement != NULL){
     int j = tempNode->numOfChild;
     for(i = 0; i < j; i++){
       if(tempList->tail->node != tempNode->children[i])
         addListLast(tempList, createListElement(tempNode->children[i]));
     }
     tempElement = tempElement->next;
-    tempNode = tempElement->node;
+    if(tempElement != NULL)
+      tempNode = tempElement->node;
   }
+  printf("%d", tempList->length);
 /****************************************************
  *  With the LinkedList, find and assign lastBrhDom *
  *  of each node in the Node tree                   *
@@ -96,8 +100,7 @@ void setLastBrhDom(Node** rootNode){
   tempElement = tempList->head;
   while(tempElement != NULL){
     tempNode = tempElement->node;
-    k = tempNode->numOfChild;
-    for(i = 0; i < k; i++){
+    for(i = 0; i < tempNode->numOfChild; i++){
       //This is to handle ROOT Node
       if(tempNode->parent == NULL){
         tempNode->lastBrhDom = NULL;
