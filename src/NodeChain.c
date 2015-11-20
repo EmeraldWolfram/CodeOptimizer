@@ -81,7 +81,6 @@ void setLastBrhDom(Node** rootNode){
 /**************************************************
  *  Assemble the tree into a LinkedList           *
  **************************************************/
-  // while(tempNode->numOfChild != 0 && tempElement != NULL){
   while(tempElement != NULL){
     int j = tempNode->numOfChild;
     for(i = 0; i < j; i++){
@@ -92,7 +91,6 @@ void setLastBrhDom(Node** rootNode){
     if(tempElement != NULL)
       tempNode = tempElement->node;
   }
-  printf("%d", tempList->length);
 /****************************************************
  *  With the LinkedList, find and assign lastBrhDom *
  *  of each node in the Node tree                   *
@@ -101,52 +99,45 @@ void setLastBrhDom(Node** rootNode){
   while(tempElement != NULL){
     tempNode = tempElement->node;
     for(i = 0; i < tempNode->numOfChild; i++){
-      //This is to handle ROOT Node
+      //handle ROOT Node
       if(tempNode->parent == NULL){
         tempNode->lastBrhDom = NULL;
-      }//Following use to handle if the child only have 1 parent (no assign to lastBrhDom yet)
+      }//handle child with 1 parent only (no assign to lastBrhDom yet)
       if(tempNode->children[i]->lastBrhDom == NULL){
         if(tempNode->numOfChild > 1 || tempNode->parent == NULL)
           tempNode->children[i]->lastBrhDom = tempNode;
         else if(tempNode->lastBrhDom != NULL)
           tempNode->children[i]->lastBrhDom = tempNode->lastBrhDom;
-      }//Following use to handle if the child have more than 1 parent (lastBrhDom assigned during prev parent)
+      }//handle child with more than 1 parent (lastBrhDom assigned by prev parents)
       else{
         highRankNode = tempNode->children[i]->lastBrhDom;
         if(tempNode->numOfChild > 1){
           if(tempNode->rank < highRankNode->rank){
-            tempNode->children[i]->lastBrhDom = tempNode;
-          }
-        }
-        else if(tempNode->lastBrhDom != NULL){
-          if(tempNode->lastBrhDom->rank < highRankNode->rank){
-            if(highRankNode->lastBrhDom == tempNode->lastBrhDom)
-              tempNode->children[i]->lastBrhDom = tempNode->lastBrhDom;
-            else{
-              //LOOP until 2 lastBrhDom is the same
-              tempNode->children[i]->lastBrhDom = tempNode->lastBrhDom;
-            }
-          }
-          else if(tempNode->lastBrhDom->rank == highRankNode->rank){
-            testRankNode_1 = tempNode->lastBrhDom;
-            testRankNode_2 = highRankNode;
-            while(testRankNode_1 != testRankNode_2){
-              testRankNode_1 = testRankNode_1->lastBrhDom;
-              testRankNode_2 = testRankNode_2->lastBrhDom;
-            }
+            testRankNode_1 = tempNode;
+            testRankNode_2 = highRankNode->lastBrhDom;
+            FIND_SAME_NODE(testRankNode_1, testRankNode_2);
             tempNode->children[i]->lastBrhDom = testRankNode_1;
           }
+        }
+        else{
+          testRankNode_1 = tempNode->lastBrhDom;
+          testRankNode_2 = highRankNode;
+          FIND_SAME_NODE(testRankNode_1, testRankNode_2);
+          tempNode->children[i]->lastBrhDom = testRankNode_1;
         } 
       }
     }
-    //*********************************************************
-    
+    //**************************************************************************************************************
+    //***********************IF numOfParent are used, the following code is enuf************************************
+    /**************************************************************************************************************
       // tempNode->lastBrhDom = NULL;            //For ROOT, last Branch is NULL
     // else if((tempNode->parent->numOfChild > 1 && tempNode->numOfParent < 2) || tempNode->parent->parent == NULL)
       // tempNode->lastBrhDom = tempNode->parent;
     // else
       // tempNode->lastBrhDom = tempNode->parent->lastBrhDom;
-
+    //*************************************************************************************************************/
+    //*************************************************************************************************************
+    //*************************************************************************************************************
     tempElement = tempElement->next;
   }
 }

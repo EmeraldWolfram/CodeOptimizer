@@ -23,6 +23,13 @@ struct Node_t{
   Node** children;
 };
 
+#define FIND_SAME_NODE(testRankNode_1, testRankNode_2)  while(testRankNode_1 != testRankNode_2){          \
+                                                          if(testRankNode_1->rank < testRankNode_2->rank) \
+                                                            testRankNode_2 = testRankNode_2->lastBrhDom;  \
+                                                          else                                            \
+                                                            testRankNode_1 = testRankNode_1->lastBrhDom;  \
+                                                        }
+
 Node* createNode(int thisRank);
 Block* createBlock(char* string, int data);
 void addChild(Node** parentNode, Node** childNode);
