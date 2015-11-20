@@ -143,7 +143,44 @@ void setLastBrhDom(Node** rootNode){
 }
 
 Node* getImdDom(Node* nodeA){
-  return nodeA;
+  Node *boudariesNode, *tempNode;
+  boudariesNode = nodeA->lastBrhDom;
+  int i;
+  LinkedList* tempList = createLinkedList();
+  addListLast(tempList, createListElement(boudariesNode));
+  ListElement* tempElement = tempList->head;
+  tempNode = tempElement->node;
+  /**************************************************
+   *  Assemble the tree into a LinkedList           *
+   **************************************************/
+  while(tempElement != NULL){
+    for(i = 0; i < tempNode->numOfChild; i++){
+      if(tempList->tail->node != tempNode->children[i])
+        addListLast(tempList, createListElement(tempNode->children[i]));
+    }
+    tempElement = tempElement->next;
+    if(tempElement != NULL)
+      tempNode = tempElement->node;
+  }
+  // printf("%d", tempList->length);
+  /*************************************************
+   * Find the imdDominator and return it           *
+   *************************************************/
+  tempElement = tempList->head;
+  while(tempElement != NULL){
+    tempNode = tempElement->node;
+        // printf("I entered");
+    for(i = 0; i < tempNode->numOfChild; i++){
+      if(tempNode->children[i] == nodeA){
+        if(nodeA->imdDom == NULL)
+          nodeA->imdDom = tempNode;
+        else
+          nodeA->imdDom = nodeA->lastBrhDom;
+      }
+    }
+    tempElement = tempElement->next;
+  }
+  return nodeA->imdDom;
 }
 
 

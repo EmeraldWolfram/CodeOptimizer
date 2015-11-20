@@ -328,3 +328,123 @@ void test_setLastBrhDom_with_treeD_shown_above(void){
 //*********************************************************************
 //********************TEST for getImdDom ******************************
 //*********************************************************************
+/**
+ *  getImdDom will find imdDom of that node and return
+ *
+ *       TREE A:  ImdDom
+ *      [parent]  {parent}
+ *         |
+ *        [B]     {parent}
+ *         |
+ *        [C]     {B}
+ *     
+ **/
+void test_getImdDom_given_nodeC_should_return_nodeB(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(2);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&childNodeB, &childNodeC);
+  setLastBrhDom(&parentNode);
+  
+  Node* testNode = getImdDom(childNodeC)
+
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, testNode);
+}
+
+
+/**
+ *  getImdDom will find imdDom of that node and return
+ *
+ *       TREE A:  ImdDom
+ *      [parent]  {parent}
+ *       /    \    
+ *     [B]    [C] {parent}
+ *       \   /
+ *        [D]
+ *     
+ *     
+ **/
+void test_getImdDom_given_nodeD_should_return_parentNode(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(2);
+  Node* childNodeD  = createNode(3);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeD);
+  setLastBrhDom(&parentNode);
+  
+  Node* testNode = getImdDom(childNodeD)
+
+  TEST_ASSERT_NODE_ADDRESS(parentNode, testNode);
+}
+
+/**
+ *  getImdDom will find imdDom of that node and return
+ *
+ *        [A]
+ *       /   \
+ *    [B]    [C]
+ *    / \     |
+ *  [D] [E]  [F]
+ *  /  \ /    |
+ *[G]--[H]---[I]
+ * |    ^
+ * |    ^
+ *[J]--[K]
+ *
+ **/
+void test_getImdDom_given_nodeJ_should_return_nodeG(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+  Node* childNodeE  = createNode(2);
+  Node* childNodeF  = createNode(2);
+  Node* childNodeG  = createNode(3);
+  Node* childNodeH  = createNode(3);
+  Node* childNodeI  = createNode(3);
+  Node* childNodeJ  = createNode(4);
+  Node* childNodeK  = createNode(5);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeE);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeF);
+  addChild(&childNodeD, &childNodeG);
+  addChild(&childNodeD, &childNodeH);
+  addChild(&childNodeE, &childNodeH);
+  addChild(&childNodeF, &childNodeI);
+  addChild(&childNodeI, &childNodeH);
+  addChild(&childNodeG, &childNodeH);
+  addChild(&childNodeG, &childNodeJ);
+  addChild(&childNodeJ, &childNodeK);
+  addChild(&childNodeK, &childNodeH);
+  setLastBrhDom(&parentNode);
+  
+  Node* testNode = getImdDom(childNodeK);
+  TEST_ASSERT_NODE_ADDRESS(childNodeJ, testNode);
+  
+  testNode = getImdDom(childNodeJ);
+  TEST_ASSERT_NODE_ADDRESS(childNodeG, testNode);
+  
+  testNode = getImdDom(childNodeG);
+  TEST_ASSERT_NODE_ADDRESS(childNodeD, testNode);
+  
+  testNode = getImdDom(childNodeH);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, testNode);
+  
+  testNode = getImdDom(childNodeI);
+  TEST_ASSERT_NODE_ADDRESS(childNodeF, testNode);
+  
+  testNode = getImdDom(childNodeD);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, testNode);
+  
+  testNode = getImdDom(childNodeE);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, testNode);
+}
