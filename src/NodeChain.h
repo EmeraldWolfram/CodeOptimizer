@@ -35,8 +35,8 @@ Block* createBlock(char* string, int data);
 void addChild(Node** parentNode, Node** childNode);
 void setLastBrhDom(Node** rootNode);
 
+Node* getImdDom(Node* nodeA);
 
-Node* findUnion(Node* nodeA, Node* nodeB);
 
 
 #endif // NodeChain_H

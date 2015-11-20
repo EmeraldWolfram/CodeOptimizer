@@ -142,9 +142,9 @@ void setLastBrhDom(Node** rootNode){
   }
 }
 
-// Node* findUnion(Node* nodeA, Node* nodeB){
-  // return nodeA;
-// }
+Node* getImdDom(Node* nodeA){
+  return nodeA;
+}
 
 
 
