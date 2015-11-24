@@ -40,39 +40,40 @@ LinkedList* createLinkedList(){
 	return newList;
 }
 
-ListElement* createListElement(Node* thisNode){
-	ListElement* newNode = malloc(sizeof(ListElement));
+ListElement* createListElement(void *data){
+	ListElement* newElement = malloc(sizeof(ListElement));
 
-	newNode->node = thisNode;
-	newNode->next = NULL;
+	newElement->node = data;
+	newElement->next = NULL;
 
-	return newNode;
+	return newElement;
 }
 
-void addListLast(LinkedList* currentList, ListElement* currentNode){
+void addListLast(LinkedList* currentList, void *data){
 
   if(currentList == NULL){
     ThrowError(ERR_NULL_LIST, "ERROR: Link List cannot be NULL!");
   }
 
-  if(currentNode == NULL){
+  if(data == NULL){
     ThrowError(ERR_NULL_ELEMENT, "ERROR: Element cannot be NULL!");
   }
 
+  ListElement* newElement = createListElement(data);
   ListElement* tempNode = currentList->head;
   //check if the linked list empty. If empty, create a Node that the head point to
   if(currentList->head == NULL){
-    currentList->head = currentNode;
+    currentList->head = newElement;
   }
   //if the list is not empty, find the last node and add a node as new last node
   else{
     while(tempNode->next != NULL){
       tempNode = tempNode->next;
     }
-    tempNode->next = currentNode;
+    tempNode->next = newElement;
   }
   //No matter what, the tail always point to last node
-  currentList->tail = currentNode;
+  currentList->tail = newElement;
   currentList->length ++;
 
 }

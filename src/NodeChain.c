@@ -73,7 +73,7 @@ void setLastBrhDom(Node** rootNode){
     ThrowError(ERR_NULL_NODE, "Empty Tree input detected!");
   
   LinkedList* tempList = createLinkedList();
-  addListLast(tempList, createListElement(*rootNode));
+  addListLast(tempList, *rootNode);
   ListElement* tempElement = tempList->head;
   Node *highRankNode, *testRankNode_1, *testRankNode_2;
   Node* tempNode = tempElement->node;
@@ -85,7 +85,7 @@ void setLastBrhDom(Node** rootNode){
     int j = tempNode->numOfChild;
     for(i = 0; i < j; i++){
       if(tempList->tail->node != tempNode->children[i])
-        addListLast(tempList, createListElement(tempNode->children[i]));
+        addListLast(tempList, tempNode->children[i]);
     }
     tempElement = tempElement->next;
     if(tempElement != NULL)
@@ -147,7 +147,7 @@ Node* getImdDom(Node* nodeA){
   boudariesNode = nodeA->lastBrhDom;
   int i;
   LinkedList* tempList = createLinkedList();
-  addListLast(tempList, createListElement(boudariesNode));
+  addListLast(tempList, boudariesNode);
   ListElement* tempElement = tempList->head;
   tempNode = tempElement->node;
   /**************************************************
@@ -156,7 +156,7 @@ Node* getImdDom(Node* nodeA){
   while(tempElement != NULL){
     for(i = 0; i < tempNode->numOfChild; i++){
       if(tempList->tail->node != tempNode->children[i])
-        addListLast(tempList, createListElement(tempNode->children[i]));
+        addListLast(tempList, tempNode->children[i]);
     }
     tempElement = tempElement->next;
     if(tempElement != NULL)
