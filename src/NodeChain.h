@@ -1,9 +1,9 @@
 #ifndef NodeChain_H
 #define NodeChain_H
 
+#include "LinkedList.h"
 #include "ErrorObject.h"
 typedef struct Node_t Node;
-#include "LinkedList.h"
 
 typedef struct {
   char* string;
@@ -37,6 +37,7 @@ void setLastBrhDom(Node** rootNode);
 
 Node* getImdDom(Node* nodeA);
 
-
+LinkedList* getAllDomFrontiers(Node** root);
+LinkedList* getNodeDomFrontiers(Node* node);
 
 #endif // NodeChain_H

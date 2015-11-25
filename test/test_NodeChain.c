@@ -448,3 +448,71 @@ void test_getImdDom_given_nodeJ_should_return_nodeG(void){
   testNode = getImdDom(childNodeE);
   TEST_ASSERT_NODE_ADDRESS(childNodeB, testNode);
 }
+
+/**       ControlFlowGraph1           DomFrontiers
+ *
+ *          | Entry                 DF(A) = { A }
+ *         \/                       DF(B) = { D } 
+ *        [ A ]<<<<                 DF(C) = { D }
+ *       |   |    /\                DF(D) = { A }
+ *      \/  \/    /\
+ *     [B]  [C]   /\
+ *      |    |    /\
+ *     \/   \/    /\
+ *       [D] >>>>>>>
+ *
+ **/
+void test_getNodeDomFrontiers_given_CFG1_then_find_domFrontiers_of_each_node_should_return_domFrontiers_respectively(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeC, &nodeD);
+  addChild(&nodeD, &nodeA);
+
+  setLastBrhDom(&nodeA);
+  
+  // Node* testNode = getImdDom(childNodeK);
+  // Node* testNode = getImdDom(childNodeK);
+
+}
+
+/**    ControlFlowGraph2         DomFrontiers
+ *
+ *          | Entry
+ *         \/
+ *      [[[A]]]                DF(A) = { }
+ *      |  |  \                DF(B) = { E }
+ *     \/ \/  \/               DF(C) = { E } 
+ *    [B] [C]  [D]             DF(D) = { F }
+ *     |   |    |              DF(E) = { F }
+ *    \/  \/   |               DF(F) = { }
+ *     [E]    |
+ *       \   |
+ *       \/ \/
+ *        [F]
+ **/
+ 
+/**       ControlFlowGraph3           DomFrontiers
+ *
+ *          | Entry                 DF(A) = { }
+ *         \/                       DF(B) = { E } 
+ *        [ A ]                     DF(C) = { E }
+ *          |  \                    DF(D) = { F }
+ *         \/   \                   DF(E) = { F }
+ *       [ B ]   \                  DF(F) = { }
+ *       /   \    \
+ *     \/    \/   |
+ *    [C]   [D]   |
+ *     \     /    |
+ *     \/  \/    /
+ *     [ E ]    /
+ *       |    /
+ *      \/  \/
+ *     [ F ]
+ *
+ **/

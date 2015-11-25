@@ -2,7 +2,7 @@
 #define LinkedList_H
 
 #include "ErrorObject.h"
-#include "NodeChain.h"
+// #include "NodeChain.h"
 /**
  * LinkedList
  *	
@@ -33,7 +33,7 @@
  */
 typedef struct ListElement_t ListElement;
 struct ListElement_t{
-	Node* node;
+	void* node;
 	ListElement* next;
 };
 
@@ -43,10 +43,10 @@ typedef struct{
   int length;
 }LinkedList;
 
-ListElement* createListElement(Node* thisNode);
+ListElement* createListElement(void *data);
 LinkedList* createLinkedList();
 
-void addListLast(LinkedList* currentList, ListElement* currentNode);
+void addListLast(LinkedList* currentList, void *data);
 void addListFirst(LinkedList* stack, ListElement *elem);
 
 ListElement* listRemoveFirst(LinkedList* link);
