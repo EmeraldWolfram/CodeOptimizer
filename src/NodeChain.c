@@ -84,7 +84,8 @@ void setLastBrhDom(Node** rootNode){
   while(tempElement != NULL){
     int j = tempNode->numOfChild;
     for(i = 0; i < j; i++){
-      if(tempList->tail->node != tempNode->children[i])
+      if(tempList->tail->node != tempNode->children[i] &&\
+         tempNode->rank < tempNode->children[i]->rank)
         addListLast(tempList, tempNode->children[i]);
     }
     tempElement = tempElement->next;
@@ -155,7 +156,8 @@ Node* getImdDom(Node* nodeA){
    **************************************************/
   while(tempElement != NULL){
     for(i = 0; i < tempNode->numOfChild; i++){
-      if(tempList->tail->node != tempNode->children[i])
+      if(tempList->tail->node != tempNode->children[i] &&\
+         tempNode->rank < tempNode->children[i]->rank)
         addListLast(tempList, tempNode->children[i]);
     }
     tempElement = tempElement->next;
@@ -183,6 +185,21 @@ Node* getImdDom(Node* nodeA){
   return nodeA->imdDom;
 }
 
+// struct Node_t{
+  // int rank;
+  // Block* block;
+  // Node* lastBrhDom;
+  // Node* imdDom;
+  // int numOfParent;
+  // Node* parent;
+  // int numOfDom;
+  // Node** doms;
+  // int numOfChild;
+  // Node** children;
+  // LinkedList* domFrontiers;
+// };
 
-
-
+// LinkedList* getNodeDomFrontiers(Node* node)
+// {
+  
+// }
