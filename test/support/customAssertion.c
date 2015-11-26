@@ -36,13 +36,14 @@ void customTestAssertNodeAddress(Node* expectedNode, Node* actualNode, int lineN
 /**
  * compare the address of every list elements and the number of elements contained between two list.
  */
-void customTestAssertLinkedList(LinkedList* expectedList, LinkedList* actualList, int lineNumber)
-{
+void customTestAssertLinkedList(LinkedList* expectedList, LinkedList* actualList, int lineNumber){
+  if(!expectedList->head && !actualList->head)
+    return;
   
-  if(!expectedList && actualList)
+  if(!expectedList->head && actualList->head)
     CUSTOM_TEST_FAIL(lineNumber, "Expected the list was NULL actual was 0x%X.", actualList );
 
-  if(expectedList && !actualList)
+  if(expectedList->head && !actualList->head)
     CUSTOM_TEST_FAIL(lineNumber, "Expected the list was 0x%X actual was NULL.", expectedList );
 
   if(expectedList->length != actualList->length)

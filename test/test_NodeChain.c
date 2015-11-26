@@ -507,15 +507,28 @@ void test_getNodeDomFrontiers_given_CFG1_then_find_domFrontiers_of_each_node_sho
 
   setLastBrhDom(&nodeA);
   
-  nodeB->imdDom = getImdDom(nodeB);
-  nodeC->imdDom = getImdDom(nodeC);
-  nodeD->imdDom = getImdDom(nodeD);
+  // nodeA->imdDom = getImdDom(nodeA);
+  // nodeB->imdDom = getImdDom(nodeB);
+  // nodeC->imdDom = getImdDom(nodeC);
+  // nodeD->imdDom = getImdDom(nodeD);
 
+  LinkedList* domFrontiersA = createLinkedList();
+  LinkedList* domFrontiersB = createLinkedList();
+  LinkedList* domFrontiersC = createLinkedList();
+  LinkedList* domFrontiersD = createLinkedList();
+  addListLast(domFrontiersA, &nodeA);
+  addListLast(domFrontiersB, &nodeD);
+  addListLast(domFrontiersC, &nodeD);
+  addListLast(domFrontiersD, &nodeA);
   // nodeA->domFrontiers = getNodeDomFrontiers(nodeA);
   // nodeB->domFrontiers = getNodeDomFrontiers(nodeB);
   // nodeC->domFrontiers = getNodeDomFrontiers(nodeC);
   // nodeD->domFrontiers = getNodeDomFrontiers(nodeD);
   
+  // TEST_ASSERT_LINKED_LIST(domFrontiersA, nodeA->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersB, nodeB->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersC, nodeC->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersD, nodeD->domFrontiers);
 }
 
 /**    ControlFlowGraph2         DomFrontiers
@@ -533,6 +546,56 @@ void test_getNodeDomFrontiers_given_CFG1_then_find_domFrontiers_of_each_node_sho
  *       \/ \/
  *        [F]
  **/
+void test_getNodeDomFrontiers_given_CFG2_then_find_domFrontiers_of_each_node_should_return_domFrontiers_respectively(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(1);
+  Node* nodeE = createNode(2);
+  Node* nodeF = createNode(2);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeA, &nodeD);
+  addChild(&nodeB, &nodeE);
+  addChild(&nodeC, &nodeE);
+  addChild(&nodeD, &nodeF);
+  addChild(&nodeE, &nodeF);
+
+  setLastBrhDom(&nodeA);
+  
+  // nodeA->imdDom = getImdDom(nodeA);
+  // nodeB->imdDom = getImdDom(nodeB);
+  // nodeC->imdDom = getImdDom(nodeC);
+  // nodeD->imdDom = getImdDom(nodeD);
+  // nodeE->imdDom = getImdDom(nodeE);
+  // nodeF->imdDom = getImdDom(nodeF);
+
+  LinkedList* domFrontiersA = createLinkedList();
+  LinkedList* domFrontiersB = createLinkedList();
+  LinkedList* domFrontiersC = createLinkedList();
+  LinkedList* domFrontiersD = createLinkedList();
+  LinkedList* domFrontiersE = createLinkedList();
+  LinkedList* domFrontiersF = createLinkedList();
+  // addListLast(domFrontiersB, &nodeE);
+  // addListLast(domFrontiersC, &nodeE);
+  // addListLast(domFrontiersD, &nodeF);
+  // addListLast(domFrontiersE, &nodeF);
+  
+  // nodeA->domFrontiers = getNodeDomFrontiers(nodeA);
+  // nodeB->domFrontiers = getNodeDomFrontiers(nodeB);
+  // nodeC->domFrontiers = getNodeDomFrontiers(nodeC);
+  // nodeD->domFrontiers = getNodeDomFrontiers(nodeD);
+  // nodeE->domFrontiers = getNodeDomFrontiers(nodeE);
+  // nodeF->domFrontiers = getNodeDomFrontiers(nodeF);
+  
+  // TEST_ASSERT_LINKED_LIST(domFrontiersA, nodeA->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersB, nodeB->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersC, nodeC->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersD, nodeD->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersE, nodeE->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersF, nodeF->domFrontiers);
+}
  
 /**       ControlFlowGraph3           DomFrontiers
  *
@@ -553,3 +616,53 @@ void test_getNodeDomFrontiers_given_CFG1_then_find_domFrontiers_of_each_node_sho
  *     [ F ]
  *
  **/
+void test_getNodeDomFrontiers_given_CFG3_then_find_domFrontiers_of_each_node_should_return_domFrontiers_respectively(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(2);
+  Node* nodeD = createNode(2);
+  Node* nodeE = createNode(3);
+  Node* nodeF = createNode(1);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeF);
+  addChild(&nodeB, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeC, &nodeE);
+  addChild(&nodeD, &nodeE);
+  addChild(&nodeE, &nodeF);
+
+  setLastBrhDom(&nodeA);
+  
+  // nodeA->imdDom = getImdDom(nodeA);
+  // nodeB->imdDom = getImdDom(nodeB);
+  // nodeC->imdDom = getImdDom(nodeC);
+  // nodeD->imdDom = getImdDom(nodeD);
+  // nodeE->imdDom = getImdDom(nodeE);
+  // nodeF->imdDom = getImdDom(nodeF);
+
+  LinkedList* domFrontiersA = createLinkedList();
+  LinkedList* domFrontiersB = createLinkedList();
+  LinkedList* domFrontiersC = createLinkedList();
+  LinkedList* domFrontiersD = createLinkedList();
+  LinkedList* domFrontiersE = createLinkedList();
+  LinkedList* domFrontiersF = createLinkedList();
+  // addListLast(domFrontiersB, &nodeE);
+  // addListLast(domFrontiersC, &nodeE);
+  // addListLast(domFrontiersD, &nodeF);
+  // addListLast(domFrontiersE, &nodeF);
+  
+  // nodeA->domFrontiers = getNodeDomFrontiers(nodeA);
+  // nodeB->domFrontiers = getNodeDomFrontiers(nodeB);
+  // nodeC->domFrontiers = getNodeDomFrontiers(nodeC);
+  // nodeD->domFrontiers = getNodeDomFrontiers(nodeD);
+  // nodeE->domFrontiers = getNodeDomFrontiers(nodeE);
+  // nodeF->domFrontiers = getNodeDomFrontiers(nodeF);
+  
+  // TEST_ASSERT_LINKED_LIST(domFrontiersA, nodeA->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersB, nodeB->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersC, nodeC->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersD, nodeD->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersE, nodeE->domFrontiers);
+  // TEST_ASSERT_LINKED_LIST(domFrontiersF, nodeF->domFrontiers);
+}
