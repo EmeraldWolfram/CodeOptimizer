@@ -321,6 +321,37 @@ void test_setLastBrhDom_with_treeD_shown_above(void){
   TEST_ASSERT_NODE_ADDRESS(childNodeG, childNodeK->lastBrhDom);
 }
 
+/**       ControlFlowGraph1      s
+ *
+ *          | Entry              
+ *         \/                     
+ *        [ A ]<<<<              
+ *       |   |    /\             
+ *      \/  \/    /\
+ *     [B]  [C]   /\
+ *      |    |    /\
+ *     \/   \/    /\
+ *       [D] >>>>>>>
+ *
+ **/
+void test_setLastBrhDom_give_CFG1_should_assign_lastBranchDominator_of_each_node_respectively(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeC, &nodeD);
+  addChild(&nodeD, &nodeA);
+
+  setLastBrhDom(&nodeA);
+  
+  TEST_ASSERT_NODE_ADDRESS(nodeA, nodeB->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(nodeA, nodeC->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(nodeA, nodeD->lastBrhDom);
+}
 
 //*********************************************************************
 //*********************************************************************
@@ -476,9 +507,15 @@ void test_getNodeDomFrontiers_given_CFG1_then_find_domFrontiers_of_each_node_sho
 
   setLastBrhDom(&nodeA);
   
-  // Node* testNode = getImdDom(childNodeK);
-  // Node* testNode = getImdDom(childNodeK);
+  nodeB->imdDom = getImdDom(nodeB);
+  nodeC->imdDom = getImdDom(nodeC);
+  nodeD->imdDom = getImdDom(nodeD);
 
+  // nodeA->domFrontiers = getNodeDomFrontiers(nodeA);
+  // nodeB->domFrontiers = getNodeDomFrontiers(nodeB);
+  // nodeC->domFrontiers = getNodeDomFrontiers(nodeC);
+  // nodeD->domFrontiers = getNodeDomFrontiers(nodeD);
+  
 }
 
 /**    ControlFlowGraph2         DomFrontiers

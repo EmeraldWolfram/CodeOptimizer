@@ -18,9 +18,13 @@
 
 #define TEST_ASSERT_NODE_ADDRESS(expectedNode, actualNode);                   \
           customTestAssertNodeAddress(expectedNode, actualNode, __LINE__);
+          
+#define TEST_ASSERT_LINKED_LIST(expectedList, actualList);                   \
+          customTestAssertLinkedList(expectedList, actualList, __LINE__);
 //TEST_ASSERT_EQUAL_CHAIN used to test the addresses of the chain and the addresses stored in the chain
 
 // void customTestAssertNodeData(char* expectedExpression, int expectedRank, Node* expectedParent, Node* actualNode, int lineNumber);
 void customTestAssertNodeAddress(Node* expectedNode, Node* actualNode, int lineNumber);
+void customTestAssertLinkedList(LinkedList* expectedList, LinkedList* actualList, int lineNumber);
 
 #endif // customAssertion_H

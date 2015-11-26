@@ -30,5 +30,33 @@ void customTestAssertNodeAddress(Node* expectedNode, Node* actualNode, int lineN
     CUSTOM_TEST_FAIL(lineNumber, "Expected Node was NULL but actual was 0x%X", actualNode);
   
   if(actualNode != expectedNode)
-      CUSTOM_TEST_FAIL(lineNumber, "Expected Node pointer point to 0x%X but actual was 0x%X", expectedNode, actualNode);
+    CUSTOM_TEST_FAIL(lineNumber, "Expected Node pointer point to 0x%X but actual was 0x%X", expectedNode, actualNode);
 }
+
+/**
+ * compare the address of every list elements and the number of elements contained between two list.
+ */
+void customTestAssertLinkedList(LinkedList* expectedList, LinkedList* actualList, int lineNumber)
+{
+  
+  if(!expectedList && actualList)
+    CUSTOM_TEST_FAIL(lineNumber, "Expected the list was NULL actual was 0x%X.", actualList );
+
+  if(expectedList && !actualList)
+    CUSTOM_TEST_FAIL(lineNumber, "Expected the list was 0x%X actual was NULL.", expectedList );
+
+  if(expectedList->length != actualList->length)
+    CUSTOM_TEST_FAIL(lineNumber, "Expected the number of elements in list was %d actual was %d.", expectedList->length, actualList->length);
+
+  ListElement* tempExpectedElem = expectedList->head;
+  ListElement* tempActualElem = actualList->head;
+  
+  while(tempExpectedElem && tempActualElem)
+  {
+    if(tempExpectedElem != tempActualElem)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected the list elements was %d actual was %d.", tempExpectedElem, tempActualElem);
+
+    tempExpectedElem = tempExpectedElem->next;
+    tempActualElem = tempActualElem->next;
+  }
+} 
