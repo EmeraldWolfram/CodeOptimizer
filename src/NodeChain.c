@@ -199,7 +199,7 @@ Node* getImdDom(Node* nodeA){
   // LinkedList* domFrontiers;
 // };
 
-// LinkedList* getNodeDomFrontiers(Node* node)
-// {
+LinkedList* getNodeDomFrontiers(Node* node)
+{
   
-// }
+}

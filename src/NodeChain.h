@@ -15,12 +15,13 @@ struct Node_t{
   Block* block;
   Node* lastBrhDom;
   Node* imdDom;
-  int numOfParent;
+  int numOfParent; //X
   Node* parent;
-  int numOfDom;
-  Node** doms;
-  int numOfChild;
-  Node** children;
+  int numOfDom; //X
+  Node** doms; //LINKEDLIST
+  int numOfChild; //X
+  Node** children; //LINKEDLIST
+  LinkedList* domFrontiers;
 };
 
 #define FIND_SAME_NODE(testRankNode_1, testRankNode_2)  while(testRankNode_1 != testRankNode_2){          \
