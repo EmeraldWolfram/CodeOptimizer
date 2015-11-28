@@ -666,3 +666,152 @@ void test_getNodeDomFrontiers_given_CFG3_then_find_domFrontiers_of_each_node_sho
   TEST_ASSERT_LINKED_LIST(domFrontiersE, nodeE->domFrontiers);
   TEST_ASSERT_LINKED_LIST(domFrontiersF, nodeF->domFrontiers);
 }
+
+/**       ControlFlowGraph1         Union of DomFrontiers
+ *
+ *          | Entry                 DF(A) = { A }
+ *         \/                       DF(B) = { D } 
+ *        [ A ]<<<<                 DF(C) = { D }
+ *       |   |    /\                DF(D) = { A }
+ *      \/  \/    /\                UDF = { A , D}
+ *     [B]  [C]   /\
+ *      |    |    /\
+ *     \/   \/    /\
+ *       [D] >>>>>>>
+ *
+ **/
+void test_getAllDomFrontiers_given_CFG1_should_give_a_union_of_dominatorFrontiers_list(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeC, &nodeD);
+  addChild(&nodeD, &nodeA);
+
+  setLastBrhDom(&nodeA);
+  // nodeA->imdDom = NULL;
+  nodeB->imdDom = getImdDom(nodeB);
+  nodeC->imdDom = getImdDom(nodeC);
+  nodeD->imdDom = getImdDom(nodeD);
+  
+  LinkedList* unionDomFrontiers = createLinkedList();
+  LinkedList* expectUnionDomFrontiers = createLinkedList();
+  
+  addListLast(expectUnionDomFrontiers, nodeA);
+  addListLast(expectUnionDomFrontiers, nodeD);
+  unionDomFrontiers = getAllDomFrontiers(&nodeA);
+
+  // TEST_ASSERT_LINKED_LIST(domFrontiersA, unionDomFrontiers);
+ 
+}
+
+/**    ControlFlowGraph2     Union of DomFrontiers
+ *
+ *          | Entry
+ *         \/
+ *      [[[A]]]                DF(A) = { }
+ *      |  |  \                DF(B) = { E }
+ *     \/ \/  \/               DF(C) = { E } 
+ *    [B] [C]  [D]             DF(D) = { F }
+ *     |   |    |              DF(E) = { F }
+ *    \/  \/   |               DF(F) = { }
+ *     [E]    |                UDF = { E , F}
+ *       \   |
+ *       \/ \/
+ *        [F]
+ **/
+void test_getAllDomFrontiers_given_CFG2_should_give_a_union_of_dominatorFrontiers_list(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(1);
+  Node* nodeE = createNode(2);
+  Node* nodeF = createNode(2);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeA, &nodeD);
+  addChild(&nodeB, &nodeE);
+  addChild(&nodeC, &nodeE);
+  addChild(&nodeD, &nodeF);
+  addChild(&nodeE, &nodeF);
+
+  setLastBrhDom(&nodeA);
+  
+  // nodeA->imdDom = getImdDom(nodeA);
+  nodeB->imdDom = getImdDom(nodeB);
+  nodeC->imdDom = getImdDom(nodeC);
+  nodeD->imdDom = getImdDom(nodeD);
+  nodeE->imdDom = getImdDom(nodeE);
+  nodeF->imdDom = getImdDom(nodeF);
+  
+  LinkedList* unionDomFrontiers = createLinkedList();
+  LinkedList* expectUnionDomFrontiers = createLinkedList();
+  
+  addListLast(expectUnionDomFrontiers, nodeE);
+  addListLast(expectUnionDomFrontiers, nodeF);
+  unionDomFrontiers = getAllDomFrontiers(&nodeA);
+
+  // TEST_ASSERT_LINKED_LIST(domFrontiersA, unionDomFrontiers);
+  
+}
+ 
+/**       ControlFlowGraph3     Union of DomFrontiers
+ *
+ *          | Entry                 DF(A) = { }
+ *         \/                       DF(B) = { F } 
+ *        [ A ]                     DF(C) = { E }
+ *          |  \                    DF(D) = { E }
+ *         \/   \                   DF(E) = { F }
+ *       [ B ]   \                  DF(F) = { }
+ *       /   \    \
+ *     \/    \/   |                UDF = { E , F}
+ *    [C]   [D]   |
+ *     \     /    |
+ *     \/  \/    /
+ *     [ E ]    /
+ *       |    /
+ *      \/  \/
+ *     [ F ]
+ *
+ **/
+void test_getAllDomFrontiers_given_CFG3_should_give_a_union_of_dominatorFrontiers_list(void){
+
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(2);
+  Node* nodeD = createNode(2);
+  Node* nodeE = createNode(3);
+  Node* nodeF = createNode(1);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeF);
+  addChild(&nodeB, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeC, &nodeE);
+  addChild(&nodeD, &nodeE);
+  addChild(&nodeE, &nodeF);
+
+  setLastBrhDom(&nodeA);
+  
+  // nodeA->imdDom = getImdDom(nodeA);
+  nodeB->imdDom = getImdDom(nodeB);
+  nodeC->imdDom = getImdDom(nodeC);
+  nodeD->imdDom = getImdDom(nodeD);
+  nodeE->imdDom = getImdDom(nodeE);
+  nodeF->imdDom = getImdDom(nodeF);
+
+  LinkedList* unionDomFrontiers = createLinkedList();
+  LinkedList* expectUnionDomFrontiers = createLinkedList();
+  
+  addListLast(expectUnionDomFrontiers, nodeF);
+  addListLast(expectUnionDomFrontiers, nodeE);
+  unionDomFrontiers = getAllDomFrontiers(&nodeA);
+
+  // TEST_ASSERT_LINKED_LIST(domFrontiersA, unionDomFrontiers);
+}
+ 
