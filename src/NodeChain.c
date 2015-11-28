@@ -225,7 +225,7 @@ LinkedList* getNodeDomFrontiers(Node* node){
   
   addListLast(checklist, node);
   tempHeadCL = checklist->head;
-  
+
   do{
     
     for( i = 0; i < ((Node*)tempHeadCL->node)->numOfChild; i++){
@@ -247,24 +247,42 @@ LinkedList* getNodeDomFrontiers(Node* node){
       
       tempCLElement = checklist->head;
       
-       //checking is the children already put in the checklist
-      while(tempCLElement->next){
-        if((((Node*)tempHeadCL->node)->children[i]) == (tempCLElement->node));
+      //checking is the children already put in the checklist
+      while(tempCLElement){
+       
+        if( ((Node*)tempHeadCL->node)->children[i] == tempCLElement->node )
           break;
 
-        if(tempCLElement->next)
-          tempCLElement = tempCLElement->next;
+        tempCLElement = tempCLElement->next;
       }
      
-      if(((Node*)tempHeadCL->node)->children[i] != tempCLElement->node)
+     if(!tempCLElement)
         addListLast(checklist, ((Node*)tempHeadCL->node)->children[i]);
     }
     
-    
-    if(tempHeadCL->next)
-      tempHeadCL = tempHeadCL->next;
+    tempHeadCL = tempHeadCL->next;
 
-  }while(tempHeadCL->next);
+  }while(tempHeadCL);
   
   return domFrontiers;
+}
+
+LinkedList* getAllDomFrontiers(Node** root){
+  
+  LinkedList* domFrontiers = createLinkedList();
+  LinkedList* checklist = createLinkedList();
+  ListElement* tempCLElement = NULL;
+  ListElement* tempHeadCL = NULL;
+  int i;
+  
+  addListLast(checklist, *root);
+  tempHeadCL = checklist->head;
+  tempHeadCL = tempHeadCL->next;
+  
+  printf("%d\n", tempHeadCL);
+  // for( i = 0; i < ((Node*)tempHeadCL->node)->numOfChild; i++){
+    
+    
+    
+  // }
 }

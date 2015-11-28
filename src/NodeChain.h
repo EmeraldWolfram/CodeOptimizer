@@ -38,7 +38,7 @@ void setLastBrhDom(Node** rootNode);
 
 Node* getImdDom(Node* nodeA);
 
-LinkedList* getAllDomFrontiers(Node** root);
 LinkedList* getNodeDomFrontiers(Node* node);
+LinkedList* getAllDomFrontiers(Node** root);
 
 #endif // NodeChain_H
