@@ -54,7 +54,7 @@ void customTestAssertLinkedList(LinkedList* expectedList, LinkedList* actualList
   
   while(tempExpectedElem && tempActualElem)
   {
-    if(tempExpectedElem != tempActualElem)
+    if(tempExpectedElem->node != tempActualElem->node)
       CUSTOM_TEST_FAIL(lineNumber, "Expected the list elements was %d actual was %d.", tempExpectedElem, tempActualElem);
 
     tempExpectedElem = tempExpectedElem->next;
