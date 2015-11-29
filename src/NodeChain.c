@@ -226,7 +226,7 @@ LinkedList* getNodeDomFrontiers(Node* node){
   addListLast(checklist, node);
   tempHeadCL = checklist->head;
 
-  do{
+ while(tempHeadCL){
     
     for( i = 0; i < ((Node*)tempHeadCL->node)->numOfChild; i++){
       
@@ -262,7 +262,7 @@ LinkedList* getNodeDomFrontiers(Node* node){
     
     tempHeadCL = tempHeadCL->next;
 
-  }while(tempHeadCL);
+  }
   
   return domFrontiers;
 }
@@ -271,18 +271,65 @@ LinkedList* getAllDomFrontiers(Node** root){
   
   LinkedList* domFrontiers = createLinkedList();
   LinkedList* checklist = createLinkedList();
+  ListElement* tempCheckList = NULL;
+  ListElement* tempDFList = NULL;
   ListElement* tempCLElement = NULL;
-  ListElement* tempHeadCL = NULL;
+  ListElement* tempNodeDF = NULL;
   int i;
   
   addListLast(checklist, *root);
-  tempHeadCL = checklist->head;
-  tempHeadCL = tempHeadCL->next;
+  tempCheckList = checklist->head;
+
+  //Assemble the tree into a LinkedList 
+  while(tempCheckList){
+    
+    for( i = 0; i < ((Node*)tempCheckList->node)->numOfChild; i++){
+      tempCLElement = checklist->head;
+      
+      //checking is the children already put in the checklist
+      while(tempCLElement){
+        if( ((Node*)tempCheckList->node)->children[i] == tempCLElement->node )
+          break;
+
+        tempCLElement = tempCLElement->next;
+      }
+     
+     if(!tempCLElement)
+        addListLast(checklist, ((Node*)tempCheckList->node)->children[i]);
+    }
+    
+    tempCheckList = tempCheckList->next;
+  }
   
-  printf("%d\n", tempHeadCL);
-  // for( i = 0; i < ((Node*)tempHeadCL->node)->numOfChild; i++){
+  
+  tempCheckList = checklist->head;
+  //get domFs of each node and add in the list, compare between DFlist and nodeDFlist, if already inside DFlist, just skip
+  while(tempCheckList){
+    ((Node*)tempCheckList->node)->domFrontiers = getNodeDomFrontiers(tempCheckList->node);
+    tempNodeDF = ((Node*)tempCheckList->node)->domFrontiers->head;
     
+    while(tempNodeDF){
+      
+      tempDFList = domFrontiers->head;
+      while(tempDFList){
+        
+          if(tempDFList->node == tempNodeDF->node )
+            break;
+  
+          tempDFList = tempDFList->next;
+        }
+      
+      if(!tempDFList)
+          addListLast(domFrontiers, tempNodeDF->node);
+        
+      tempNodeDF = tempNodeDF->next;
+    }
     
+    tempCheckList = tempCheckList->next;
+  }
     
-  // }
+  return domFrontiers;
+    
 }
+  
+  
