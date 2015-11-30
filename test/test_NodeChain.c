@@ -774,13 +774,13 @@ void test_getNodeDomFrontiers_given_CFG3_then_find_domFrontiers_of_each_node_sho
 /**       ControlFlowGraph4          DomFrontiers
  *
  *          | Entry                 DF(A) = { }
- *         \/                       *DF(B) = { D }
- *       [  A  ]                    *DF(C) = { C, D }
+ *         \/                       DF(B) = { D }
+ *       [  A  ]                    DF(C) = { C, D }
  *        |    |                    DF(D) = { I }  
- *       \/   \/                    DF(E) = { D, E, I }
+ *       \/   \/                    DF(E) = { D, I, E }
  *     [B]   [ E ]<<<<<             DF(F) = { D, H }
  *      |     |   |   /\            DF(G) = { H }
- * >>>>\/    \/  \/   /\            DF(H) = { E, I }
+ * >>>>\/    \/  \/   /\            DF(H) = { I, E }
  * |  [C]   [F]  [G]  /\            DF(I) = { }
  * <<< |  /  \   |    /\
  *    \/\/   \/ \/    /\
@@ -817,7 +817,6 @@ void test_getNodeDomFrontiers_given_CFG4_then_find_domFrontiers_of_each_node_sho
   addChild(&nodeH, &nodeE);
 
   setLastBrhDom(&nodeA);
-  // nodeA->imdDom = getImdDom(nodeA);
   nodeB->imdDom = getImdDom(nodeB);
   nodeC->imdDom = getImdDom(nodeC);
   nodeD->imdDom = getImdDom(nodeD);
@@ -828,59 +827,48 @@ void test_getNodeDomFrontiers_given_CFG4_then_find_domFrontiers_of_each_node_sho
   nodeI->imdDom = getImdDom(nodeI);
 
 
-  // LinkedList* domFrontiersA = createLinkedList();
-  // LinkedList* domFrontiersB = createLinkedList();
-  // LinkedList* domFrontiersC = createLinkedList();
-  // LinkedList* domFrontiersD = createLinkedList();
-  // LinkedList* domFrontiersE = createLinkedList();
-  // LinkedList* domFrontiersF = createLinkedList();
-  // LinkedList* domFrontiersG = createLinkedList();
-  // LinkedList* domFrontiersH = createLinkedList();
-  // LinkedList* domFrontiersI = createLinkedList();
+  LinkedList* domFrontiersA = createLinkedList();
+  LinkedList* domFrontiersB = createLinkedList();
+  LinkedList* domFrontiersC = createLinkedList();
+  LinkedList* domFrontiersD = createLinkedList();
+  LinkedList* domFrontiersE = createLinkedList();
+  LinkedList* domFrontiersF = createLinkedList();
+  LinkedList* domFrontiersG = createLinkedList();
+  LinkedList* domFrontiersH = createLinkedList();
+  LinkedList* domFrontiersI = createLinkedList();
   
-  // addListLast(domFrontiersB, nodeD);
-  // addListLast(domFrontiersC, nodeC);
-  // addListLast(domFrontiersC, nodeD);
-  // addListLast(domFrontiersD, nodeI);
-  // addListLast(domFrontiersE, nodeD);
-  // addListLast(domFrontiersE, nodeE);
-  // addListLast(domFrontiersE, nodeI);
-  // addListLast(domFrontiersF, nodeD);
-  // addListLast(domFrontiersF, nodeH);
-  // addListLast(domFrontiersG, nodeH);
-  // addListLast(domFrontiersH, nodeE);
-  // addListLast(domFrontiersH, nodeI);
+  addListLast(domFrontiersB, nodeD);
+  addListLast(domFrontiersC, nodeC);
+  addListLast(domFrontiersC, nodeD);
+  addListLast(domFrontiersD, nodeI);
+  addListLast(domFrontiersE, nodeD);
+  addListLast(domFrontiersE, nodeI);
+  addListLast(domFrontiersE, nodeE);
+  addListLast(domFrontiersF, nodeD);
+  addListLast(domFrontiersF, nodeH);
+  addListLast(domFrontiersG, nodeH);
+  addListLast(domFrontiersH, nodeI);
+  addListLast(domFrontiersH, nodeE);
 
-  // nodeA->domFrontiers = getNodeDomFrontiers(nodeA);
-  // nodeB->domFrontiers = getNodeDomFrontiers(nodeB);
-  // nodeC->domFrontiers = getNodeDomFrontiers(nodeC);
-  // nodeD->domFrontiers = getNodeDomFrontiers(nodeD);
-  // nodeE->domFrontiers = getNodeDomFrontiers(nodeE);
-  // nodeF->domFrontiers = getNodeDomFrontiers(nodeF);
-  // nodeG->domFrontiers = getNodeDomFrontiers(nodeG);
-  // nodeH->domFrontiers = getNodeDomFrontiers(nodeH);
-  // nodeI->domFrontiers = getNodeDomFrontiers(nodeI);
-
-  // printf("nodeA = %d\n", nodeA);
-  // printf("nodeB = %d\n", nodeB);
-  // printf("nodeC = %d\n", nodeC);
-  // printf("nodeD = %d\n", nodeD);
-  // printf("nodeE = %d\n", nodeE);
-  // printf("nodeF = %d\n", nodeF);
-  // printf("nodeG = %d\n", nodeG);
-  // printf("nodeH = %d\n", nodeH);
-  // printf("nodeI = %d\n", nodeI);
+  nodeA->domFrontiers = getNodeDomFrontiers(nodeA);
+  nodeB->domFrontiers = getNodeDomFrontiers(nodeB);
+  nodeC->domFrontiers = getNodeDomFrontiers(nodeC);
+  nodeD->domFrontiers = getNodeDomFrontiers(nodeD);
+  nodeE->domFrontiers = getNodeDomFrontiers(nodeE);
+  nodeF->domFrontiers = getNodeDomFrontiers(nodeF);
+  nodeG->domFrontiers = getNodeDomFrontiers(nodeG);
+  nodeH->domFrontiers = getNodeDomFrontiers(nodeH);
+  nodeI->domFrontiers = getNodeDomFrontiers(nodeI);
   
-  // printf("nodeB->dF = %d\n", nodeB->domFrontiers->head->node);
-  // TEST_ASSERT_LINKED_LIST(domFrontiersA, nodeA->domFrontiers);
-  // // TEST_ASSERT_LINKED_LIST(domFrontiersB, nodeB->domFrontiers);
-  // TEST_ASSERT_LINKED_LIST(domFrontiersC, nodeC->domFrontiers);
-  // TEST_ASSERT_LINKED_LIST(domFrontiersD, nodeD->domFrontiers);
-  // TEST_ASSERT_LINKED_LIST(domFrontiersE, nodeE->domFrontiers);
-  // TEST_ASSERT_LINKED_LIST(domFrontiersF, nodeF->domFrontiers);
-  // TEST_ASSERT_LINKED_LIST(domFrontiersG, nodeG->domFrontiers);
-  // TEST_ASSERT_LINKED_LIST(domFrontiersH, nodeH->domFrontiers);
-  // TEST_ASSERT_LINKED_LIST(domFrontiersI, nodeI->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersA, nodeA->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersB, nodeB->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersC, nodeC->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersD, nodeD->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersE, nodeE->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersF, nodeF->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersG, nodeG->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersH, nodeH->domFrontiers);
+  TEST_ASSERT_LINKED_LIST(domFrontiersI, nodeI->domFrontiers);
 }
 
 /**       ControlFlowGraph1         Union of DomFrontiers
@@ -1030,3 +1018,72 @@ void test_getAllDomFrontiers_given_CFG3_should_give_a_union_of_dominatorFrontier
 
   TEST_ASSERT_LINKED_LIST(expectUnionDomFrontiers, unionDomFrontiers);
 }
+
+/**       ControlFlowGraph4          DomFrontiers
+ *
+ *          | Entry                 DF(A) = { }
+ *         \/                       DF(B) = { D }
+ *       [  A  ]                    DF(C) = { C, D }
+ *        |    |                    DF(D) = { I }  
+ *       \/   \/                    DF(E) = { D, I, E }
+ *     [B]   [ E ]<<<<<             DF(F) = { D, H }
+ *      |     |   |   /\            DF(G) = { H }
+ * >>>>\/    \/  \/   /\            DF(H) = { I, E }
+ * |  [C]   [F]  [G]  /\            DF(I) = { }
+ * <<< |  /  \   |    /\            UDF = { D, I, E, C, H}
+ *    \/\/   \/ \/    /\
+ *    [D]   [ H ] >>>>>
+ *     \      |
+ *      \    |
+ *      \|  \/
+ *      [ I ]
+ *
+ **/
+void test_getAllDomFrontiers_given_CFG4_should_give_a_union_of_dominatorFrontiers_list(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeE = createNode(1);
+  Node* nodeC = createNode(2);
+  Node* nodeF = createNode(2);
+  Node* nodeG = createNode(2);
+  Node* nodeD = createNode(3);
+  Node* nodeH = createNode(3);
+  Node* nodeI = createNode(4);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeE);
+  addChild(&nodeB, &nodeC);
+  addChild(&nodeE, &nodeF);
+  addChild(&nodeE, &nodeG);
+  addChild(&nodeC, &nodeC);
+  addChild(&nodeC, &nodeD);
+  addChild(&nodeF, &nodeD);
+  addChild(&nodeF, &nodeH);
+  addChild(&nodeG, &nodeH);
+  addChild(&nodeD, &nodeI);
+  addChild(&nodeH, &nodeI);
+  addChild(&nodeH, &nodeE);
+
+  setLastBrhDom(&nodeA);
+  nodeB->imdDom = getImdDom(nodeB);
+  nodeC->imdDom = getImdDom(nodeC);
+  nodeD->imdDom = getImdDom(nodeD);
+  nodeE->imdDom = getImdDom(nodeE);
+  nodeF->imdDom = getImdDom(nodeF);
+  nodeG->imdDom = getImdDom(nodeG);
+  nodeH->imdDom = getImdDom(nodeH);
+  nodeI->imdDom = getImdDom(nodeI);
+    
+  LinkedList* unionDomFrontiers = createLinkedList();
+  LinkedList* expectUnionDomFrontiers = createLinkedList();
+
+  addListLast(expectUnionDomFrontiers, nodeD);
+  addListLast(expectUnionDomFrontiers, nodeI);
+  addListLast(expectUnionDomFrontiers, nodeE);
+  addListLast(expectUnionDomFrontiers, nodeC);
+  addListLast(expectUnionDomFrontiers, nodeH);
+  unionDomFrontiers = getAllDomFrontiers(&nodeA);
+
+  TEST_ASSERT_LINKED_LIST(expectUnionDomFrontiers, unionDomFrontiers);
+}
+
