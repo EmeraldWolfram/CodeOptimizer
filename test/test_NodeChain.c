@@ -353,8 +353,46 @@ void test_setLastBrhDom_give_CFG1_should_assign_lastBranchDominator_of_each_node
   TEST_ASSERT_NODE_ADDRESS(nodeA, nodeD->lastBrhDom);
 }
 
-//*********************************************************************
-//*********************************************************************
+/**       ControlFlowGraph2
+ *
+ *          | Entry
+ *         \/
+ *        [ A ]
+ *        / \
+ *     [B]  [C]
+ *      |    |
+ * >>>>\/   \/
+ * |   [D] [E]
+ * <<<< \  /
+ *       \/
+ *      [F]
+ *
+ **/
+void test_setLastBrhDom_give_CFG2_should_assign_lastBranchDominator_of_each_node_respectively(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  Node* nodeE = createNode(2);
+  Node* nodeF = createNode(3);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeC, &nodeE);
+  addChild(&nodeD, &nodeD);
+  addChild(&nodeD, &nodeF);
+  addChild(&nodeE, &nodeF);
+
+  setLastBrhDom(&nodeA);
+
+  TEST_ASSERT_NODE_ADDRESS(nodeA, nodeB->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(nodeA, nodeC->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(nodeA, nodeD->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(nodeA, nodeE->lastBrhDom);
+  TEST_ASSERT_NODE_ADDRESS(nodeA, nodeF->lastBrhDom);
+}
+
 //*********************************************************************
 //*********************************************************************
 //********************TEST for getImdDom ******************************
@@ -478,6 +516,72 @@ void test_getImdDom_given_nodeJ_should_return_nodeG(void){
 
   testNode = getImdDom(childNodeE);
   TEST_ASSERT_NODE_ADDRESS(childNodeB, testNode);
+}
+
+/**      TREE A                     
+ *
+ *          | Entry                 imdD(A) = {NULL}
+ *         \/                       imdD(B) = { A }
+ *       [  A  ]                    imdD(C) = { B }
+ *        |    |                    imdD(D) = { A }  
+ *       \/   \/                    imdD(E) = { A }
+ *     [B]   [ E ]<<<<<             imdD(F) = { E }
+ *      |     |   |   /\            imdD(G) = { E }
+ * >>>>\/    \/  \/   /\            imdD(H) = { E }
+ * |  [C]   [F]  [G]  /\            imdD(I) = { A }
+ * <<< |  /  \   |    /\
+ *    \/\/   \/ \/    /\
+ *    [D]   [ H ] >>>>>
+ *     \      |
+ *      \    |
+ *      \|  \/
+ *      [ I ]
+ *
+ **/
+void test_getImdDom_given_treeA_above_should_return_expected_imdDom_in_table(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeE = createNode(1);
+  Node* nodeC = createNode(2);
+  Node* nodeF = createNode(2);
+  Node* nodeG = createNode(2);
+  Node* nodeD = createNode(3);
+  Node* nodeH = createNode(3);
+  Node* nodeI = createNode(4);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeE);
+  addChild(&nodeB, &nodeC);
+  addChild(&nodeE, &nodeF);
+  addChild(&nodeE, &nodeG);
+  addChild(&nodeC, &nodeC);
+  addChild(&nodeC, &nodeD);
+  addChild(&nodeF, &nodeD);
+  addChild(&nodeF, &nodeH);
+  addChild(&nodeG, &nodeH);
+  addChild(&nodeD, &nodeI);
+  addChild(&nodeH, &nodeI);
+  addChild(&nodeH, &nodeE);
+
+  setLastBrhDom(&nodeA);
+
+  nodeB->imdDom = getImdDom(nodeB);
+  nodeC->imdDom = getImdDom(nodeC);
+  nodeD->imdDom = getImdDom(nodeD);
+  nodeE->imdDom = getImdDom(nodeE);
+  nodeF->imdDom = getImdDom(nodeF);
+  nodeG->imdDom = getImdDom(nodeG);
+  nodeH->imdDom = getImdDom(nodeH);
+  nodeI->imdDom = getImdDom(nodeI);
+  TEST_ASSERT_NULL(nodeA->imdDom);
+  TEST_ASSERT_EQUAL_PTR(nodeA, nodeB->imdDom);
+  TEST_ASSERT_EQUAL_PTR(nodeA, nodeE->imdDom);
+  TEST_ASSERT_EQUAL_PTR(nodeB, nodeC->imdDom);
+  TEST_ASSERT_EQUAL_PTR(nodeE, nodeF->imdDom);
+  TEST_ASSERT_EQUAL_PTR(nodeE, nodeG->imdDom);
+  TEST_ASSERT_EQUAL_PTR(nodeE, nodeH->imdDom);
+  TEST_ASSERT_EQUAL_PTR(nodeA, nodeD->imdDom);
+  TEST_ASSERT_EQUAL_PTR(nodeA, nodeI->imdDom);
 }
 
 /**       ControlFlowGraph1           DomFrontiers
@@ -667,62 +771,62 @@ void test_getNodeDomFrontiers_given_CFG3_then_find_domFrontiers_of_each_node_sho
   TEST_ASSERT_LINKED_LIST(domFrontiersF, nodeF->domFrontiers);
 }
 
-// /**       ControlFlowGraph4          DomFrontiers
- // *
- // *          | Entry                 DF(A) = { }
- // *         \/                       *DF(B) = { D }
- // *       [  A  ]                    *DF(C) = { C, D }
- // *        |    |                    DF(D) = { I }  
- // *       \/   \/                    DF(E) = { D, E, I }
- // *     [B]   [ E ]<<<<<             DF(F) = { D, H }
- // *      |     |   |   /\            DF(G) = { H }
- // * >>>>\/    \/  \/   /\            DF(H) = { E, I }
- // * |  [C]   [F]  [G]  /\            DF(I) = { }
- // * <<< |  /  \   |    /\
- // *    \/\/   \/ \/    /\
- // *    [D]   [ H ] >>>>>
- // *     \      |
- // *      \    |
- // *      \|  \/
- // *      [ I ]
- // *
- // **/
-// void test_getNodeDomFrontiers_given_CFG4_then_find_domFrontiers_of_each_node_should_return_domFrontiers_respectively(void){
-  // Node* nodeA = createNode(0);
-  // Node* nodeB = createNode(1);
-  // Node* nodeE = createNode(1);
-  // Node* nodeC = createNode(2);
-  // Node* nodeF = createNode(2);
-  // Node* nodeG = createNode(2);
-  // Node* nodeD = createNode(3);
-  // Node* nodeH = createNode(3);
-  // Node* nodeI = createNode(4);
+/**       ControlFlowGraph4          DomFrontiers
+ *
+ *          | Entry                 DF(A) = { }
+ *         \/                       *DF(B) = { D }
+ *       [  A  ]                    *DF(C) = { C, D }
+ *        |    |                    DF(D) = { I }  
+ *       \/   \/                    DF(E) = { D, E, I }
+ *     [B]   [ E ]<<<<<             DF(F) = { D, H }
+ *      |     |   |   /\            DF(G) = { H }
+ * >>>>\/    \/  \/   /\            DF(H) = { E, I }
+ * |  [C]   [F]  [G]  /\            DF(I) = { }
+ * <<< |  /  \   |    /\
+ *    \/\/   \/ \/    /\
+ *    [D]   [ H ] >>>>>
+ *     \      |
+ *      \    |
+ *      \|  \/
+ *      [ I ]
+ *
+ **/
+void test_getNodeDomFrontiers_given_CFG4_then_find_domFrontiers_of_each_node_should_return_domFrontiers_respectively(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeE = createNode(1);
+  Node* nodeC = createNode(2);
+  Node* nodeF = createNode(2);
+  Node* nodeG = createNode(2);
+  Node* nodeD = createNode(3);
+  Node* nodeH = createNode(3);
+  Node* nodeI = createNode(4);
 
-  // addChild(&nodeA, &nodeB);
-  // addChild(&nodeA, &nodeE);
-  // addChild(&nodeB, &nodeC);
-  // addChild(&nodeE, &nodeF);
-  // addChild(&nodeE, &nodeG);
-  // addChild(&nodeC, &nodeC);
-  // addChild(&nodeC, &nodeD);
-  // addChild(&nodeF, &nodeD);
-  // addChild(&nodeF, &nodeH);
-  // addChild(&nodeG, &nodeH);
-  // addChild(&nodeD, &nodeI);
-  // addChild(&nodeH, &nodeI);
-  // addChild(&nodeH, &nodeE);
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeE);
+  addChild(&nodeB, &nodeC);
+  addChild(&nodeE, &nodeF);
+  addChild(&nodeE, &nodeG);
+  addChild(&nodeC, &nodeC);
+  addChild(&nodeC, &nodeD);
+  addChild(&nodeF, &nodeD);
+  addChild(&nodeF, &nodeH);
+  addChild(&nodeG, &nodeH);
+  addChild(&nodeD, &nodeI);
+  addChild(&nodeH, &nodeI);
+  addChild(&nodeH, &nodeE);
 
-  // setLastBrhDom(&nodeA);
+  setLastBrhDom(&nodeA);
+  // nodeA->imdDom = getImdDom(nodeA);
+  nodeB->imdDom = getImdDom(nodeB);
+  nodeC->imdDom = getImdDom(nodeC);
+  nodeD->imdDom = getImdDom(nodeD);
+  nodeE->imdDom = getImdDom(nodeE);
+  nodeF->imdDom = getImdDom(nodeF);
+  nodeG->imdDom = getImdDom(nodeG);
+  nodeH->imdDom = getImdDom(nodeH);
+  nodeI->imdDom = getImdDom(nodeI);
 
-  // // nodeA->imdDom = getImdDom(nodeA);
-  // nodeB->imdDom = getImdDom(nodeB);
-  // nodeC->imdDom = getImdDom(nodeC);
-  // nodeD->imdDom = getImdDom(nodeD);
-  // nodeE->imdDom = getImdDom(nodeE);
-  // nodeF->imdDom = getImdDom(nodeF);
-  // nodeG->imdDom = getImdDom(nodeG);
-  // nodeH->imdDom = getImdDom(nodeH);
-  // nodeI->imdDom = getImdDom(nodeI);
 
   // LinkedList* domFrontiersA = createLinkedList();
   // LinkedList* domFrontiersB = createLinkedList();
@@ -777,7 +881,7 @@ void test_getNodeDomFrontiers_given_CFG3_then_find_domFrontiers_of_each_node_sho
   // TEST_ASSERT_LINKED_LIST(domFrontiersG, nodeG->domFrontiers);
   // TEST_ASSERT_LINKED_LIST(domFrontiersH, nodeH->domFrontiers);
   // TEST_ASSERT_LINKED_LIST(domFrontiersI, nodeI->domFrontiers);
-// }
+}
 
 /**       ControlFlowGraph1         Union of DomFrontiers
  *

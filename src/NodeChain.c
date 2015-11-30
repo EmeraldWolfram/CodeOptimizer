@@ -112,21 +112,10 @@ void setLastBrhDom(Node** rootNode){
           tempNode->children[i]->lastBrhDom = tempNode->lastBrhDom;
       }//handle child with more than 1 parent (lastBrhDom assigned by prev parents)
       else{
-        highRankNode = tempNode->children[i]->lastBrhDom;
-        if(tempNode->numOfChild > 1){
-          if(tempNode->rank < highRankNode->rank){
-            testRankNode_1 = tempNode;
-            testRankNode_2 = highRankNode->lastBrhDom;
-            FIND_SAME_NODE(testRankNode_1, testRankNode_2);
-            tempNode->children[i]->lastBrhDom = testRankNode_1;
-          }
-        }
-        else{
-          testRankNode_1 = tempNode->lastBrhDom;
-          testRankNode_2 = highRankNode;
-          FIND_SAME_NODE(testRankNode_1, testRankNode_2);
-          tempNode->children[i]->lastBrhDom = testRankNode_1;
-        } 
+        testRankNode_1 = tempNode->lastBrhDom;
+        testRankNode_2 = tempNode->children[i]->lastBrhDom;
+        FIND_SAME_NODE(testRankNode_1, testRankNode_2);
+        tempNode->children[i]->lastBrhDom = testRankNode_1;
       }
     }
     //**************************************************************************************************************
@@ -177,8 +166,10 @@ Node* getImdDom(Node* nodeA){
       if(tempNode->children[i] == nodeA){
         if(nodeA->imdDom == NULL)
           nodeA->imdDom = tempNode;
-        else
-          nodeA->imdDom = nodeA->lastBrhDom;
+        else{
+          if(tempNode != nodeA)
+            nodeA->imdDom = nodeA->lastBrhDom; 
+        }
       }
     }
     tempElement = tempElement->next;
