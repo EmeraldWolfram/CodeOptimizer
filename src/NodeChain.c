@@ -10,7 +10,6 @@ Node* createNode(int thisRank){
   newNode->parent       = NULL;
   newNode->lastBrhDom   = NULL;
   newNode->imdDom       = NULL;
-  newNode->numOfParent  = 0;
   newNode->numOfDom     = 0;
   newNode->doms         = NULL;
   newNode->numOfChild   = 0;
@@ -26,7 +25,19 @@ Block* createBlock(LinkedList* expList){
   return newBlock;
 }
 
-
+Expression* createExpression(int thisID, int sValue, int subs, \
+                              Operator oprt, int oprd1, int oprd2){
+  Expression* newExp = malloc(sizeof(Expression));
+  
+  newExp->id = thisID;
+  newExp->subscrpt  = subs;
+  newExp->subsValue = sValue;
+  newExp->opr = oprt;
+  newExp->operand1 = oprd1;
+  newExp->operand2 = oprd2;
+               
+  return newExp;            
+}
 /*
  * brief @ Add a new child to a node as shown below.
  * Example:
@@ -55,16 +66,15 @@ void addChild(Node** parentNode, Node** childNode){
   *  Link Child to parentNode                       *
   ***************************************************/
   (*parentNode)->numOfChild++;
-  (*parentNode)->children = (Node**)realloc((*parentNode)->children, (sizeof(Node*) * ((*parentNode)->numOfChild)));
+  (*parentNode)->children = (Node**)realloc((*parentNode)->children, \
+                            (sizeof(Node*) * ((*parentNode)->numOfChild)));
+                            
   (*parentNode)->children[((*parentNode)->numOfChild) - 1] = *childNode;
   
   /***************************************************
   *  Link Parent to childNode                       *
   ***************************************************/
   (*childNode)->parent = *parentNode;
-  (*childNode)->numOfParent++;
-  // (*childNode)->imdParent = (Node**)realloc((*childNode)->imdParent, (sizeof(Node*) * ((*childNode)->numberOfParent)));
-  // (*childNode)->imdParent[((*childNode)->numberOfParent) - 1] = *parentNode;
   
 }
 
@@ -117,63 +127,53 @@ void setLastBrhDom(Node** rootNode){
         tempNode->children[i]->lastBrhDom = testRankNode_1;
       }
     }
-    //**************************************************************************************************************
-    //***********************IF numOfParent are used, the following code is enuf************************************
-    /**************************************************************************************************************
-      // tempNode->lastBrhDom = NULL;            //For ROOT, last Branch is NULL
-    // else if((tempNode->parent->numOfChild > 1 && tempNode->numOfParent < 2) || tempNode->parent->parent == NULL)
-      // tempNode->lastBrhDom = tempNode->parent;
-    // else
-      // tempNode->lastBrhDom = tempNode->parent->lastBrhDom;
-    //*************************************************************************************************************/
-    //*************************************************************************************************************
-    //*************************************************************************************************************
     tempElement = tempElement->next;
   }
 }
 
-Node* getImdDom(Node* nodeA){
-  Node *boudariesNode, *tempNode;
-  boudariesNode = nodeA->lastBrhDom;
-  int i;
-  LinkedList* tempList = createLinkedList();
-  addListLast(tempList, boudariesNode);
-  ListElement* tempElement = tempList->head;
-  tempNode = tempElement->node;
-  /**************************************************
-   *  Assemble the tree into a LinkedList           *
-   **************************************************/
-  while(tempElement != NULL){
-    for(i = 0; i < tempNode->numOfChild; i++){
-      if(tempList->tail->node != tempNode->children[i] &&\
-         tempNode->rank < tempNode->children[i]->rank)
-        addListLast(tempList, tempNode->children[i]);
+void getImdDom(Node* nodeA){
+  if(nodeA->parent == NULL)
+    nodeA->imdDom = NULL;
+  else{
+    Node *boudariesNode       = nodeA->lastBrhDom;
+    LinkedList* tempList      = createLinkedList();
+    addListLast(tempList, boudariesNode);
+    ListElement* tempElement  = tempList->head;
+    int i;
+    Node *tempNode            = tempElement->node;
+    /**************************************************
+    *  Assemble the tree into a LinkedList           *
+    **************************************************/
+    while(tempElement != NULL){
+      for(i = 0; i < tempNode->numOfChild; i++){
+        if(tempList->tail->node != tempNode->children[i] \
+        && tempNode->rank < tempNode->children[i]->rank)
+          addListLast(tempList, tempNode->children[i]);
+      }
+      tempElement = tempElement->next;
+      
+      if(tempElement != NULL)
+        tempNode = tempElement->node;
     }
-    tempElement = tempElement->next;
-    if(tempElement != NULL)
+    /*************************************************
+    * Find the imdDominator and return it           *
+    *************************************************/
+    tempElement = tempList->head;
+    while(tempElement != NULL){
       tempNode = tempElement->node;
-  }
-  // printf("%d", tempList->length);
-  /*************************************************
-   * Find the imdDominator and return it           *
-   *************************************************/
-  tempElement = tempList->head;
-  while(tempElement != NULL){
-    tempNode = tempElement->node;
-        // printf("I entered");
-    for(i = 0; i < tempNode->numOfChild; i++){
-      if(tempNode->children[i] == nodeA){
-        if(nodeA->imdDom == NULL)
-          nodeA->imdDom = tempNode;
-        else{
-          if(tempNode != nodeA)
-            nodeA->imdDom = nodeA->lastBrhDom; 
+      for(i = 0; i < tempNode->numOfChild; i++){
+        if(tempNode->children[i] == nodeA){
+          if(nodeA->imdDom == NULL)
+            nodeA->imdDom = tempNode;
+          else{
+            if(tempNode != nodeA)
+              nodeA->imdDom = nodeA->lastBrhDom; 
+          }
         }
       }
+      tempElement = tempElement->next;
     }
-    tempElement = tempElement->next;
   }
-  return nodeA->imdDom;
 }
 
 

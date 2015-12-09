@@ -21,8 +21,17 @@ typedef enum{
   ASSIGN,
   IF_STATEMENT
 }Operator;
- 
-typedef struct {
+
+typedef struct{
+  int id;
+  int subsValue;
+  int subscrpt;
+  Operator opr;
+  int operand1;
+  int operand2;
+}Expression;
+
+typedef struct{
   LinkedList* expression;
 }Block;
 
@@ -31,7 +40,6 @@ struct Node_t{
   Block* block;
   Node* lastBrhDom;
   Node* imdDom;
-  int numOfParent; //X
   Node* parent;
   int numOfDom; //X
   Node** doms; //LINKEDLIST
@@ -50,10 +58,13 @@ struct Node_t{
 
 Node* createNode(int thisRank);
 Block* createBlock(LinkedList* expList);
+Expression* createExpression(int id, int sValue, int subscrpt,  \
+                              Operator opr, int oprd1, int oprd2);
+
 void addChild(Node** parentNode, Node** childNode);
 void setLastBrhDom(Node** rootNode);
 
-Node* getImdDom(Node* nodeA);
+void getImdDom(Node* nodeA);
 
 LinkedList* getNodeDomFrontiers(Node* node);
 LinkedList* getAllDomFrontiers(Node** root);
