@@ -12,15 +12,17 @@ void setUp(void){}
 void tearDown(void){}
 
 /**
- *       ControlFlowGraph1
+ *  ControlFlowGraph1
  *
- *        [ A ]
+ *       [ A ]
  *       |   |
  *      \/  \/
  *     [B]  [C]
  *      |    |
  *     \/   \/
- *       [D]
+ *       [D]          <= PhiFunction(B,C)
+ *
+ *  PhiFunction should allocated in D
  *
  **/
 void test_phiFunction_allocation(void){
@@ -28,13 +30,23 @@ void test_phiFunction_allocation(void){
   Node* nodeB = createNode(1);
   Node* nodeC = createNode(1);
   Node* nodeD = createNode(2);
-
+  Expression* exp = createExpression(0, 25, 3, ASSIGN, 10, 15);
+  
   addChild(&nodeA, &nodeB);
   addChild(&nodeA, &nodeC);
   addChild(&nodeB, &nodeD);
   addChild(&nodeC, &nodeD);
   
   setLastBrhDom(&nodeA);
+  TEST_ASSERT_NULL(nodeD->block->expression->head);
+  TEST_ASSERT_NULL(nodeA->block->expression->head);
+  TEST_ASSERT_NULL(nodeB->block->expression->head);
+  TEST_ASSERT_NULL(nodeC->block->expression->head);
 
-  allocPhiFunc(&nodeA);
+  allocPhiFunc(nodeA);
+  
+  TEST_ASSERT_NULL(nodeA->block->expression->head);
+  // TEST_ASSERT_NULL(nodeB->block->expression->head);
+  // TEST_ASSERT_NULL(nodeC->block->expression->head);
+  TEST_ASSERT_NOT_NULL(nodeD->block->expression->head);
 }

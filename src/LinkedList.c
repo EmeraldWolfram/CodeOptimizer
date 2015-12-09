@@ -78,27 +78,24 @@ void addListLast(LinkedList* currentList, void *data){
 
 }
 
-void addListFirst(LinkedList* currentList, ListElement *currentNode){
-  if(currentNode == NULL)
+void addListFirst(LinkedList* currentList, void *data){
+  if(data == NULL)
     ThrowError(ERR_NULL_ELEMENT, "ERROR: Element cannot be NULL!");
 
   if(currentList == NULL)
     ThrowError(ERR_NULL_LIST, "ERROR: Link List cannot be NULL!");
 
-  ListElement* prevHead = malloc(sizeof(ListElement));
-  prevHead = currentList->head;
-  currentList->head = currentNode; //No matter what, the head always point to the new added Element
-
-  if(currentList->length == 0){
-    currentList->head->next = NULL;
-    currentList->tail = currentNode;
-  }
-  else{
-  currentList->head->next = prevHead;
-
-  (currentList->length)++;
+  ListElement* prevHead   = currentList->head;
+  ListElement* newElement = createListElement(data);
+  currentList->head = newElement; //No matter what, the head always point to the new added Element
+  
+  if(currentList->length == 0)
+    currentList->tail = newElement;
+  else
+    currentList->head->next = prevHead;
+  
   currentList->tail->next = NULL; //Tail->next permanently pointing to NULL
-  }
+  (currentList->length)++;
 }
 
 ListElement* listRemoveFirst(LinkedList* link){

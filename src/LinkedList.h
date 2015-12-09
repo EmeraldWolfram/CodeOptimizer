@@ -47,7 +47,7 @@ ListElement* createListElement(void *data);
 LinkedList* createLinkedList();
 
 void addListLast(LinkedList* currentList, void *data);
-void addListFirst(LinkedList* stack, ListElement *elem);
+void addListFirst(LinkedList* currentList, void *data);
 
 ListElement* listRemoveFirst(LinkedList* link);
 ListElement* listRemoveLast(LinkedList* link);

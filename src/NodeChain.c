@@ -6,7 +6,7 @@ Node* createNode(int thisRank){
   Node* newNode = malloc(sizeof(Node));
   
   newNode->rank         = thisRank;
-  newNode->block        = NULL;
+  newNode->block        = createBlock(createLinkedList());
   newNode->parent       = NULL;
   newNode->lastBrhDom   = NULL;
   newNode->imdDom       = NULL;
@@ -82,12 +82,12 @@ void setLastBrhDom(Node** rootNode){
   if(*rootNode == NULL)
     ThrowError(ERR_NULL_NODE, "Empty Tree input detected!");
   
-  LinkedList* tempList = createLinkedList();
+  LinkedList* tempList      = createLinkedList();
   addListLast(tempList, *rootNode);
-  ListElement* tempElement = tempList->head;
-  Node *highRankNode, *testRankNode_1, *testRankNode_2;
-  Node* tempNode = tempElement->node;
+  ListElement* tempElement  = tempList->head;
+  Node* tempNode            = tempElement->node;
   int i, k;
+  Node *highRankNode, *testRankNode_1, *testRankNode_2;
 /**************************************************
  *  Assemble the tree into a LinkedList           *
  **************************************************/

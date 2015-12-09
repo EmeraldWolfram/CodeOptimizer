@@ -41,10 +41,10 @@ struct Node_t{
   Node* lastBrhDom;
   Node* imdDom;
   Node* parent;
-  int numOfDom; //X
-  Node** doms; //LINKEDLIST
-  int numOfChild; //X
-  Node** children; //LINKEDLIST
+  int numOfDom;
+  Node** doms;
+  int numOfChild;
+  Node** children;
   LinkedList* domFrontiers;
 };
 
