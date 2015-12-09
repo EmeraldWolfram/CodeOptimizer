@@ -5,9 +5,9 @@
 Node* createNode(int thisRank){
   Node* newNode = malloc(sizeof(Node));
   
-  newNode->rank   = thisRank;
-  newNode->block  = NULL;
-  newNode->parent = NULL;
+  newNode->rank         = thisRank;
+  newNode->block        = NULL;
+  newNode->parent       = NULL;
   newNode->lastBrhDom   = NULL;
   newNode->imdDom       = NULL;
   newNode->numOfParent  = 0;
@@ -19,10 +19,9 @@ Node* createNode(int thisRank){
   return newNode;
 }
 
-Block* createBlock(char* thisString, int thisData){
-  Block* newBlock = malloc(sizeof(Block));
-  newBlock->string  = thisString;
-  newBlock->data    = thisData;
+Block* createBlock(LinkedList* expList){
+  Block* newBlock       = malloc(sizeof(Block));
+  newBlock->expression  = expList;
   
   return newBlock;
 }

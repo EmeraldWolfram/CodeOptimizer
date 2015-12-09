@@ -4,6 +4,7 @@
 #include "customAssertion.h"
 #include "LinkedList.h"
 #include "CException.h"
+#include <stdlib.h>
 // TEST_ASSERT_NODE_DATA(char* expectExpress, int expectRank, Node* expectParent, Node* actualNode)
 // TEST_ASSERT_NODE_DATA use to test internal data of the Node, not necessary to be the same node
 
@@ -12,11 +13,11 @@ void setUp(void){}
 void tearDown(void){}
 
 void test_createBlock(void){
-	Block* testBlock = createBlock("Hello World", 3);
+  LinkedList* nullList = malloc(sizeof(LinkedList));
+	Block* testBlock = createBlock(nullList);
 
   TEST_ASSERT_NOT_NULL(testBlock);
-  TEST_ASSERT_EQUAL(3, testBlock->data);
-  TEST_ASSERT_EQUAL("Hello World", testBlock->string);
+  TEST_ASSERT_EQUAL_PTR(nullList, testBlock->expression);
 }
 
 void test_createNode(void){
