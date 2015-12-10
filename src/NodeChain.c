@@ -82,31 +82,16 @@ void setLastBrhDom(Node** rootNode){
   if(*rootNode == NULL)
     ThrowError(ERR_NULL_NODE, "Empty Tree input detected!");
   
-  LinkedList* tempList      = createLinkedList();
-  addListLast(tempList, *rootNode);
+  LinkedList* tempList      = assembleList(rootNode);
   ListElement* tempElement  = tempList->head;
   Node* tempNode            = tempElement->node;
   int i, k;
   Node *highRankNode, *testRankNode_1, *testRankNode_2;
-/**************************************************
- *  Assemble the tree into a LinkedList           *
- **************************************************/
-  while(tempElement != NULL){
-    int j = tempNode->numOfChild;
-    for(i = 0; i < j; i++){
-      if(tempList->tail->node != tempNode->children[i] &&\
-         tempNode->rank < tempNode->children[i]->rank)
-        addListLast(tempList, tempNode->children[i]);
-    }
-    tempElement = tempElement->next;
-    if(tempElement != NULL)
-      tempNode = tempElement->node;
-  }
+
 /****************************************************
  *  With the LinkedList, find and assign lastBrhDom *
  *  of each node in the Node tree                   *
  ****************************************************/
-  tempElement = tempList->head;
   while(tempElement != NULL){
     tempNode = tempElement->node;
     for(i = 0; i < tempNode->numOfChild; i++){
@@ -135,30 +120,14 @@ void getImdDom(Node* nodeA){
   if(nodeA->parent == NULL)
     nodeA->imdDom = NULL;
   else{
-    Node *boudariesNode       = nodeA->lastBrhDom;
-    LinkedList* tempList      = createLinkedList();
-    addListLast(tempList, boudariesNode);
-    ListElement* tempElement  = tempList->head;
     int i;
-    Node *tempNode            = tempElement->node;
-    /**************************************************
-    *  Assemble the tree into a LinkedList           *
-    **************************************************/
-    while(tempElement != NULL){
-      for(i = 0; i < tempNode->numOfChild; i++){
-        if(tempList->tail->node != tempNode->children[i] \
-        && tempNode->rank < tempNode->children[i]->rank)
-          addListLast(tempList, tempNode->children[i]);
-      }
-      tempElement = tempElement->next;
-      
-      if(tempElement != NULL)
-        tempNode = tempElement->node;
-    }
+    Node *boudariesNode       = nodeA->lastBrhDom;
+    LinkedList* tempList      = assembleList(&boudariesNode);
+    ListElement* tempElement  = tempList->head;
+    Node *tempNode;
     /*************************************************
     * Find the imdDominator and return it           *
     *************************************************/
-    tempElement = tempList->head;
     while(tempElement != NULL){
       tempNode = tempElement->node;
       for(i = 0; i < tempNode->numOfChild; i++){
@@ -321,5 +290,26 @@ LinkedList* getAllDomFrontiers(Node** root){
   return domFrontiers;
     
 }
-  
+
+//ASSEMBLE ALL THE NODE THAT HAVE A RANK EQUAL OR LOWER THAN THE ROOT INTO A LINKEDLIST
+LinkedList* assembleList(Node **rootNode){
+    LinkedList* tempList      = createLinkedList();
+    addListLast(tempList, *rootNode);
+    ListElement* tempElement  = tempList->head;
+    int i;
+    Node *tempNode            = tempElement->node;
+
+    while(tempElement != NULL){
+      for(i = 0; i < tempNode->numOfChild; i++){
+        if(tempList->tail->node != tempNode->children[i] \
+        && tempNode->rank < tempNode->children[i]->rank)
+          addListLast(tempList, tempNode->children[i]);
+      }
+      tempElement = tempElement->next;
+      
+      if(tempElement != NULL)
+        tempNode = tempElement->node;
+    }
+    return tempList;
+}
   

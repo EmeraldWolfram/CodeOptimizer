@@ -68,5 +68,6 @@ void getImdDom(Node* nodeA);
 
 LinkedList* getNodeDomFrontiers(Node* node);
 LinkedList* getAllDomFrontiers(Node** root);
+LinkedList* assembleList(Node **rootNode);
 
 #endif // NodeChain_H
