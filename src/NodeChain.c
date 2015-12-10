@@ -117,7 +117,7 @@ void setLastBrhDom(Node** rootNode){
 }
 
 void getImdDom(Node* nodeA){
-  if(nodeA->parent == NULL)
+  if(nodeA->rank == 0)
     nodeA->imdDom = NULL;
   else{
     int i;
@@ -142,6 +142,20 @@ void getImdDom(Node* nodeA){
       }
       tempElement = tempElement->next;
     }
+  }
+}
+
+void setAllImdDom(Node** rootNode){
+  LinkedList* tempList      = assembleList(rootNode);
+  ListElement* tempElement  = tempList->head;
+  Node *tempNode;
+  /*************************************************
+  * Find the imdDominator and return it           *
+  *************************************************/
+  while(tempElement != NULL){
+    tempNode = tempElement->node;
+    getImdDom(tempNode);
+    tempElement = tempElement->next;
   }
 }
 
@@ -295,8 +309,8 @@ LinkedList* getAllDomFrontiers(Node** root){
 LinkedList* assembleList(Node **rootNode){
     LinkedList* tempList      = createLinkedList();
     addListLast(tempList, *rootNode);
-    ListElement* tempElement  = tempList->head;
     int i;
+    ListElement* tempElement  = tempList->head;
     Node *tempNode            = tempElement->node;
 
     while(tempElement != NULL){

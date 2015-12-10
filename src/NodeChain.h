@@ -65,9 +65,11 @@ void addChild(Node** parentNode, Node** childNode);
 void setLastBrhDom(Node** rootNode);
 
 void getImdDom(Node* nodeA);
+void setAllImdDom(Node** rootNode);
 
 LinkedList* getNodeDomFrontiers(Node* node);
 LinkedList* getAllDomFrontiers(Node** root);
+
 LinkedList* assembleList(Node **rootNode);
 
 #endif // NodeChain_H

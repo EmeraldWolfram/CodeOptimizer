@@ -3,11 +3,12 @@
 #include <stdio.h>
 
 
-int phiFunction(){
+int phiFunction(Expression** liveExpr, int numberOfLiveExpr){
   return 1;
 }
 
 void allocPhiFunc(Node* entryNode){
+  setAllImdDom(&entryNode);
   LinkedList* tempList     = getAllDomFrontiers(&entryNode);
   ListElement* domFElement = tempList->head;
   Node* domFNode           = (Node*)domFElement->node;

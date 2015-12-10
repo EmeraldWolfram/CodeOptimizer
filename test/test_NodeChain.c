@@ -12,7 +12,6 @@ void setUp(void){}
 
 void tearDown(void){}
 
-
 void test_createExpression(void){
   Expression* addExpress = createExpression(1,2,3,NORMAL_OPERATOR,1,2);
   
@@ -404,7 +403,6 @@ void test_setLastBrhDom_give_CFG2_should_assign_lastBranchDominator_of_each_node
 }
 
 //*********************************************************************
-//*********************************************************************
 //********************TEST for getImdDom ******************************
 //*********************************************************************
 /**
@@ -465,19 +463,19 @@ void test_getImdDom_given_nodeD_should_return_parentNode(void){
 /**
  *  getImdDom will find imdDom of that node and return
  *
- *        [A]
- *       /   \
- *    [B]    [C]
- *    / \     |
- *  [D] [E]  [F]
+ *         [A]
+ *        /   \
+ *     [B]    [C]
+ *     / \     |
+ *   [D] [E]  [F]
  *  /  \ /    |
- *[G]--[H]---[I]
+ *[G]->[H]<--[I]
  * |    ^
  * |    ^
  *[J]--[K]
  *
  **/
-void test_getImdDom_given_nodeJ_should_return_nodeG(void){
+void test_getImdDom_given_nodeJ_and_nodeH_should_return_nodeG_and_node_A_respectively(void){
   Node* parentNode  = createNode(0);
   Node* childNodeB  = createNode(1);
   Node* childNodeC  = createNode(1);
@@ -506,21 +504,69 @@ void test_getImdDom_given_nodeJ_should_return_nodeG(void){
   addChild(&childNodeK, &childNodeH);
   setLastBrhDom(&parentNode);
 
-  getImdDom(childNodeK);
   getImdDom(childNodeJ);
-  getImdDom(childNodeG);
   getImdDom(childNodeH);
-  getImdDom(childNodeI);
-  getImdDom(childNodeD);
-  getImdDom(childNodeE);
-  
-  TEST_ASSERT_NODE_ADDRESS(childNodeJ, childNodeK->imdDom);
+
   TEST_ASSERT_NODE_ADDRESS(childNodeG, childNodeJ->imdDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeH->imdDom);
+}
+
+/**
+ *  setAllImdDom will set all imdDom by iterative calling getImdDom function
+ *
+ *        [A]
+ *       /   \
+ *    [B]    [C]
+ *    / \     |
+ *  [D] [E]  [F]
+ *  /  \ /    |
+ *[G]--[H]---[I]
+ * |    ^
+ * |    ^
+ *[J]--[K]
+ *
+ **/
+void test_setAllImdDom_will_set_all_imdDom_to_every_Node(void){
+  Node* parentNode  = createNode(0);
+  Node* childNodeB  = createNode(1);
+  Node* childNodeC  = createNode(1);
+  Node* childNodeD  = createNode(2);
+  Node* childNodeE  = createNode(2);
+  Node* childNodeF  = createNode(2);
+  Node* childNodeG  = createNode(3);
+  Node* childNodeH  = createNode(3);
+  Node* childNodeI  = createNode(3);
+  Node* childNodeJ  = createNode(4);
+  Node* childNodeK  = createNode(5);
+
+  addChild(&parentNode, &childNodeB);
+  addChild(&parentNode, &childNodeC);
+  addChild(&childNodeB, &childNodeE);
+  addChild(&childNodeB, &childNodeD);
+  addChild(&childNodeC, &childNodeF);
+  addChild(&childNodeD, &childNodeG);
+  addChild(&childNodeD, &childNodeH);
+  addChild(&childNodeE, &childNodeH);
+  addChild(&childNodeF, &childNodeI);
+  addChild(&childNodeI, &childNodeH);
+  addChild(&childNodeG, &childNodeH);
+  addChild(&childNodeG, &childNodeJ);
+  addChild(&childNodeJ, &childNodeK);
+  addChild(&childNodeK, &childNodeH);
+  setLastBrhDom(&parentNode);
+  setAllImdDom(&parentNode);
+  
+  TEST_ASSERT_NULL(parentNode->imdDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->imdDom);
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->imdDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeD->imdDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeE->imdDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeC, childNodeF->imdDom);
   TEST_ASSERT_NODE_ADDRESS(childNodeD, childNodeG->imdDom);
   TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeH->imdDom);
   TEST_ASSERT_NODE_ADDRESS(childNodeF, childNodeI->imdDom);
-  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeD->imdDom);
-  TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeE->imdDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeG, childNodeJ->imdDom);
+  TEST_ASSERT_NODE_ADDRESS(childNodeJ, childNodeK->imdDom);
 }
 
 /**      TREE A                     
@@ -569,15 +615,8 @@ void test_getImdDom_given_treeA_above_should_return_expected_imdDom_in_table(voi
   addChild(&nodeH, &nodeE);
 
   setLastBrhDom(&nodeA);
+  setAllImdDom(&nodeA);
 
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
-  getImdDom(nodeE);
-  getImdDom(nodeF);
-  getImdDom(nodeG);
-  getImdDom(nodeH);
-  getImdDom(nodeI);
   TEST_ASSERT_NULL(nodeA->imdDom);
   TEST_ASSERT_EQUAL_PTR(nodeA, nodeB->imdDom);
   TEST_ASSERT_EQUAL_PTR(nodeA, nodeE->imdDom);
@@ -615,10 +654,7 @@ void test_getNodeDomFrontiers_given_CFG1_then_find_domFrontiers_of_each_node_sho
   addChild(&nodeD, &nodeA);
 
   setLastBrhDom(&nodeA);
-  nodeA->imdDom = NULL;
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
+  setAllImdDom(&nodeA);
 
   LinkedList* domFrontiersA = createLinkedList();
   LinkedList* domFrontiersB = createLinkedList();
@@ -672,13 +708,8 @@ void test_getNodeDomFrontiers_given_CFG2_then_find_domFrontiers_of_each_node_sho
   addChild(&nodeE, &nodeF);
 
   setLastBrhDom(&nodeA);
+  setAllImdDom(&nodeA);
 
-  getImdDom(nodeA);
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
-  getImdDom(nodeE);
-  getImdDom(nodeF);
 
   LinkedList* domFrontiersA = createLinkedList();
   LinkedList* domFrontiersB = createLinkedList();
@@ -742,13 +773,8 @@ void test_getNodeDomFrontiers_given_CFG3_then_find_domFrontiers_of_each_node_sho
   addChild(&nodeE, &nodeF);
 
   setLastBrhDom(&nodeA);
+  setAllImdDom(&nodeA);
 
-  getImdDom(nodeA);
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
-  getImdDom(nodeE);
-  getImdDom(nodeF);
 
   LinkedList* domFrontiersA = createLinkedList();
   LinkedList* domFrontiersB = createLinkedList();
@@ -822,14 +848,8 @@ void test_getNodeDomFrontiers_given_CFG4_then_find_domFrontiers_of_each_node_sho
   addChild(&nodeH, &nodeE);
 
   setLastBrhDom(&nodeA);
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
-  getImdDom(nodeE);
-  getImdDom(nodeF);
-  getImdDom(nodeG);
-  getImdDom(nodeH);
-  getImdDom(nodeI);
+  setAllImdDom(&nodeA);
+
 
 
   LinkedList* domFrontiersA = createLinkedList();
@@ -902,9 +922,7 @@ void test_getAllDomFrontiers_given_CFG1_should_give_a_union_of_dominatorFrontier
   addChild(&nodeD, &nodeA);
 
   setLastBrhDom(&nodeA);
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
+  setAllImdDom(&nodeA);
 
   LinkedList* unionDomFrontiers = createLinkedList();
   LinkedList* expectUnionDomFrontiers = createLinkedList();
@@ -949,13 +967,7 @@ void test_getAllDomFrontiers_given_CFG2_should_give_a_union_of_dominatorFrontier
   addChild(&nodeE, &nodeF);
 
   setLastBrhDom(&nodeA);
-
-  getImdDom(nodeA);
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
-  getImdDom(nodeE);
-  getImdDom(nodeF);
+  setAllImdDom(&nodeA);
 
   LinkedList* unionDomFrontiers = createLinkedList();
   LinkedList* expectUnionDomFrontiers = createLinkedList();
@@ -1005,13 +1017,7 @@ void test_getAllDomFrontiers_given_CFG3_should_give_a_union_of_dominatorFrontier
   addChild(&nodeE, &nodeF);
 
   setLastBrhDom(&nodeA);
-
-  getImdDom(nodeA);
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
-  getImdDom(nodeE);
-  getImdDom(nodeF);
+  setAllImdDom(&nodeA);
 
   LinkedList* unionDomFrontiers = createLinkedList();
   LinkedList* expectUnionDomFrontiers = createLinkedList();
@@ -1069,14 +1075,8 @@ void test_getAllDomFrontiers_given_CFG4_should_give_a_union_of_dominatorFrontier
   addChild(&nodeH, &nodeE);
 
   setLastBrhDom(&nodeA);
-  getImdDom(nodeB);
-  getImdDom(nodeC);
-  getImdDom(nodeD);
-  getImdDom(nodeE);
-  getImdDom(nodeF);
-  getImdDom(nodeG);
-  getImdDom(nodeH);
-  getImdDom(nodeI);
+  setAllImdDom(&nodeA);
+
     
   LinkedList* unionDomFrontiers = createLinkedList();
   LinkedList* expectUnionDomFrontiers = createLinkedList();

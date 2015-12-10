@@ -46,7 +46,7 @@ void test_phiFunction_allocation(void){
   allocPhiFunc(nodeA);
   
   TEST_ASSERT_NULL(nodeA->block->expression->head);
-  // TEST_ASSERT_NULL(nodeB->block->expression->head);
-  // TEST_ASSERT_NULL(nodeC->block->expression->head);
+  TEST_ASSERT_NULL(nodeB->block->expression->head);
+  TEST_ASSERT_NULL(nodeC->block->expression->head);
   TEST_ASSERT_NOT_NULL(nodeD->block->expression->head);
 }
