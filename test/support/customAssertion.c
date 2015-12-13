@@ -1,10 +1,43 @@
 #include "customAssertion.h"
 #include "unity.h"
 #include "NodeChain.h"
+#include "PhiFunction.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-// void customTestAssertNodeData(int expRank, Block* expBlock, , Node* expParent, Node* actualNode, int lineNumber){
+void customTestAssertPhiFunction(Expression* expectedPhiFunction, Node** nodeToTest, int lineNumber){
+  Expression* actualPhiFunc = (Expression*)(*nodeToTest)->block->expression->head->node;
+  
+  if(actualPhiFunc == NULL || expectedPhiFunction == NULL){
+    CUSTOM_TEST_FAIL(lineNumber, "NULL input detected");
+  }
+  else{
+    if(actualPhiFunc->opr != PHI_FUNC)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected PhiFunction but actual was %d", \
+                        actualPhiFunc->opr);
+                        
+    if(actualPhiFunc->id != expectedPhiFunction->id)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected id is %c but actual was %c",     \
+                        expectedPhiFunction->id, actualPhiFunc->id);
+                        
+    if(actualPhiFunc->subscrpt != expectedPhiFunction->subscrpt)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected subscript %d but actual was %d", \
+                        expectedPhiFunction->subscrpt, actualPhiFunc->subscrpt);
+                        
+    if(actualPhiFunc->operand1 != expectedPhiFunction->operand1)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected operand1 as %d but actual was %d", \
+                        expectedPhiFunction->operand1, actualPhiFunc->operand1);
+                        
+    if(actualPhiFunc->operand2 != expectedPhiFunction->operand2)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected operand2 as %d but actual was %d", \
+                        expectedPhiFunction->operand2, actualPhiFunc->operand2);
+                        
+    if(actualPhiFunc->condition != expectedPhiFunction->condition)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected condition is %d but actual was %d", \
+                        expectedPhiFunction->condition, actualPhiFunc->condition);
+  
+  }
+}
 
   // if(actualNode == NULL){
     // CUSTOM_TEST_FAIL(lineNumber, "NULL input detected");

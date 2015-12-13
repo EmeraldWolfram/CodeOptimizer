@@ -13,14 +13,14 @@ void setUp(void){}
 void tearDown(void){}
 
 void test_createExpression(void){
-  Expression* addExpress = createExpression(1,2,3,NORMAL_OPERATOR,1,2);
+  Expression* addExpress = createExpression('x',3,NORMAL_OPERATOR,1, 2, 0);
   
-  TEST_ASSERT_EQUAL(1, addExpress->id);
-  TEST_ASSERT_EQUAL(2, addExpress->subsValue);
+  TEST_ASSERT_EQUAL('x', addExpress->id);
   TEST_ASSERT_EQUAL(3, addExpress->subscrpt);
   TEST_ASSERT_EQUAL(NORMAL_OPERATOR, addExpress->opr);
   TEST_ASSERT_EQUAL(1, addExpress->operand1);
   TEST_ASSERT_EQUAL(2, addExpress->operand2);
+  TEST_ASSERT_EQUAL(0, addExpress->condition);
 }
 
 void test_createBlock(void){

@@ -25,16 +25,16 @@ Block* createBlock(LinkedList* expList){
   return newBlock;
 }
 
-Expression* createExpression(int thisID, int sValue, int subs, \
-                              Operator oprt, int oprd1, int oprd2){
+Expression* createExpression(char thisID, int subs, Operator oprt,  \
+                             int oprd1, int oprd2, int condt){
   Expression* newExp = malloc(sizeof(Expression));
   
   newExp->id = thisID;
   newExp->subscrpt  = subs;
-  newExp->subsValue = sValue;
   newExp->opr = oprt;
-  newExp->operand1 = oprd1;
-  newExp->operand2 = oprd2;
+  newExp->operand1  = oprd1;
+  newExp->operand2  = oprd2;
+  newExp->condition = condt;
                
   return newExp;            
 }

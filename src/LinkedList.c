@@ -91,9 +91,8 @@ void addListFirst(LinkedList* currentList, void *data){
   
   if(currentList->length == 0)
     currentList->tail = newElement;
-  else
-    currentList->head->next = prevHead;
   
+  currentList->head->next = prevHead;
   currentList->tail->next = NULL; //Tail->next permanently pointing to NULL
   (currentList->length)++;
 }

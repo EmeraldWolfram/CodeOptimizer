@@ -13,6 +13,7 @@ typedef struct Node_t Node;
  * expression[4]  = operand 2
  *************************************/
 typedef enum{
+  PHI_FUNC,
   GREATER_THAN,
   SMALLER_THAN,
   EQUAL_TO,
@@ -22,14 +23,15 @@ typedef enum{
   IF_STATEMENT
 }Operator;
 
-typedef struct{
-  int id;
-  int subsValue;
+typedef struct Expression_t Expression;
+struct Expression_t{
+  char id;
   int subscrpt;
   Operator opr;
   int operand1;
   int operand2;
-}Expression;
+  int condition;
+};
 
 typedef struct{
   LinkedList* expression;
@@ -58,8 +60,8 @@ struct Node_t{
 
 Node* createNode(int thisRank);
 Block* createBlock(LinkedList* expList);
-Expression* createExpression(int id, int sValue, int subscrpt,  \
-                              Operator opr, int oprd1, int oprd2);
+Expression* createExpression(char thisID, int subs, Operator oprt,  \
+                             int oprd1, int oprd2, int condt);
 
 void addChild(Node** parentNode, Node** childNode);
 void setLastBrhDom(Node** rootNode);

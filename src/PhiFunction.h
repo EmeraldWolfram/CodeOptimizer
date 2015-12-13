@@ -6,7 +6,7 @@
 #include "NodeChain.h"
 
 void allocPhiFunc(Node* entryNode);
-int phiFunction();
+Expression* getPhiFunction();
 
 
 
