@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "PhiFunction.h"
+#include "ExpressionBlock.h"
 #include "NodeChain.h"
 #include "ErrorObject.h"
 #include "customAssertion.h"
@@ -35,10 +36,10 @@ void test_phiFunction_allocation(void){
   Expression* expB = createExpression('x', 1, NORMAL_OPERATOR, 1, 5, 0);
   Expression* expC = createExpression('x', 2, NORMAL_OPERATOR, 2, 6, 0);
   Expression* expD = createExpression('x', 3, NORMAL_OPERATOR, 3, 7, 0);
-  addListFirst(nodeA->block->expression, expA);
-  addListFirst(nodeB->block->expression, expB);
-  addListFirst(nodeC->block->expression, expC);
-  addListFirst(nodeD->block->expression, expD);
+  addListFirst(nodeA->block, expA);
+  addListFirst(nodeB->block, expB);
+  addListFirst(nodeC->block, expC);
+  addListFirst(nodeD->block, expD);
   
   addChild(&nodeA, &nodeB);
   addChild(&nodeA, &nodeC);
@@ -48,10 +49,10 @@ void test_phiFunction_allocation(void){
   setLastBrhDom(&nodeA);
 
   allocPhiFunc(nodeA);
-  TEST_ASSERT_EQUAL(2, nodeD->block->expression->length);
-  TEST_ASSERT_EQUAL(1, nodeA->block->expression->length);
-  TEST_ASSERT_EQUAL(1, nodeB->block->expression->length);
-  TEST_ASSERT_EQUAL(1, nodeC->block->expression->length);
+  TEST_ASSERT_EQUAL(2, nodeD->block->length);
+  TEST_ASSERT_EQUAL(1, nodeA->block->length);
+  TEST_ASSERT_EQUAL(1, nodeB->block->length);
+  TEST_ASSERT_EQUAL(1, nodeC->block->length);
 
   Expression* testPhi = createExpression('x', 3, PHI_FUNC, 1, 2, 1);
   TEST_ASSERT_PHIFUNC(testPhi, &nodeD);

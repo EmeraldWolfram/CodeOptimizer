@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "NodeChain.h"
+#include "ExpressionBlock.h"
 #include "ErrorObject.h"
 #include "customAssertion.h"
 #include "LinkedList.h"
@@ -11,25 +12,6 @@
 void setUp(void){}
 
 void tearDown(void){}
-
-void test_createExpression(void){
-  Expression* addExpress = createExpression('x',3,NORMAL_OPERATOR,1, 2, 0);
-  
-  TEST_ASSERT_EQUAL('x', addExpress->id);
-  TEST_ASSERT_EQUAL(3, addExpress->subscrpt);
-  TEST_ASSERT_EQUAL(NORMAL_OPERATOR, addExpress->opr);
-  TEST_ASSERT_EQUAL(1, addExpress->operand1);
-  TEST_ASSERT_EQUAL(2, addExpress->operand2);
-  TEST_ASSERT_EQUAL(0, addExpress->condition);
-}
-
-void test_createBlock(void){
-  LinkedList* nullList = malloc(sizeof(LinkedList));
-	Block* testBlock = createBlock(nullList);
-
-  TEST_ASSERT_NOT_NULL(testBlock);
-  TEST_ASSERT_EQUAL_PTR(nullList, testBlock->expression);
-}
 
 void test_createNode(void){
 	Node* testNode = createNode(0);
@@ -118,6 +100,72 @@ void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above
   TEST_ASSERT_NODE_ADDRESS(childNodeD, childNodeC->children[0]);
   TEST_ASSERT_NODE_ADDRESS(childNodeC, childNodeD->parent);
 }
+
+/**
+ *      TREE X:   |
+ *         [A]    |   ListX:
+ *        /   \   |   tail
+ *     [B]    [C] |        \________________________________________
+ *     / \     |  |   head                                          \
+ *   [D] [E]  [F] |       \                                          \
+ *  /  \ /    |   |        \-[A]-[B]-[C]-[D]-[E]-[F]-[G]-[H]-[I]-[J]-[K]
+ *[G]->[H]<--[I]  |
+ * |    ^         |
+ * |    ^         |
+ *[J]--[K]        |
+ ************************************************************************/
+void test_assembleList_given_node_tree_X_above_should_move_into_ListX(void){
+  Node* nodeA  = createNode(0);
+  Node* nodeB  = createNode(1);
+  Node* nodeC  = createNode(1);
+  Node* nodeD  = createNode(2);
+  Node* nodeE  = createNode(2);
+  Node* nodeF  = createNode(2);
+  Node* nodeG  = createNode(3);
+  Node* nodeH  = createNode(3);
+  Node* nodeI  = createNode(3);
+  Node* nodeJ  = createNode(4);
+  Node* nodeK  = createNode(5);
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeB, &nodeE);
+  addChild(&nodeC, &nodeF);
+  addChild(&nodeD, &nodeG);
+  addChild(&nodeD, &nodeH);
+  addChild(&nodeE, &nodeH);
+  addChild(&nodeF, &nodeI);
+  addChild(&nodeI, &nodeH);
+  addChild(&nodeG, &nodeH);
+  addChild(&nodeG, &nodeJ);
+  addChild(&nodeJ, &nodeK);
+  addChild(&nodeK, &nodeH);
+  
+  LinkedList* testList  = assembleList(&nodeA);
+  ListElement* testPtr  = testList->head;
+  
+  TEST_ASSERT_EQUAL_PTR(nodeA, testPtr->node);
+  TEST_ASSERT_EQUAL_PTR(nodeB, testPtr->next->node);
+  TEST_ASSERT_EQUAL_PTR(nodeC, testPtr->next->next->node);
+  
+  testPtr = testPtr->next->next->next;
+  TEST_ASSERT_EQUAL_PTR(nodeD, testPtr->node);
+  TEST_ASSERT_EQUAL_PTR(nodeE, testPtr->next->node);
+  TEST_ASSERT_EQUAL_PTR(nodeF, testPtr->next->next->node);
+  
+  testPtr = testPtr->next->next->next;
+  TEST_ASSERT_EQUAL_PTR(nodeG, testPtr->node);
+  TEST_ASSERT_EQUAL_PTR(nodeH, testPtr->next->node);
+  TEST_ASSERT_EQUAL_PTR(nodeI, testPtr->next->next->node);
+  
+  testPtr = testPtr->next->next->next;
+  TEST_ASSERT_EQUAL_PTR(nodeJ, testPtr->node);
+  TEST_ASSERT_EQUAL_PTR(nodeK, testPtr->next->node);
+}
+
+
+
 
 /**
  *  setParent will assign lastBrhDom to all the node in the tree

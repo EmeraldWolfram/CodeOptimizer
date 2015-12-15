@@ -1,45 +1,14 @@
 #ifndef NodeChain_H
 #define NodeChain_H
 
+typedef struct Node_t Node;
 #include "LinkedList.h"
 #include "ErrorObject.h"
-typedef struct Node_t Node;
-
-/**
- * expression[0]  = id
- * expression[1]  = resulting value
- * expression[2]  = operator
- * expression[3]  = operand 1
- * expression[4]  = operand 2
- *************************************/
-typedef enum{
-  PHI_FUNC,
-  GREATER_THAN,
-  SMALLER_THAN,
-  EQUAL_TO,
-  NOT_EQUAL_TO,
-  NORMAL_OPERATOR,
-  ASSIGN,
-  IF_STATEMENT
-}Operator;
-
-typedef struct Expression_t Expression;
-struct Expression_t{
-  char id;
-  int subscrpt;
-  Operator opr;
-  int operand1;
-  int operand2;
-  int condition;
-};
-
-typedef struct{
-  LinkedList* expression;
-}Block;
+#include "ExpressionBlock.h"
 
 struct Node_t{
   int rank;
-  Block* block;
+  LinkedList* block;
   Node* lastBrhDom;
   Node* imdDom;
   Node* parent;
@@ -59,9 +28,6 @@ struct Node_t{
           }
 
 Node* createNode(int thisRank);
-Block* createBlock(LinkedList* expList);
-Expression* createExpression(char thisID, int subs, Operator oprt,  \
-                             int oprd1, int oprd2, int condt);
 
 void addChild(Node** parentNode, Node** childNode);
 void setLastBrhDom(Node** rootNode);

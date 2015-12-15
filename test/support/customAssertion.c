@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 void customTestAssertPhiFunction(Expression* expectedPhiFunction, Node** nodeToTest, int lineNumber){
-  Expression* actualPhiFunc = (Expression*)(*nodeToTest)->block->expression->head->node;
+  Expression* actualPhiFunc = (Expression*)(*nodeToTest)->block->head->node;
   
   if(actualPhiFunc == NULL || expectedPhiFunction == NULL){
     CUSTOM_TEST_FAIL(lineNumber, "NULL input detected");

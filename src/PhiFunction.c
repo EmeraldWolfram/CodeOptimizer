@@ -41,7 +41,7 @@ void allocPhiFunc(Node* entryNode){
     phiFunction = getPhiFunction();
     
     if(phiFunction != NULL)
-      addListFirst(domFNode->block->expression, phiFunction);
+      addListFirst(domFNode->block, phiFunction);
     
     domFElement = domFElement->next;
   }

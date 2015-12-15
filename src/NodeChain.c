@@ -6,7 +6,7 @@ Node* createNode(int thisRank){
   Node* newNode = malloc(sizeof(Node));
   
   newNode->rank         = thisRank;
-  newNode->block        = createBlock(createLinkedList());
+  newNode->block        = createLinkedList();
   newNode->parent       = NULL;
   newNode->lastBrhDom   = NULL;
   newNode->imdDom       = NULL;
@@ -18,26 +18,7 @@ Node* createNode(int thisRank){
   return newNode;
 }
 
-Block* createBlock(LinkedList* expList){
-  Block* newBlock       = malloc(sizeof(Block));
-  newBlock->expression  = expList;
-  
-  return newBlock;
-}
 
-Expression* createExpression(char thisID, int subs, Operator oprt,  \
-                             int oprd1, int oprd2, int condt){
-  Expression* newExp = malloc(sizeof(Expression));
-  
-  newExp->id = thisID;
-  newExp->subscrpt  = subs;
-  newExp->opr = oprt;
-  newExp->operand1  = oprd1;
-  newExp->operand2  = oprd2;
-  newExp->condition = condt;
-               
-  return newExp;            
-}
 /*
  * brief @ Add a new child to a node as shown below.
  * Example:
