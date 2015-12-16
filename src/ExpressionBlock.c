@@ -1,20 +1,56 @@
 #include "ExpressionBlock.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 
-Expression* createExpression(char thisID, int subs, Operator oprt,  \
-                             int oprd1, int oprd2, int condt){
+Expression* createExpression(int thisID, Operator oprt, int oprdA,\
+                            int oprdB, int condt){
   Expression* newExp = malloc(sizeof(Expression));
   
-  newExp->id = thisID;
-  newExp->subscrpt  = subs;
-  newExp->opr = oprt;
-  newExp->operand1  = oprd1;
-  newExp->operand2  = oprd2;
-  newExp->condition = condt;
-               
+  newExp->id.name    = thisID;
+  newExp->id.subs    = 0;
+  newExp->opr        = oprt;
+  newExp->oprdA.name = oprdA;
+  newExp->oprdA.subs = 0;
+  newExp->oprdB.name = oprdB;
+  newExp->oprdB.subs = 0;
+  newExp->condition  = condt;
+
   return newExp;            
 }
+
+LinkedList* getSubsList(LinkedList* expression){
+  LinkedList* subsList = createLinkedList();
+  ListElement* exprPtr = expression->head;
+  
+  while(exprPtr != NULL){
+    if(((Expression*)exprPtr->node)->opr != IF_STATEMENT){
+      addListLast(subsList, &((Expression*)exprPtr->node)->oprdA);
+      addListLast(subsList, &((Expression*)exprPtr->node)->oprdB);
+      addListLast(subsList, &((Expression*)exprPtr->node)->id);
+      exprPtr = exprPtr->next;
+    }
+  }
+  
+  return subsList;
+}
+
+void arrangeSSA(Node* inputNode){
+  LinkedList* exprList  = inputNode->block;
+  LinkedList* checkList = getSubsList(inputNode->block);
+  ListElement* exprPtr  = exprList->head;
+  ListElement* checkPtr;
+  int currentRank;
+  
+  while(exprPtr != NULL){
+    currentRank = 0;
+    checkPtr = checkList->head;
+    CHANGE_ID_SUBSCRIPT(exprPtr, checkPtr, currentRank);
+    
+    exprPtr = exprPtr->next;
+  }
+}
+
 
 /*
  *  getCondition function return the subscript of 
@@ -24,15 +60,14 @@ Expression* createExpression(char thisID, int subs, Operator oprt,  \
  *
  */
 
-Expression* getCondition(Node* imdDomNode){
+Subscript* getCondition(Node* imdDomNode){
   ListElement* ptrToCondition = imdDomNode->block->head;
   
   while(ptrToCondition->next->next != NULL){
     ptrToCondition = ptrToCondition->next;
   }
   
-  //????????????????????HERE IS THE QUESTION! WHAT SHOULD I RETURN
-  return (Expression*)(ptrToCondition->node);
+  return (&((Expression*)ptrToCondition->node)->id);
 }
 
 

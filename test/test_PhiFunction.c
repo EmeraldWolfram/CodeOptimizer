@@ -32,10 +32,10 @@ void test_phiFunction_allocation(void){
   Node* nodeB = createNode(1);
   Node* nodeC = createNode(1);
   Node* nodeD = createNode(2);
-  Expression* expA = createExpression('x', 0, ASSIGN, 12, 0, 0);
-  Expression* expB = createExpression('x', 1, NORMAL_OPERATOR, 1, 5, 0);
-  Expression* expC = createExpression('x', 2, NORMAL_OPERATOR, 2, 6, 0);
-  Expression* expD = createExpression('x', 3, NORMAL_OPERATOR, 3, 7, 0);
+  Expression* expA = createExpression('x', ASSIGN, 'z', 'z', 0);
+  Expression* expB = createExpression('x', NORMAL_OPERATOR, 'y', 'z', 0);
+  Expression* expC = createExpression('x', NORMAL_OPERATOR, 'x', 'y', 0);
+  Expression* expD = createExpression('x', NORMAL_OPERATOR, 'x', 'z', 0);
   addListFirst(nodeA->block, expA);
   addListFirst(nodeB->block, expB);
   addListFirst(nodeC->block, expC);
@@ -54,6 +54,6 @@ void test_phiFunction_allocation(void){
   TEST_ASSERT_EQUAL(1, nodeB->block->length);
   TEST_ASSERT_EQUAL(1, nodeC->block->length);
 
-  Expression* testPhi = createExpression('x', 3, PHI_FUNC, 1, 2, 1);
+  Expression* testPhi = createExpression('x', PHI_FUNC, 1, 2, 1);
   TEST_ASSERT_PHIFUNC(testPhi, &nodeD);
 }

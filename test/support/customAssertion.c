@@ -16,21 +16,21 @@ void customTestAssertPhiFunction(Expression* expectedPhiFunction, Node** nodeToT
       CUSTOM_TEST_FAIL(lineNumber, "Expected PhiFunction but actual was %d", \
                         actualPhiFunc->opr);
                         
-    if(actualPhiFunc->id != expectedPhiFunction->id)
+    if(actualPhiFunc->id.name != expectedPhiFunction->id.name)
       CUSTOM_TEST_FAIL(lineNumber, "Expected id is %c but actual was %c",     \
-                        expectedPhiFunction->id, actualPhiFunc->id);
+                        expectedPhiFunction->id.name, actualPhiFunc->id.name);
                         
-    if(actualPhiFunc->subscrpt != expectedPhiFunction->subscrpt)
-      CUSTOM_TEST_FAIL(lineNumber, "Expected subscript %d but actual was %d", \
-                        expectedPhiFunction->subscrpt, actualPhiFunc->subscrpt);
+    if(actualPhiFunc->id.subs != expectedPhiFunction->id.subs)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected ID subscript %d but actual was %d", \
+                        expectedPhiFunction->id.subs, actualPhiFunc->id.subs);
                         
-    if(actualPhiFunc->operand1 != expectedPhiFunction->operand1)
-      CUSTOM_TEST_FAIL(lineNumber, "Expected operand1 as %d but actual was %d", \
-                        expectedPhiFunction->operand1, actualPhiFunc->operand1);
+    if(actualPhiFunc->oprdA.name != expectedPhiFunction->oprdA.name)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected operand A as %c but actual was %c", \
+                        expectedPhiFunction->oprdA, actualPhiFunc->oprdA);
                         
-    if(actualPhiFunc->operand2 != expectedPhiFunction->operand2)
-      CUSTOM_TEST_FAIL(lineNumber, "Expected operand2 as %d but actual was %d", \
-                        expectedPhiFunction->operand2, actualPhiFunc->operand2);
+    if(actualPhiFunc->oprdB.name != expectedPhiFunction->oprdB.name)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected operand B as %c but actual was %c", \
+                        expectedPhiFunction->oprdB, actualPhiFunc->oprdB);
                         
     if(actualPhiFunc->condition != expectedPhiFunction->condition)
       CUSTOM_TEST_FAIL(lineNumber, "Expected condition is %d but actual was %d", \
@@ -38,23 +38,8 @@ void customTestAssertPhiFunction(Expression* expectedPhiFunction, Node** nodeToT
   
   }
 }
-
-  // if(actualNode == NULL){
-    // CUSTOM_TEST_FAIL(lineNumber, "NULL input detected");
-  // }
-  // else{
-    // if(actualNode->expression != expectedExpression){
-      // CUSTOM_TEST_FAIL(lineNumber,"Expected expression to be %s was %s", expectedExpression, actualNode->expression);
-    // }
-    // if(actualNode->rank != expectedRank){
-      // CUSTOM_TEST_FAIL(lineNumber,"Expected rank to be %d was %d", expectedRank, actualNode->rank);
-    // }
-    // if(actualNode->parent != expectedParent){
-      // CUSTOM_TEST_FAIL(lineNumber, "Expected parent is 0x%X was 0x%X", expectedParent, actualNode->parent);
-    // }
-  // }
-// }
-
+//**********************************************************************************************
+//**********************************************************************************************
 void customTestAssertNodeAddress(Node* expectedNode, Node* actualNode, int lineNumber){
   if(!actualNode && expectedNode)
     CUSTOM_TEST_FAIL(lineNumber, "Expected Node was 0x%X but actual was NULL", expectedNode);
@@ -66,9 +51,9 @@ void customTestAssertNodeAddress(Node* expectedNode, Node* actualNode, int lineN
     CUSTOM_TEST_FAIL(lineNumber, "Expected Node pointer point to 0x%X but actual was 0x%X", expectedNode, actualNode);
 }
 
-/**
+/************************************************************************************************
  * compare the address of every list elements and the number of elements contained between two list.
- */
+ ************************************************************************************************/
 void customTestAssertLinkedList(LinkedList* expectedList, LinkedList* actualList, int lineNumber){
   
   int i = 1;
@@ -98,3 +83,14 @@ void customTestAssertLinkedList(LinkedList* expectedList, LinkedList* actualList
     i++;
   }
 } 
+//*******************************************************************************************
+void customTestAssertSubscript(int expectName, int expectSub, Subscript* actual, int lineNumber){
+  if(actual->name != expectName)
+    CUSTOM_TEST_FAIL(lineNumber, "Expected ID %c but actual was %c", expectName, actual->name);
+  
+  if(actual->subs != expectSub)
+    CUSTOM_TEST_FAIL(lineNumber, "Expected subscript no. %d was %d", expectSub, actual->subs);
+  
+  
+  
+}

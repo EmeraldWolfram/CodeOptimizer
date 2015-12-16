@@ -11,7 +11,7 @@ typedef enum{
 
 typedef struct{
   char *errorMsg;									//errorMsg give a message about the error.
-  ErrorCode errorCode;								//ErrorCode is to show the type of error that throw in the function.
+  ErrorCode errorCode;						//ErrorCode is to show the type of error that throw in the function.
 } ErrorObject;
 
 void freeError(ErrorObject *errObj);

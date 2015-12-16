@@ -20,7 +20,7 @@ Expression* getPhiFunction(){
     
     //                            modID
     //                              |
-    phiFunction = createExpression('x', 3, PHI_FUNC, 1, 2, 1);
+    phiFunction = createExpression('x', PHI_FUNC, 1, 2, 1);
     // idElement = idElement->next;
   // }
   
