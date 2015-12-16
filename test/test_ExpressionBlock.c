@@ -125,12 +125,12 @@ void test_arrangeSSA_given_ListA_should_modify_to_ListB(void){
   elemPtr = elemPtr->next;
   TEST_ASSERT_SUBSCRIPT('z', 1, &((Expression*)elemPtr->node)->id);
   TEST_ASSERT_SUBSCRIPT('z', 0, &((Expression*)elemPtr->node)->oprdA);
-  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)elemPtr->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)elemPtr->node)->oprdB);
 
   elemPtr = elemPtr->next;
   TEST_ASSERT_SUBSCRIPT('z', 2, &((Expression*)elemPtr->node)->id);
-  // TEST_ASSERT_SUBSCRIPT('z', 1, &((Expression*)elemPtr->node)->oprdA);
-  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)elemPtr->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT('z', 1, &((Expression*)elemPtr->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)elemPtr->node)->oprdB);
 }
 
 /**

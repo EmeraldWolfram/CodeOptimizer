@@ -41,11 +41,39 @@ void arrangeSSA(Node* inputNode){
   ListElement* exprPtr  = exprList->head;
   ListElement* checkPtr;
   int currentRank;
+  int oprARank;
+  int oprBRank;
   
   while(exprPtr != NULL){
     currentRank = 0;
+    oprARank = 0;
+    oprBRank = 0;
     checkPtr = checkList->head;
     CHANGE_ID_SUBSCRIPT(exprPtr, checkPtr, currentRank);
+    
+    checkPtr = checkList->head;
+    while(&((Expression*)exprPtr->node)->oprdA != checkPtr->node){
+      if(((Expression*)exprPtr->node)->oprdA.name == \
+         ((Subscript*)checkPtr->node)->name &&       \
+         oprARank < ((Subscript*)checkPtr->node)->subs){
+        oprARank = ((Subscript*)checkPtr->node)->subs;
+      }
+      checkPtr = checkPtr->next;
+    }
+    ((Expression*)exprPtr->node)->oprdA.subs = oprARank;
+
+    checkPtr = checkList->head;
+    while(&((Expression*)exprPtr->node)->oprdB != checkPtr->node){
+      if(((Expression*)exprPtr->node)->oprdB.name == \
+         ((Subscript*)checkPtr->node)->name &&       \
+         oprARank < ((Subscript*)checkPtr->node)->subs){
+        oprARank = ((Subscript*)checkPtr->node)->subs;
+      }
+      checkPtr = checkPtr->next;
+    }
+    ((Expression*)exprPtr->node)->oprdB.subs = oprARank;
+    
+    
     
     exprPtr = exprPtr->next;
   }

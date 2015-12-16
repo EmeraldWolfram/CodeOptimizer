@@ -8,13 +8,12 @@ typedef struct Expression_t Expression;
 #include "NodeChain.h"
 
 #define CHANGE_ID_SUBSCRIPT(exprPtr, checkPtr, currentRank)                   \
-                while(&(((Expression*)exprPtr->node)->id) !=                  \
-                      &(((Expression*)checkPtr->node)->id)){                  \
+                while(&(((Expression*)exprPtr->node)->id) != checkPtr->node){ \
                                                                               \
                   if(((Expression*)exprPtr->node)->id.name ==                 \
-                    ((Expression*)checkPtr->node)->id.name &&                 \
-                    currentRank <= ((Expression*)checkPtr->node)->id.subs){   \
-                    currentRank = ((Expression*)checkPtr->node)->id.subs + 1; \
+                      ((Subscript*)checkPtr->node)->name &&                   \
+                    currentRank <= ((Subscript*)checkPtr->node)->subs){       \
+                    currentRank = ((Subscript*)checkPtr->node)->subs + 1;     \
                   }                                                           \
                   checkPtr = checkPtr->next;                                  \
                 }                                                             \
