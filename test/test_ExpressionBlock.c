@@ -197,7 +197,6 @@ void test_getCondition_with_the_Block0_above_should_return_expr1(void){
   Expression* expr2 = createExpression(0, IF_STATEMENT, 'c', ((int)&nodeB), 0);
   addListLast(nodeA->block, expr1);
   addListLast(nodeA->block, expr2);
-  arrangeSSA(nodeA);
   
   Subscript* testExpr = getCondition(nodeA);
   

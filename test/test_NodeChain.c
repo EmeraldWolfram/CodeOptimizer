@@ -496,7 +496,6 @@ void test_getImdDom_given_nodeC_should_return_nodeB(void){
 
   getImdDom(childNodeC);
 
-  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->imdDom);
   TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeC->imdDom);
 }
 
