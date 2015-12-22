@@ -25,8 +25,10 @@ LinkedList* getSubsList(LinkedList* expression){
   
   while(exprPtr != NULL){
     if(((Expression*)exprPtr->node)->opr != IF_STATEMENT){
-      addListLast(subsList, &((Expression*)exprPtr->node)->oprdA);
-      addListLast(subsList, &((Expression*)exprPtr->node)->oprdB);
+      if(((Expression*)exprPtr->node)->opr != ASSIGN){
+        addListLast(subsList, &((Expression*)exprPtr->node)->oprdA);
+        addListLast(subsList, &((Expression*)exprPtr->node)->oprdB); 
+      }
       addListLast(subsList, &((Expression*)exprPtr->node)->id);
       exprPtr = exprPtr->next;
     }
@@ -48,32 +50,15 @@ void arrangeSSA(Node* inputNode){
     currentRank = 0;
     oprARank = 0;
     oprBRank = 0;
+    
     checkPtr = checkList->head;
     CHANGE_ID_SUBSCRIPT(exprPtr, checkPtr, currentRank);
     
     checkPtr = checkList->head;
-    while(&((Expression*)exprPtr->node)->oprdA != checkPtr->node){
-      if(((Expression*)exprPtr->node)->oprdA.name == \
-         ((Subscript*)checkPtr->node)->name &&       \
-         oprARank < ((Subscript*)checkPtr->node)->subs){
-        oprARank = ((Subscript*)checkPtr->node)->subs;
-      }
-      checkPtr = checkPtr->next;
-    }
-    ((Expression*)exprPtr->node)->oprdA.subs = oprARank;
+    CHANGE_OPERAND_A(exprPtr, checkPtr, oprARank);
 
     checkPtr = checkList->head;
-    while(&((Expression*)exprPtr->node)->oprdB != checkPtr->node){
-      if(((Expression*)exprPtr->node)->oprdB.name == \
-         ((Subscript*)checkPtr->node)->name &&       \
-         oprARank < ((Subscript*)checkPtr->node)->subs){
-        oprARank = ((Subscript*)checkPtr->node)->subs;
-      }
-      checkPtr = checkPtr->next;
-    }
-    ((Expression*)exprPtr->node)->oprdB.subs = oprARank;
-    
-    
+    CHANGE_OPERAND_B(exprPtr, checkPtr, oprBRank);
     
     exprPtr = exprPtr->next;
   }
@@ -81,10 +66,12 @@ void arrangeSSA(Node* inputNode){
 
 
 /*
- *  getCondition function return the subscript of 
- *
- *  ???? SHOULD I CREATE A RESULTING VALUE OF THAT SUBSCRIPT  ?????
- *
+ *  getCondition function return the condition subscript
+ *  Eg.
+ *    condition = x > 10
+ *    if( condition )  goto nodeX
+ *  
+ *  getCondition should return the condition expression
  *
  */
 
@@ -95,7 +82,7 @@ Subscript* getCondition(Node* imdDomNode){
     ptrToCondition = ptrToCondition->next;
   }
   
-  return (&((Expression*)ptrToCondition->node)->id);
+  return (&((Expression*)ptrToCondition->next->node)->oprdA);
 }
 
 

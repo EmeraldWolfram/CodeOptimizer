@@ -33,9 +33,9 @@ void test_phiFunction_allocation(void){
   Node* nodeC = createNode(1);
   Node* nodeD = createNode(2);
   Expression* expA = createExpression('x', ASSIGN, 'z', 'z', 0);
-  Expression* expB = createExpression('x', NORMAL_OPERATOR, 'y', 'z', 0);
-  Expression* expC = createExpression('x', NORMAL_OPERATOR, 'x', 'y', 0);
-  Expression* expD = createExpression('x', NORMAL_OPERATOR, 'x', 'z', 0);
+  Expression* expB = createExpression('x', ADDITION, 'y', 'z', 0);
+  Expression* expC = createExpression('x', ADDITION, 'x', 'y', 0);
+  Expression* expD = createExpression('x', ADDITION, 'x', 'z', 0);
   addListFirst(nodeA->block, expA);
   addListFirst(nodeB->block, expB);
   addListFirst(nodeC->block, expC);

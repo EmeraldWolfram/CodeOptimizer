@@ -19,13 +19,42 @@ typedef struct Expression_t Expression;
                 }                                                             \
                 ((Expression*)exprPtr->node)->id.subs = currentRank;
 
+                
+#define CHANGE_OPERAND_A(exprPtr, checkPtr, oprARank)                           \
+                while(&((Expression*)exprPtr->node)->oprdA != checkPtr->node){  \
+                  if(((Expression*)exprPtr->node)->oprdA.name ==                \
+                    ((Subscript*)checkPtr->node)->name &&                       \
+                    oprARank < ((Subscript*)checkPtr->node)->subs){             \
+                    oprARank = ((Subscript*)checkPtr->node)->subs;              \
+                  }                                                             \
+                  checkPtr = checkPtr->next;                                    \
+                }                                                               \
+                ((Expression*)exprPtr->node)->oprdA.subs = oprARank;
+
+                
+#define CHANGE_OPERAND_B(exprPtr, checkPtr, oprBRank)                           \
+                while(&((Expression*)exprPtr->node)->oprdB != checkPtr->node){  \
+                  if(((Expression*)exprPtr->node)->oprdB.name ==                \
+                    ((Subscript*)checkPtr->node)->name &&                       \
+                    oprBRank < ((Subscript*)checkPtr->node)->subs){             \
+                    oprBRank = ((Subscript*)checkPtr->node)->subs;              \
+                  }                                                             \
+                  checkPtr = checkPtr->next;                                    \
+                }                                                               \
+                ((Expression*)exprPtr->node)->oprdB.subs = oprBRank;
+                
+                
+                
 typedef enum{
   PHI_FUNC,
   GREATER_THAN,
   SMALLER_THAN,
   EQUAL_TO,
   NOT_EQUAL_TO,
-  NORMAL_OPERATOR,
+  ADDITION,
+  SUBTRACTION,
+  MULITPLICATION,
+  DIVISION,
   ASSIGN,
   IF_STATEMENT
 }Operator;
