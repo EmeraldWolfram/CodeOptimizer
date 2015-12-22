@@ -27,7 +27,8 @@ void test_createNode(void){
   TEST_ASSERT_NULL(testNode->doms);
 }
 
-/***************************************
+/**
+ *  addChild
  *  Given Node parentNode (a) and childNode (b)
  *  addChild should link them as shown below
  *
@@ -46,7 +47,8 @@ void test_addChild_given_parentNode_and_childNode_should_link_it_as_tree_above(v
   TEST_ASSERT_NODE_ADDRESS(parentNode, childNode->parent);
 }
 
-/***************************************
+/**
+ *  addChild
  *  Given Node parentNode (a) with child (b) add childNode (c)
  *  addChild should link them as shown below
  *
@@ -69,7 +71,8 @@ void test_addChild_given_parentNode_with_childB_and_childNodeC_should_link_it_as
   TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->parent);
 }
 
-/***************************************
+/**
+ *  addChild
  *  Forming the following tree with addChild function only
  *
  *           [parent]
@@ -102,6 +105,11 @@ void test_addChild_given_parentNode_add_3_childNode_should_link_it_as_tree_above
 }
 
 /**
+ *  assembleList
+ *  This function should be able to add all the node in a Node Tree into
+ *  a LinkedList without repetition of Node
+ *
+ *  Eg.
  *      TREE X:   |
  *         [A]    |   ListX:
  *        /   \   |   tail
@@ -165,11 +173,9 @@ void test_assembleList_given_node_tree_X_above_should_move_into_ListX(void){
 }
 
 
-
-
 /**
- *  setParent will assign lastBrhDom to all the node in the tree
- *  This test test assign of true parent for the following tree
+ *  setLastBrhDom 
+ *  This function will assign lastBrhDom to the node in the tree
  *
  *      [parent]
  *         |
@@ -188,8 +194,8 @@ void test_setLastBrhDom_with_one_child_only(void){
 }
 
 /**
- *  setParent will assign lastBrhDom to all the node in the tree
- *  This test test assign of lastBrhDom for the following tree
+ *  setLastBrhDom
+ *  This test test assign of lastBrhDom when there are two child Node
  *
  *      [parent]
  *        /  \
@@ -210,8 +216,10 @@ void test_setLastBrhDom_with_two_child_only(void){
 }
 
 /**
- *  setParent will assign lastBrhDom to all the node in the tree
+ *  setLastBrhDom will assign lastBrhDom to all the node in the tree
  *  This test test assign of lastBrhDom for the following tree
+ *  where Node D should have lastBrhDom pointing to parent
+ *
  *  TreeA
  *
  *     [parent]
@@ -240,7 +248,7 @@ void test_setLastBrhDom_with_treeA_shown_above(void){
 }
 
 /**
- *  setParent will assign lastBrhDom to all the node in the tree
+ *  setLastBrhDom will assign lastBrhDom to all the node in the tree
  *  This test test assign of lastBrhDom for the following tree
  *  TreeB
  *
@@ -273,7 +281,7 @@ void test_setLastBrhDom_with_treeB_shown_above(void){
 }
 
 /**
- *  setParent will assign lastBrhDom to all the node in the tree
+ *  setLastBrhDom will assign lastBrhDom to all the node in the tree
  *  This test test assign of lastBrhDom for the following tree
  *  TreeC
  *
@@ -320,8 +328,11 @@ void test_setLastBrhDom_with_treeC_shown_above(void){
 
 
 /**
- *  setParent will assign lastBrhDom to all the node in the tree
- *  This test test assign of lastBrhDom for the following tree
+ *  setLastBrhDom will assign lastBrhDom to all the node in the tree
+ *  This test test assign of lastBrhDom when there are lower rank node
+ *  pointing to a higher rank Node
+ *
+ *
  *  TreeC
  *
  *        [A]
@@ -378,7 +389,12 @@ void test_setLastBrhDom_with_treeD_shown_above(void){
   TEST_ASSERT_NODE_ADDRESS(childNodeG, childNodeK->lastBrhDom);
 }
 
-/**       ControlFlowGraph1      s
+/**       
+ *  setLastBrhDom
+ *  This is to test when there is node point back to the root Node.
+ *  Check whether setLastBrhDom can handle this case.
+ *
+ *    ControlFlowGraph1
  *
  *          | Entry
  *         \/
@@ -410,7 +426,12 @@ void test_setLastBrhDom_give_CFG1_should_assign_lastBranchDominator_of_each_node
   TEST_ASSERT_NODE_ADDRESS(nodeA, nodeD->lastBrhDom);
 }
 
-/**       ControlFlowGraph2
+/**       
+ *  setLastBrhDom
+ *  This test is to check if the function can handle the case when the Node point to itself
+ *
+ *
+ *  ControlFlowGraph2
  *
  *          | Entry
  *         \/
@@ -450,11 +471,11 @@ void test_setLastBrhDom_give_CFG2_should_assign_lastBranchDominator_of_each_node
   TEST_ASSERT_NODE_ADDRESS(nodeA, nodeF->lastBrhDom);
 }
 
-//*********************************************************************
+
 //********************TEST for getImdDom ******************************
-//*********************************************************************
+
 /**
- *  getImdDom will find imdDom of that node and return
+ *  getImdDom will find imdDom of that node and assign to it
  *
  *       TREE A:  ImdDom
  *      [parent]  {parent}
@@ -475,12 +496,14 @@ void test_getImdDom_given_nodeC_should_return_nodeB(void){
 
   getImdDom(childNodeC);
 
+  TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->imdDom);
   TEST_ASSERT_NODE_ADDRESS(childNodeB, childNodeC->imdDom);
 }
 
 
 /**
- *  getImdDom will find imdDom of that node and return
+ *  getImdDom 
+ *  This test check if NodeD can get the imdDom as parent using getImdDom function
  *
  *       TREE A:  ImdDom
  *      [parent]  {parent}
@@ -509,7 +532,9 @@ void test_getImdDom_given_nodeD_should_return_parentNode(void){
 }
 
 /**
- *  getImdDom will find imdDom of that node and return
+ *  getImdDom
+ *  This test check if the function can handle the case when there are
+ *  many node pointing to the particular Node
  *
  *         [A]
  *        /   \
@@ -560,7 +585,9 @@ void test_getImdDom_given_nodeJ_and_nodeH_should_return_nodeG_and_node_A_respect
 }
 
 /**
- *  setAllImdDom will set all imdDom by iterative calling getImdDom function
+ *  setAllImdDom 
+ *  This test check if setAllImdDom funcion will call getImdDom function iteratively
+ *  to assign all the imdDom to every Node in the Tree.
  *
  *        [A]
  *       /   \
@@ -617,7 +644,14 @@ void test_setAllImdDom_will_set_all_imdDom_to_every_Node(void){
   TEST_ASSERT_NODE_ADDRESS(childNodeJ, childNodeK->imdDom);
 }
 
-/**      TREE A                     
+/**      
+ *  setAllImdDom
+ *  This test check setAllImdDom can handle the scenario when
+ *  1. Self poiting Node (Node C)
+ *  2. Lower rank too higher rank Node (Node H -> Node E)
+ *
+ *
+ *      TREE A                     
  *
  *          | Entry                 imdD(A) = {NULL}
  *         \/                       imdD(B) = { A }
@@ -637,7 +671,7 @@ void test_setAllImdDom_will_set_all_imdDom_to_every_Node(void){
  *      [ I ]
  *
  **/
-void test_getImdDom_given_treeA_above_should_return_expected_imdDom_in_table(void){
+void test_setAllImdDom_given_treeA_above_should_return_expected_imdDom_in_table(void){
   Node* nodeA = createNode(0);
   Node* nodeB = createNode(1);
   Node* nodeE = createNode(1);
