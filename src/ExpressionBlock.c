@@ -162,7 +162,12 @@ LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList){
 }
 
 
-/*
+/*  Traverse down every single node to make sure all the node
+ *  does not have the same subscript index.
+ *
+ *  assignAllNodeSSA should change all the subscript in the node
+ *  to a higher index when the same subscript was found in
+ *  another group.
  *
  **********************************************************/
 void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
@@ -175,17 +180,24 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
     subsName  = ((Subscript*)livePtr->node)->name;
     newExpr   = createExpression(subsName, ASSIGN, subsName, 0, 0);
     
-    if(inputNode->imdDom == inputNode->parent)
-      newExpr->id.subs = newExpr->oprdA.subs + 1;
-    else
-      newExpr->id.subs = newExpr->oprdA.subs + 2;
+    if(inputNode->imdDom == inputNode->parent){
+      newExpr->oprdA.subs = ((Subscript*)livePtr->node)->subs;
+      newExpr->id.subs    = newExpr->oprdA.subs + 1;
+    }
+    else{
+      newExpr->oprdA.subs = ((Subscript*)livePtr->node)->subs + 1;
+      newExpr->id.subs    = newExpr->oprdA.subs + 1;
+    }
 
     addListFirst(inputNode->block, newExpr);
     livePtr   = livePtr->next;
   }
   
   arrangeSSA(inputNode);
+  // printf("%d", ((Expression*)inputNode->block->head->node)->id.subs);
   LinkedList* myLiveList = getLiveList(inputNode, liveList);
+  printf("%d\t", myLiveList->length);
+  printf("%d\n", ((Subscript*)myLiveList->head->node)->subs);
   
   for(i=0; i < inputNode->numOfChild; i++){
     if(inputNode->children[i]->visitFlag != 1)

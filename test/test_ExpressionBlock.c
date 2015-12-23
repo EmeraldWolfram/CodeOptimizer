@@ -310,5 +310,56 @@ void test_getLiveList_should_return_prevList_and_add_on_x2_y2_when_the_expressio
 }
 
 
+/**
+ *  assignAllNodeSSA
+ *
+ *  BEFORE                  AFTER
+ *
+ *    NodeA:                NodeA:
+ *    x0 = 3;               x0 = 3;
+ *    x0 = x0 + x0          x1 = x0 + x0
+ *    goto NodeB            goto NodeB
+ *
+ *    NodeB:                NodeB:
+ *    x0 = x0 * x0          x2 = x1
+ *                          x3 = x2 * x2;
+ *
+ *************************************************************************/
+void test_assignAllNodeSSA_(void){
+  Expression* exp1 = createExpression('x', ASSIGN, 3, 0, 0);
+  Expression* exp2 = createExpression('x', ADDITION, 'x', 'x', 0);
+  Expression* exp3 = createExpression('x', MULITPLICATION, 'x', 'x', 0);
+  
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  addChild(&nodeA, &nodeB);
+  
+  addListLast(nodeA->block, exp1);
+  addListLast(nodeA->block, exp2);
+  addListLast(nodeB->block, exp3);
+
+  // arrangeSSA(nodeA);
+  
+  // TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)nodeA->block->head->node)->id);
+  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)nodeA->block->head->next->node)->id);
+  
+  
+  assignAllNodeSSA(nodeA, createLinkedList());
+  ListElement* testExp = nodeA->block->head;
+  
+  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->next->node)->id);
+  TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->next->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->next->node)->oprdB);
+  
+  testExp = nodeB->block->head;
+  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->node)->id);
+  // TEST_ASSERT_SUBSCRIPT('x', 2, &((Expression*)testExp->node)->oprdA);
+  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->next->node)->id);
+  // TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->next->node)->oprdA);
+  // TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->next->node)->oprdB);
+
+  
+}
 
 
