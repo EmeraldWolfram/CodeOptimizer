@@ -18,6 +18,7 @@ void test_createNode(void){
 
   TEST_ASSERT_NOT_NULL(testNode);
   TEST_ASSERT_EQUAL(0, testNode->rank);
+  TEST_ASSERT_EQUAL(0, testNode->visitFlag);
   TEST_ASSERT_EQUAL(0, testNode->numOfChild);
   TEST_ASSERT_EQUAL(0, testNode->numOfDom);
   TEST_ASSERT_NULL(testNode->parent);

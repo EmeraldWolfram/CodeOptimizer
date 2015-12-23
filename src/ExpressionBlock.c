@@ -19,6 +19,14 @@ Expression* createExpression(int thisID, Operator oprt, int oprdA,\
   return newExp;            
 }
 
+
+/*
+ *  getSubsList is a simple function that extract all the
+ *  variable in all the expressions in the Node into a LinkedList.
+ *
+ *  The function take the input LinkedList* expression that contain
+ *  all the expression in the Node.
+ */
 LinkedList* getSubsList(LinkedList* expression){
   LinkedList* subsList = createLinkedList();
   ListElement* exprPtr = expression->head;
@@ -30,60 +38,131 @@ LinkedList* getSubsList(LinkedList* expression){
         addListLast(subsList, &((Expression*)exprPtr->node)->oprdB); 
       }
       addListLast(subsList, &((Expression*)exprPtr->node)->id);
-      exprPtr = exprPtr->next;
     }
+    exprPtr = exprPtr->next;
   }
   
   return subsList;
 }
-
+/**
+ *  arrangeSSA take in the inputNode and arrange all the expression
+ *  in the Node to the correct subscript.
+ *  Eg.
+ *    x0 = x0 + x0
+ *  
+ *  arrangeSSA should arrange the equation above to
+ *  x1 = x0 + x0
+ *
+ ********************************************************************/
 void arrangeSSA(Node* inputNode){
   LinkedList* exprList  = inputNode->block;
   LinkedList* checkList = getSubsList(inputNode->block);
   ListElement* exprPtr  = exprList->head;
   ListElement* checkPtr;
-  int currentRank;
-  int oprARank;
-  int oprBRank;
+  
+  int currentRank, oprARank, oprBRank;
   
   while(exprPtr != NULL){
     currentRank = 0;
     oprARank = 0;
     oprBRank = 0;
     
-    checkPtr = checkList->head;
-    CHANGE_ID_SUBSCRIPT(exprPtr, checkPtr, currentRank);
-    
-    checkPtr = checkList->head;
-    CHANGE_OPERAND_A(exprPtr, checkPtr, oprARank);
+    if(((Expression*)exprPtr->node)->opr != IF_STATEMENT){
+      checkPtr = checkList->head;
+      CHANGE_ID_SUBSCRIPT(exprPtr, checkPtr, currentRank);  
+                
+      if(((Expression*)exprPtr->node)->opr != ASSIGN){
+        checkPtr = checkList->head;
+        CHANGE_OPERAND_A(exprPtr, checkPtr, oprARank);
 
-    checkPtr = checkList->head;
-    CHANGE_OPERAND_B(exprPtr, checkPtr, oprBRank);
-    
+        checkPtr = checkList->head;
+        CHANGE_OPERAND_B(exprPtr, checkPtr, oprBRank);
+      }
+    }
     exprPtr = exprPtr->next;
   }
 }
 
-
-/*
- *  getCondition function return the condition subscript
- *  Eg.
- *    condition = x > 10
- *    if( condition )  goto nodeX
- *  
- *  getCondition should return the condition expression
- *
- */
-
-Subscript* getCondition(Node* imdDomNode){
-  ListElement* ptrToCondition = imdDomNode->block->head;
+LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList){
+  LinkedList* newLiveList = createLinkedList();
+  LinkedList* checkList   = createLinkedList();
+  LinkedList* expList     = inputNode->block;
   
-  while(ptrToCondition->next->next != NULL){
-    ptrToCondition = ptrToCondition->next;
+  ListElement *newPtr, *exprPtr, *checkPtr;
+  exprPtr   = expList->head;
+  
+  while(exprPtr != NULL){
+    
+      if(((Expression*)exprPtr->node)->opr != IF_STATEMENT){
+        // if(((Expression*)exprPtr->node)->id is not repeated)
+          addListLast(checkList, &((Expression*)exprPtr->node)->id);
+      }
+      exprPtr = exprPtr->next;
   }
   
-  return (&((Expression*)ptrToCondition->next->node)->oprdA);
+  checkPtr  = checkList->head;
+  
+  // while(checkPtr != NULL){
+    // newPtr  = newLiveList->head;
+    // if(newPtr == NULL)
+      // addListFirst(newLiveList, checkPtr->node);
+    // else{
+      // while(((Subscript*)checkPtr->node)->name != ((Subscript*)newPtr->node)->name){
+        
+        
+        // newPtr = newPtr->next;
+      // }
+    // }  
+    
+  // }
+  
+  // newPtr = newLiveList->head;
+  // while(newPtr != NULL){
+    // exprPtr = prevLiveList->head;
+    // if(exprPtr == NULL){
+      
+      
+    // }
+    
+    
+    // newPtr = newPtr->next;
+  // }
+  
+  
+  return prevLiveList;
 }
+
+
+
+void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
+  inputNode->visitFlag = 1;
+  ListElement* livePtr = liveList->head;
+  int subsName, i;
+  Expression* newExpr;
+  
+  while(livePtr != NULL){
+    subsName  = ((Subscript*)livePtr->node)->name;
+    newExpr   = createExpression(subsName, ASSIGN, subsName, 0, 0);
+    
+    if(inputNode->imdDom == inputNode->parent)
+      newExpr->id.subs = newExpr->oprdA.subs + 1;
+    else
+      newExpr->id.subs = newExpr->oprdA.subs + 2;
+
+    addListFirst(inputNode->block, newExpr);
+    livePtr   = livePtr->next;
+  }
+  
+  arrangeSSA(inputNode);
+  LinkedList* myLiveList = getLiveList(inputNode, liveList);
+  
+  for(i=0; i < inputNode->numOfChild; i++){
+    if(inputNode->children[i]->visitFlag != 1)
+      assignAllNodeSSA(inputNode->children[i], myLiveList);
+  }
+}
+
+
 
 
 

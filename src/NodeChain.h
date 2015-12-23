@@ -8,6 +8,7 @@ typedef struct Node_t Node;
 
 struct Node_t{
   int rank;
+  int visitFlag;
   LinkedList* block;
   Node* lastBrhDom;
   Node* imdDom;

@@ -3,13 +3,39 @@
 #include <stdio.h>
 
 
+/*
+ *  getCondition function return the condition subscript
+ *  Eg.
+ *    condition = x > 10
+ *    if( condition )  goto nodeX
+ *  
+ *  getCondition should return the condition expression
+ *
+ */
+
+Subscript* getCondition(Node* imdDomNode){
+  ListElement* ptrToCondition = imdDomNode->block->head;
+  
+  while(ptrToCondition->next->next != NULL){
+    ptrToCondition = ptrToCondition->next;
+  }
+  
+  return (&((Expression*)ptrToCondition->next->node)->oprdA);
+}
+
+
+/**
+ *  This function will compare the liveness list from two parent and 
+ *
+ *
+ */
 Expression* getPhiFunction(){
   Expression* phiFunction = NULL;
   
   //Argument brought in InputNode
-  //Get the condition from the imdDom
   //Get the imdDom
-  //TRAVELING TASK: Check modified Id
+  //Get the condition from the imdDom
+  //TRAVELING TASK: Check modified Id(liveliness)
   //TRAVELING TASK: Get the oprd1 & oprd2
   
   // LinkedList* idList       = getModifiedId(Node* domNode, Node* checkNode);

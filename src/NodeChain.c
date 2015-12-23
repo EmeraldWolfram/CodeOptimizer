@@ -6,6 +6,7 @@ Node* createNode(int thisRank){
   Node* newNode = malloc(sizeof(Node));
   
   newNode->rank         = thisRank;
+  newNode->visitFlag    = 0;
   newNode->block        = createLinkedList();
   newNode->parent       = NULL;
   newNode->lastBrhDom   = NULL;

@@ -73,11 +73,11 @@ struct Expression_t{
 };
 
 
-Subscript* getCondition(Node* imdDomNode);
 Expression* createExpression(int thisID, Operator oprt,        \
                             int oprdA, int oprdB, int condt);
                             
 LinkedList* getSubsList(LinkedList* expression);
 void arrangeSSA(Node* inputNode);
+LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList);
 
 #endif // ExpressionBlock_H

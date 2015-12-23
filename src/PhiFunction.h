@@ -8,7 +8,7 @@
 
 void allocPhiFunc(Node* entryNode);
 Expression* getPhiFunction();
-
+Subscript* getCondition(Node* imdDomNode);
 
 
 
