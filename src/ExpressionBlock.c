@@ -68,7 +68,7 @@ int getLargestIndex(LinkedList* exprList, Subscript* subsName){
   return ((Expression*)resultPtr->node)->id.subs;
 }
 
-/*********************************************************************
+/*
  *  arrangeSSA take in the inputNode and arrange all the expression
  *  in the Node to the correct subscript.
  *  Eg.
@@ -140,11 +140,31 @@ LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList){
     newPtr = newPtr->next;
   }
   
-  //CASCADE PREV & NEW
-  prevLiveList = newLiveList;
+  /******************************************************
+   *  Update the prevLiveList with the newLiveList
+   ******************************************************/
+  newPtr    = newLiveList->head;
+  while(newPtr != NULL){
+    checkPtr  = prevLiveList->head;
+    while(checkPtr != NULL && ((Subscript*)checkPtr->node)->name != ((Subscript*)newPtr->node)->name)
+      checkPtr = checkPtr->next;
+  
+    if(checkPtr == NULL)
+      addListLast(prevLiveList, (Subscript*)newPtr->node);
+    else{
+      ((Subscript*)checkPtr->node)->subs = ((Subscript*)newPtr->node)->subs;
+    }
+    
+    newPtr = newPtr->next;
+  }
+  
   return prevLiveList;
 }
 
+
+/*
+ *
+ **********************************************************/
 void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
   inputNode->visitFlag = 1;
   ListElement* livePtr = liveList->head;

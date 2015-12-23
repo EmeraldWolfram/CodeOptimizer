@@ -257,14 +257,57 @@ void test_getLiveList_should_return_x2_y2_when_the_expression_list_is_given(void
   
   arrangeSSA(testNode);
   
-  LinkedList* testList = getLiveList(testNode, NULL);
+  LinkedList* testList = getLiveList(testNode, createLinkedList());
 
   TEST_ASSERT_EQUAL(2, testList->length);
   TEST_ASSERT_SUBSCRIPT('x', 2, testList->head->node);
   TEST_ASSERT_SUBSCRIPT('y', 2, testList->head->next->node);
 }
 
+/**
+ *  getLiveList
+ *
+ *  prevList = w0->z0->x0
+ *
+ *  x1 = y0 + x0
+ *  y1 = z0 + x1
+ *  y2 = z0 + y1
+ *  x2 = x1 + y2
+ *
+ *  getLiveList should update the prevList and return w0->z0->x2->y2
+ *
+ *************************************************************************/
+void test_getLiveList_should_return_prevList_and_add_on_x2_y2_when_the_expression_list_is_given(void){
+  Expression* exp1 = createExpression('x', ADDITION, 'y', 'x', 0);
+  Expression* exp2 = createExpression('y', ADDITION, 'z', 'x', 0);
+  Expression* exp3 = createExpression('y', ADDITION, 'z', 'y', 0);
+  Expression* exp4 = createExpression('x', ADDITION, 'x', 'y', 0);
+  Expression* prev1 = createExpression('w', ASSIGN, 10, 0, 0);
+  Expression* prev2 = createExpression('z', ASSIGN, 11, 0, 0);
+  Expression* prev3 = createExpression('x', ASSIGN, 12, 0, 0);
+  
+  Node* testNode = createNode(1);
+  addListLast(testNode->block, exp1);
+  addListLast(testNode->block, exp2);
+  addListLast(testNode->block, exp3);
+  addListLast(testNode->block, exp4);
+  
+  arrangeSSA(testNode);
+  
+  Node* prevNode = createNode(0);
+  addListLast(prevNode->block, prev1);
+  addListLast(prevNode->block, prev2);
+  addListLast(prevNode->block, prev3);
+  
+  LinkedList* prevList = getSubsList(prevNode->block);
+  LinkedList* testList = getLiveList(testNode, prevList);
 
+  TEST_ASSERT_EQUAL(4, testList->length);
+  TEST_ASSERT_SUBSCRIPT('w', 0, testList->head->node);
+  TEST_ASSERT_SUBSCRIPT('z', 0, testList->head->next->node);
+  TEST_ASSERT_SUBSCRIPT('x', 2, testList->head->next->next->node);
+  TEST_ASSERT_SUBSCRIPT('y', 2, testList->head->next->next->next->node);
+}
 
 
 
