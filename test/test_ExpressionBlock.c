@@ -192,8 +192,77 @@ void test_arrangeSSA_with_IF_STATEMENT_and_ASSIGN(void){
   TEST_ASSERT_SUBSCRIPT('c', 0, &expr2->oprdA);
 }
 
+/**
+ *  getLargestIndex
+ *
+ *  x0 = y0 + z0
+ *  x1 = z0 + x0
+ *  y1 = z0 + x1
+ *  y2 = z0 + y1
+ *  x2 = x1 + y2
+ *
+ *  getLargestIndex(exprList, x) should return 2 as x2 is the largest in the list
+ *
+ *************************************************************************/
+void test_getgetLargestIndex_given_list_shown_above_should_return_2(void){
+  Expression* exp1 = createExpression('x', ADDITION, 'y', 'z', 0);
+  Expression* exp2 = createExpression('x', ADDITION, 'z', 'x', 0);
+  Expression* exp3 = createExpression('y', ADDITION, 'z', 'x', 0);
+  Expression* exp4 = createExpression('y', ADDITION, 'z', 'y', 0);
+  Expression* exp5 = createExpression('x', ADDITION, 'x', 'y', 0);
+  
+  Node* testNode = createNode(0);
+  addListLast(testNode->block, exp1);
+  addListLast(testNode->block, exp2);
+  addListLast(testNode->block, exp3);
+  addListLast(testNode->block, exp4);
+  addListLast(testNode->block, exp5);
+  
+  arrangeSSA(testNode);
+  Subscript* xVariable = &((Expression*)testNode->block->head->node)->id;
+  Subscript* yVariable = &((Expression*)testNode->block->head->next->next->node)->id;
+  
+  int testX = getLargestIndex(testNode->block, xVariable);
+  int testY = getLargestIndex(testNode->block, yVariable);
+  TEST_ASSERT_EQUAL(2, testX);
+  TEST_ASSERT_EQUAL(2, testY);
+  
+}
 
+/**
+ *  getLiveList
+ *
+ *  x0 = y0 + z0
+ *  x1 = z0 + x0
+ *  y1 = z0 + x1
+ *  y2 = z0 + y1
+ *  x2 = x1 + y2
+ *
+ *  should return x2->y2
+ *
+ *************************************************************************/
+void test_getLiveList_should_return_x2_y2_when_the_expression_list_is_given(void){
+  Expression* exp1 = createExpression('x', ADDITION, 'y', 'z', 0);
+  Expression* exp2 = createExpression('x', ADDITION, 'z', 'x', 0);
+  Expression* exp3 = createExpression('y', ADDITION, 'z', 'x', 0);
+  Expression* exp4 = createExpression('y', ADDITION, 'z', 'y', 0);
+  Expression* exp5 = createExpression('x', ADDITION, 'x', 'y', 0);
+  
+  Node* testNode = createNode(0);
+  addListLast(testNode->block, exp1);
+  addListLast(testNode->block, exp2);
+  addListLast(testNode->block, exp3);
+  addListLast(testNode->block, exp4);
+  addListLast(testNode->block, exp5);
+  
+  arrangeSSA(testNode);
+  
+  LinkedList* testList = getLiveList(testNode, NULL);
 
+  TEST_ASSERT_EQUAL(2, testList->length);
+  TEST_ASSERT_SUBSCRIPT('x', 2, testList->head->node);
+  TEST_ASSERT_SUBSCRIPT('y', 2, testList->head->next->node);
+}
 
 
 

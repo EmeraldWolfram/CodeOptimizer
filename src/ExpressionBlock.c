@@ -44,7 +44,31 @@ LinkedList* getSubsList(LinkedList* expression){
   
   return subsList;
 }
-/**
+
+/*
+ *  getLargestIndex
+ *  
+ *  find the largest number of the input argument subscript
+ *  in the exprList
+ *
+ */
+int getLargestIndex(LinkedList* exprList, Subscript* subsName){
+  ListElement *checkPtr, *resultPtr;
+  
+  checkPtr  = exprList->head;
+  while(checkPtr != NULL){
+    if(((Subscript*)checkPtr->node)->name == subsName->name)
+        resultPtr = checkPtr;
+    checkPtr = checkPtr->next;
+  }
+  
+  if(resultPtr == NULL)
+    return 0;
+  
+  return ((Expression*)resultPtr->node)->id.subs;
+}
+
+/*********************************************************************
  *  arrangeSSA take in the inputNode and arrange all the expression
  *  in the Node to the correct subscript.
  *  Eg.
@@ -83,56 +107,43 @@ void arrangeSSA(Node* inputNode){
   }
 }
 
+
 LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList){
   LinkedList* newLiveList = createLinkedList();
   LinkedList* checkList   = createLinkedList();
   LinkedList* expList     = inputNode->block;
   
   ListElement *newPtr, *exprPtr, *checkPtr;
+  int validFlag;
   exprPtr   = expList->head;
   
+  /***********************************************************
+   * Form newLiveList with the living variable in this block
+   ***********************************************************/
   while(exprPtr != NULL){
-    
-      if(((Expression*)exprPtr->node)->opr != IF_STATEMENT){
-        // if(((Expression*)exprPtr->node)->id is not repeated)
-          addListLast(checkList, &((Expression*)exprPtr->node)->id);
-      }
+    checkPtr = newLiveList->head;
+    while(checkPtr != NULL && ((Subscript*)checkPtr->node)->name \
+          != ((Expression*)exprPtr->node)->id.name){
+      checkPtr = checkPtr->next;
+    }
+    if(checkPtr != NULL)
       exprPtr = exprPtr->next;
+    else
+      addListLast(newLiveList, &((Expression*)exprPtr->node)->id);
+  }
+  /******************************************************
+   *  Find the correct subscript index and assign to it
+   ******************************************************/
+  newPtr = newLiveList->head;
+  while(newPtr != NULL){
+    ((Subscript*)newPtr->node)->subs = getLargestIndex(expList, (Subscript*)newPtr->node);
+    newPtr = newPtr->next;
   }
   
-  checkPtr  = checkList->head;
-  
-  // while(checkPtr != NULL){
-    // newPtr  = newLiveList->head;
-    // if(newPtr == NULL)
-      // addListFirst(newLiveList, checkPtr->node);
-    // else{
-      // while(((Subscript*)checkPtr->node)->name != ((Subscript*)newPtr->node)->name){
-        
-        
-        // newPtr = newPtr->next;
-      // }
-    // }  
-    
-  // }
-  
-  // newPtr = newLiveList->head;
-  // while(newPtr != NULL){
-    // exprPtr = prevLiveList->head;
-    // if(exprPtr == NULL){
-      
-      
-    // }
-    
-    
-    // newPtr = newPtr->next;
-  // }
-  
-  
+  //CASCADE PREV & NEW
+  prevLiveList = newLiveList;
   return prevLiveList;
 }
-
-
 
 void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
   inputNode->visitFlag = 1;
