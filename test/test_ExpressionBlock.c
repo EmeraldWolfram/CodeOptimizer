@@ -204,7 +204,7 @@ void test_arrangeSSA_with_IF_STATEMENT_and_ASSIGN(void){
  *  getLargestIndex(exprList, x) should return 2 as x2 is the largest in the list
  *
  *************************************************************************/
-void test_getgetLargestIndex_given_list_shown_above_should_return_2(void){
+void test_getLargestIndex_given_list_shown_above_should_return_2(void){
   Expression* exp1 = createExpression('x', ADDITION, 'y', 'z', 0);
   Expression* exp2 = createExpression('x', ADDITION, 'z', 'x', 0);
   Expression* exp3 = createExpression('y', ADDITION, 'z', 'x', 0);
@@ -222,10 +222,10 @@ void test_getgetLargestIndex_given_list_shown_above_should_return_2(void){
   Subscript* xVariable = &((Expression*)testNode->block->head->node)->id;
   Subscript* yVariable = &((Expression*)testNode->block->head->next->next->node)->id;
   
-  int testX = getLargestIndex(testNode->block, xVariable);
-  int testY = getLargestIndex(testNode->block, yVariable);
-  TEST_ASSERT_EQUAL(2, testX);
-  TEST_ASSERT_EQUAL(2, testY);
+  Subscript* testX = getLargestIndex(testNode->block, xVariable);
+  Subscript* testY = getLargestIndex(testNode->block, yVariable);
+  TEST_ASSERT_SUBSCRIPT('x', 2, testX);
+  TEST_ASSERT_SUBSCRIPT('y', 2, testY);
   
 }
 
@@ -338,26 +338,23 @@ void test_assignAllNodeSSA_(void){
   addListLast(nodeA->block, exp2);
   addListLast(nodeB->block, exp3);
 
-  // arrangeSSA(nodeA);
-  
-  // TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)nodeA->block->head->node)->id);
-  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)nodeA->block->head->next->node)->id);
-  
+  setLastBrhDom(&nodeA);
+  setAllImdDom(&nodeA);
   
   assignAllNodeSSA(nodeA, createLinkedList());
   ListElement* testExp = nodeA->block->head;
   
-  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->node)->id);
   TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->next->node)->id);
   TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->next->node)->oprdA);
   TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->next->node)->oprdB);
   
   testExp = nodeB->block->head;
-  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->node)->id);
-  // TEST_ASSERT_SUBSCRIPT('x', 2, &((Expression*)testExp->node)->oprdA);
-  // TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->next->node)->id);
-  // TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->next->node)->oprdA);
-  // TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->next->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT('x', 2, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT('x', 3, &((Expression*)testExp->next->node)->id);
+  TEST_ASSERT_SUBSCRIPT('x', 2, &((Expression*)testExp->next->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT('x', 2, &((Expression*)testExp->next->node)->oprdB);
 
   
 }

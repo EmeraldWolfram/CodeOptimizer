@@ -56,6 +56,7 @@ typedef enum{
   MULITPLICATION,
   DIVISION,
   ASSIGN,
+  COPY,
   IF_STATEMENT
 }Operator;
 
@@ -77,7 +78,7 @@ Expression* createExpression(int thisID, Operator oprt,        \
                             int oprdA, int oprdB, int condt);
                             
 LinkedList* getSubsList(LinkedList* expression);
-int getLargestIndex(LinkedList* exprList, Subscript* subsName);
+Subscript* getLargestIndex(LinkedList* exprList, Subscript* subsName);
 
 void arrangeSSA(Node* inputNode);
 LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList);

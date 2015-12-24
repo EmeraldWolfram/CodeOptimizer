@@ -35,6 +35,7 @@ LinkedList* getSubsList(LinkedList* expression){
     if(((Expression*)exprPtr->node)->opr != IF_STATEMENT){
       if(((Expression*)exprPtr->node)->opr != ASSIGN){
         addListLast(subsList, &((Expression*)exprPtr->node)->oprdA);
+        if(((Expression*)exprPtr->node)->opr != COPY)
         addListLast(subsList, &((Expression*)exprPtr->node)->oprdB); 
       }
       addListLast(subsList, &((Expression*)exprPtr->node)->id);
@@ -52,7 +53,7 @@ LinkedList* getSubsList(LinkedList* expression){
  *  in the exprList
  *
  */
-int getLargestIndex(LinkedList* exprList, Subscript* subsName){
+Subscript* getLargestIndex(LinkedList* exprList, Subscript* subsName){
   ListElement *checkPtr, *resultPtr;
   
   checkPtr  = exprList->head;
@@ -65,7 +66,7 @@ int getLargestIndex(LinkedList* exprList, Subscript* subsName){
   if(resultPtr == NULL)
     return 0;
   
-  return ((Expression*)resultPtr->node)->id.subs;
+  return &((Expression*)resultPtr->node)->id;
 }
 
 /*
@@ -87,9 +88,9 @@ void arrangeSSA(Node* inputNode){
   int currentRank, oprARank, oprBRank;
   
   while(exprPtr != NULL){
-    currentRank = 0;
-    oprARank = 0;
-    oprBRank = 0;
+    currentRank = ((Expression*)exprPtr->node)->id.subs;
+    oprARank = ((Expression*)exprPtr->node)->oprdA.subs;
+    oprBRank = ((Expression*)exprPtr->node)->oprdB.subs;
     
     if(((Expression*)exprPtr->node)->opr != IF_STATEMENT){
       checkPtr = checkList->head;
@@ -98,9 +99,11 @@ void arrangeSSA(Node* inputNode){
       if(((Expression*)exprPtr->node)->opr != ASSIGN){
         checkPtr = checkList->head;
         CHANGE_OPERAND_A(exprPtr, checkPtr, oprARank);
-
-        checkPtr = checkList->head;
-        CHANGE_OPERAND_B(exprPtr, checkPtr, oprBRank);
+                
+        if(((Expression*)exprPtr->node)->opr != COPY){
+          checkPtr = checkList->head;
+          CHANGE_OPERAND_B(exprPtr, checkPtr, oprBRank);
+        }
       }
     }
     exprPtr = exprPtr->next;
@@ -128,15 +131,16 @@ LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList){
     }
     if(checkPtr != NULL)
       exprPtr = exprPtr->next;
-    else
+    else{
       addListLast(newLiveList, &((Expression*)exprPtr->node)->id);
+    }
   }
   /******************************************************
    *  Find the correct subscript index and assign to it
    ******************************************************/
   newPtr = newLiveList->head;
   while(newPtr != NULL){
-    ((Subscript*)newPtr->node)->subs = getLargestIndex(expList, (Subscript*)newPtr->node);
+    newPtr->node = getLargestIndex(expList, (Subscript*)newPtr->node);
     newPtr = newPtr->next;
   }
   
@@ -152,7 +156,7 @@ LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList){
     if(checkPtr == NULL)
       addListLast(prevLiveList, (Subscript*)newPtr->node);
     else{
-      ((Subscript*)checkPtr->node)->subs = ((Subscript*)newPtr->node)->subs;
+      checkPtr->node = newPtr->node;
     }
     
     newPtr = newPtr->next;
@@ -178,27 +182,16 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
   
   while(livePtr != NULL){
     subsName  = ((Subscript*)livePtr->node)->name;
-    newExpr   = createExpression(subsName, ASSIGN, subsName, 0, 0);
-    
-    if(inputNode->imdDom == inputNode->parent){
-      newExpr->oprdA.subs = ((Subscript*)livePtr->node)->subs;
-      newExpr->id.subs    = newExpr->oprdA.subs + 1;
-    }
-    else{
-      newExpr->oprdA.subs = ((Subscript*)livePtr->node)->subs + 1;
-      newExpr->id.subs    = newExpr->oprdA.subs + 1;
-    }
+    newExpr   = createExpression(subsName, COPY, subsName, 0, 0);
+    newExpr->oprdA  = *(Subscript*)livePtr->node;
 
     addListFirst(inputNode->block, newExpr);
     livePtr   = livePtr->next;
   }
   
   arrangeSSA(inputNode);
-  // printf("%d", ((Expression*)inputNode->block->head->node)->id.subs);
   LinkedList* myLiveList = getLiveList(inputNode, liveList);
-  printf("%d\t", myLiveList->length);
-  printf("%d\n", ((Subscript*)myLiveList->head->node)->subs);
-  
+
   for(i=0; i < inputNode->numOfChild; i++){
     if(inputNode->children[i]->visitFlag != 1)
       assignAllNodeSSA(inputNode->children[i], myLiveList);
@@ -206,7 +199,14 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
 }
 
 
-
-
+//TO PRINT ELEMENT IN A LINKEDLIST
+  // ListElement* printPtr = inputNode->block->head;
+  // Subscript* printScr;
+  // printf("\n");
+  // while(printPtr != NULL){
+    // printScr   = &((Expression*)printPtr->node)->oprdA;
+    // printf("%c%d->", printScr->name, printScr->subs);
+    // printPtr = printPtr->next;
+  // }
 
 
