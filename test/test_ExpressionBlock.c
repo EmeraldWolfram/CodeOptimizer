@@ -309,7 +309,6 @@ void test_getLiveList_should_return_prevList_and_add_on_x2_y2_when_the_expressio
   TEST_ASSERT_SUBSCRIPT('y', 2, testList->head->next->next->next->node);
 }
 
-
 /**
  *  assignAllNodeSSA
  *
@@ -355,8 +354,68 @@ void test_assignAllNodeSSA_(void){
   TEST_ASSERT_SUBSCRIPT('x', 3, &((Expression*)testExp->next->node)->id);
   TEST_ASSERT_SUBSCRIPT('x', 2, &((Expression*)testExp->next->node)->oprdA);
   TEST_ASSERT_SUBSCRIPT('x', 2, &((Expression*)testExp->next->node)->oprdB);
-
-  
 }
 
 
+/**
+ *  assignAllNodeSSA
+ *
+ *  BEFORE                              AFTER
+ *
+ *    NodeA:                            NodeA:
+ *    x0 = 3                            x0 = 3;
+ *    y0 = 5                            y0 = 5;
+ *    z0 = 7                            z0 = 7
+ *    x0 = y0 + x0                      x1 = y0 + x0
+ *    goto NodeB                        goto NodeB
+ *
+ *    NodeB:                            NodeB:
+ *    z0 = y0 * x0                      z1 = z0
+ *                                      y1 = y0
+ *                                      x2 = x1
+ *                                      z2 = y1 * x2;
+ *
+ *
+ *************************************************************************/
+void test_assignAllNodeSSA_with_muliple_variable(void){
+  Expression* exp1 = createExpression('x', ASSIGN, 3, 0, 0);
+  Expression* exp2 = createExpression('y', ASSIGN, 5, 0, 0);
+  Expression* exp3 = createExpression('z', ASSIGN, 7, 0, 0);
+  Expression* exp4 = createExpression('x', ADDITION, 'y', 'x', 0);
+  Expression* exp5 = createExpression('z', MULITPLICATION, 'y', 'x', 0);
+  
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  addChild(&nodeA, &nodeB);
+  
+  addListLast(nodeA->block, exp1);
+  addListLast(nodeA->block, exp2);
+  addListLast(nodeA->block, exp3);
+  addListLast(nodeA->block, exp4);
+  addListLast(nodeB->block, exp5);
+
+  setLastBrhDom(&nodeA);
+  setAllImdDom(&nodeA);
+  
+  assignAllNodeSSA(nodeA, createLinkedList());
+  ListElement* testExp = nodeA->block->head;
+  TEST_ASSERT_SUBSCRIPT('x', 0, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT('y', 0, &((Expression*)testExp->next->node)->id);
+  TEST_ASSERT_SUBSCRIPT('z', 0, &((Expression*)testExp->next->next->node)->id);
+  Expression* testExpr = (Expression*)testExp->next->next->next->node;
+  TEST_ASSERT_SUBSCRIPT('x', 1, &testExpr->id);
+  TEST_ASSERT_SUBSCRIPT('y', 0, &testExpr->oprdA);
+  TEST_ASSERT_SUBSCRIPT('x', 0, &testExpr->oprdB);
+  
+  testExp = nodeB->block->head;
+  TEST_ASSERT_SUBSCRIPT('z', 1, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT('z', 0, &((Expression*)testExp->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT('y', 1, &((Expression*)testExp->next->node)->id);
+  TEST_ASSERT_SUBSCRIPT('y', 0, &((Expression*)testExp->next->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT('x', 2, &((Expression*)testExp->next->next->node)->id);
+  TEST_ASSERT_SUBSCRIPT('x', 1, &((Expression*)testExp->next->next->node)->oprdA);
+  testExpr = (Expression*)testExp->next->next->next->node;
+  TEST_ASSERT_SUBSCRIPT('z', 2, &testExpr->id);
+  TEST_ASSERT_SUBSCRIPT('y', 1, &testExpr->oprdA);
+  TEST_ASSERT_SUBSCRIPT('x', 2, &testExpr->oprdB);
+}
