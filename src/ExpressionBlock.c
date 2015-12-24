@@ -8,12 +8,12 @@ Expression* createExpression(int thisID, Operator oprt, int oprdA,\
   Expression* newExp = malloc(sizeof(Expression));
   
   newExp->id.name    = thisID;
-  newExp->id.subs    = 0;
+  newExp->id.index    = 0;
   newExp->opr        = oprt;
   newExp->oprdA.name = oprdA;
-  newExp->oprdA.subs = 0;
+  newExp->oprdA.index = 0;
   newExp->oprdB.name = oprdB;
-  newExp->oprdB.subs = 0;
+  newExp->oprdB.index = 0;
   newExp->condition  = condt;
 
   return newExp;            
@@ -88,9 +88,9 @@ void arrangeSSA(Node* inputNode){
   int currentRank, oprARank, oprBRank;
   
   while(exprPtr != NULL){
-    currentRank = ((Expression*)exprPtr->node)->id.subs;
-    oprARank = ((Expression*)exprPtr->node)->oprdA.subs;
-    oprBRank = ((Expression*)exprPtr->node)->oprdB.subs;
+    currentRank = ((Expression*)exprPtr->node)->id.index;
+    oprARank = ((Expression*)exprPtr->node)->oprdA.index;
+    oprBRank = ((Expression*)exprPtr->node)->oprdB.index;
     
     if(((Expression*)exprPtr->node)->opr != IF_STATEMENT){
       checkPtr = checkList->head;
@@ -205,7 +205,7 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
   // printf("\n");
   // while(printPtr != NULL){
     // printScr   = &((Expression*)printPtr->node)->oprdA;
-    // printf("%c%d->", printScr->name, printScr->subs);
+    // printf("%c%d->", printScr->name, printScr->index);
     // printPtr = printPtr->next;
   // }
 

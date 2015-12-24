@@ -20,9 +20,9 @@ void customTestAssertPhiFunction(Expression* expectedPhiFunction, Node** nodeToT
       CUSTOM_TEST_FAIL(lineNumber, "Expected id is %c but actual was %c",     \
                         expectedPhiFunction->id.name, actualPhiFunc->id.name);
                         
-    if(actualPhiFunc->id.subs != expectedPhiFunction->id.subs)
+    if(actualPhiFunc->id.index != expectedPhiFunction->id.index)
       CUSTOM_TEST_FAIL(lineNumber, "Expected ID subscript %d but actual was %d", \
-                        expectedPhiFunction->id.subs, actualPhiFunc->id.subs);
+                        expectedPhiFunction->id.index, actualPhiFunc->id.index);
                         
     if(actualPhiFunc->oprdA.name != expectedPhiFunction->oprdA.name)
       CUSTOM_TEST_FAIL(lineNumber, "Expected operand A as %c but actual was %c", \
@@ -88,8 +88,8 @@ void customTestAssertSubscript(int expectName, int expectSub, Subscript* actual,
   if(actual->name != expectName)
     CUSTOM_TEST_FAIL(lineNumber, "Expected ID %c but actual was %c", expectName, actual->name);
   
-  if(actual->subs != expectSub)
-    CUSTOM_TEST_FAIL(lineNumber, "Expected subscript no. %d was %d", expectSub, actual->subs);
+  if(actual->index != expectSub)
+    CUSTOM_TEST_FAIL(lineNumber, "Expected subscript no. %d was %d", expectSub, actual->index);
   
   
   
