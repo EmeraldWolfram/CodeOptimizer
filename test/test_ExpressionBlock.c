@@ -442,12 +442,12 @@ void test_assignAllNodeSSA_with_muliple_variable(void){
  *          if(c0) goto Node C                if(c0) goto NodeC
  *          /         \                      /                  \
  *    NodeB:          NodeC:            NodeB:                  NodeC:
- *    x = x * x       x = x + x         x1 = x0                 x5 = x0
- *           \        /                 x2 = x1 * x1            x6 = x5 + x5
+ *    x = x * x       x = x + x         x1 = x0                 x6 = x0
+ *           \        /                 x2 = x1 * x1            x7 = x6 + x6
  *            NodeD:                            \             /
  *            x = x + x                             NodeD:
- *                                                x3 = x2
- *                                                x4 = x3 + x3
+ *                                                x4 = x3         (reserved x3 for phiFunction)
+ *                                                x5 = x4 + x4
  *
  *************************************************************************/
 void test_assignAllNodeSSA_with_muliple_Node(void){
@@ -493,16 +493,16 @@ void test_assignAllNodeSSA_with_muliple_Node(void){
   TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testExp->next->node)->oprdB);
   
   testExp = nodeD->block->head;
-  TEST_ASSERT_SUBSCRIPT(x, 3, &((Expression*)testExp->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 2, &((Expression*)testExp->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->next->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 3, &((Expression*)testExp->next->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 3, &((Expression*)testExp->next->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT(x, 3, &((Expression*)testExp->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT(x, 5, &((Expression*)testExp->next->node)->id);
+  TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->next->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->next->node)->oprdB);
   
   testExp = nodeC->block->head;
-  TEST_ASSERT_SUBSCRIPT(x, 5, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT(x, 6, &((Expression*)testExp->node)->id);
   TEST_ASSERT_SUBSCRIPT(x, 0, &((Expression*)testExp->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 6, &((Expression*)testExp->next->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 5, &((Expression*)testExp->next->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 5, &((Expression*)testExp->next->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT(x, 7, &((Expression*)testExp->next->node)->id);
+  TEST_ASSERT_SUBSCRIPT(x, 6, &((Expression*)testExp->next->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT(x, 6, &((Expression*)testExp->next->node)->oprdB);
 }

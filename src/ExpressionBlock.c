@@ -192,6 +192,11 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* liveList, LinkedList* prevLis
     
     newExpr->oprdA    = *(Subscript*)prevPtr->node;
     newExpr->id.index = ((Subscript*)livePtr->node)->index + 1;
+    
+    if(inputNode->parent != inputNode->imdDom){
+      newExpr->oprdA.index ++;
+      newExpr->id.index ++;
+    }
 
     addListFirst(inputNode->block, newExpr);
     livePtr   = livePtr->next;
