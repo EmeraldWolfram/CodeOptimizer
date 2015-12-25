@@ -4,7 +4,7 @@
 #include "LinkedList.h"
 #include "ErrorObject.h"
 typedef struct Expression_t Expression;
-#include "ExpressionBlock.h"
+#include "GetList.h"
 #include "NodeChain.h"
 
 #define CHANGE_ID_SUBSCRIPT(exprPtr, checkPtr, currentRank)                   \
@@ -12,8 +12,8 @@ typedef struct Expression_t Expression;
                                                                               \
                   if(((Expression*)exprPtr->node)->id.name ==                 \
                       ((Subscript*)checkPtr->node)->name &&                   \
-                    currentRank <= ((Subscript*)checkPtr->node)->index){       \
-                    currentRank = ((Subscript*)checkPtr->node)->index + 1;     \
+                    currentRank <= ((Subscript*)checkPtr->node)->index){      \
+                    currentRank = ((Subscript*)checkPtr->node)->index + 1;    \
                   }                                                           \
                   checkPtr = checkPtr->next;                                  \
                 }                                                             \
@@ -24,8 +24,8 @@ typedef struct Expression_t Expression;
                 while(&((Expression*)exprPtr->node)->oprdA != checkPtr->node){  \
                   if(((Expression*)exprPtr->node)->oprdA.name ==                \
                     ((Subscript*)checkPtr->node)->name &&                       \
-                    oprARank < ((Subscript*)checkPtr->node)->index){             \
-                    oprARank = ((Subscript*)checkPtr->node)->index;              \
+                    oprARank < ((Subscript*)checkPtr->node)->index){            \
+                    oprARank = ((Subscript*)checkPtr->node)->index;             \
                   }                                                             \
                   checkPtr = checkPtr->next;                                    \
                 }                                                               \
@@ -36,8 +36,8 @@ typedef struct Expression_t Expression;
                 while(&((Expression*)exprPtr->node)->oprdB != checkPtr->node){  \
                   if(((Expression*)exprPtr->node)->oprdB.name ==                \
                     ((Subscript*)checkPtr->node)->name &&                       \
-                    oprBRank < ((Subscript*)checkPtr->node)->index){             \
-                    oprBRank = ((Subscript*)checkPtr->node)->index;              \
+                    oprBRank < ((Subscript*)checkPtr->node)->index){            \
+                    oprBRank = ((Subscript*)checkPtr->node)->index;             \
                   }                                                             \
                   checkPtr = checkPtr->next;                                    \
                 }                                                               \
@@ -77,10 +77,12 @@ struct Expression_t{
 Expression* createExpression(int thisID, Operator oprt,        \
                             int oprdA, int oprdB, int condt);
                             
-LinkedList* getSubsList(LinkedList* expression);
 Subscript* getLargestIndex(LinkedList* exprList, Subscript* subsName);
 
-void arrangeSSA(Node* inputNode);
+LinkedList* getSubsList(LinkedList* expression);
 LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList);
+
+void arrangeSSA(Node* inputNode);
+void assignAllNodeSSA(Node* inputNode, LinkedList* liveList, LinkedList* prevList);
 
 #endif // ExpressionBlock_H

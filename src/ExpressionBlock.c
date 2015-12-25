@@ -7,14 +7,14 @@ Expression* createExpression(int thisID, Operator oprt, int oprdA,\
                             int oprdB, int condt){
   Expression* newExp = malloc(sizeof(Expression));
   
-  newExp->id.name    = thisID;
+  newExp->id.name     = thisID;
   newExp->id.index    = 0;
-  newExp->opr        = oprt;
-  newExp->oprdA.name = oprdA;
+  newExp->opr         = oprt;
+  newExp->oprdA.name  = oprdA;
   newExp->oprdA.index = 0;
-  newExp->oprdB.name = oprdB;
+  newExp->oprdB.name  = oprdB;
   newExp->oprdB.index = 0;
-  newExp->condition  = condt;
+  newExp->condition   = condt;
 
   return newExp;            
 }
@@ -129,11 +129,13 @@ LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList){
           != ((Expression*)exprPtr->node)->id.name){
       checkPtr = checkPtr->next;
     }
-    if(checkPtr != NULL)
-      exprPtr = exprPtr->next;
-    else{
-      addListLast(newLiveList, &((Expression*)exprPtr->node)->id);
+    
+    if(checkPtr == NULL){
+      if(((Expression*)exprPtr->node)->opr != IF_STATEMENT &&   \
+        ((Expression*)exprPtr->next->node)->opr != IF_STATEMENT)
+        addListLast(newLiveList, &((Expression*)exprPtr->node)->id); 
     }
+    exprPtr = exprPtr->next;
   }
   /******************************************************
    *  Find the correct subscript index and assign to it
@@ -174,27 +176,34 @@ LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList){
  *  another group.
  *
  **********************************************************/
-void assignAllNodeSSA(Node* inputNode, LinkedList* liveList){
+void assignAllNodeSSA(Node* inputNode, LinkedList* liveList, LinkedList* prevList){
   inputNode->visitFlag = 1;
   ListElement* livePtr = liveList->head;
+  ListElement* prevPtr = prevList->head;
   int subsName, i;
   Expression* newExpr;
   
   while(livePtr != NULL){
     subsName  = ((Subscript*)livePtr->node)->name;
     newExpr   = createExpression(subsName, COPY, subsName, 0, 0);
-    newExpr->oprdA  = *(Subscript*)livePtr->node;
+    
+    while(((Subscript*)prevPtr->node)->name != subsName)
+      prevPtr = prevPtr->next;
+    
+    newExpr->oprdA    = *(Subscript*)prevPtr->node;
+    newExpr->id.index = ((Subscript*)livePtr->node)->index + 1;
 
     addListFirst(inputNode->block, newExpr);
     livePtr   = livePtr->next;
   }
   
   arrangeSSA(inputNode);
-  LinkedList* myLiveList = getLiveList(inputNode, liveList);
+  LinkedList* myLiveList  = getLiveList(inputNode, liveList);
+  LinkedList* curList     = getModifiedList(inputNode);
 
   for(i=0; i < inputNode->numOfChild; i++){
     if(inputNode->children[i]->visitFlag != 1)
-      assignAllNodeSSA(inputNode->children[i], myLiveList);
+      assignAllNodeSSA(inputNode->children[i], myLiveList, curList);
   }
 }
 

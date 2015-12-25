@@ -4,6 +4,7 @@
 #include "ErrorObject.h"
 #include "customAssertion.h"
 #include "LinkedList.h"
+#include "GetList.h"
 #include "CException.h"
 #include <stdlib.h>
 // TEST_ASSERT_NODE_DATA(char* expectExpress, int expectRank, Node* expectParent, Node* actualNode)
