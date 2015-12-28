@@ -148,6 +148,23 @@ void test_arrangeSSA_with_IF_STATEMENT_and_ASSIGN(void){
 }
 
 /**
+ *  arrangeSSA
+ *
+ *  arrangeSSA should throw ERR_NULL_NODE when NULL input node detected
+ *
+ ************************************************************************/
+void test_arrangeSSA_should_throw_ERR_NULL_NODE(void){
+  ErrorObject *err;
+  Try{
+    arrangeSSA(NULL);
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_NODE but no error thrown");
+  } Catch (err){
+    TEST_ASSERT_EQUAL(ERR_NULL_NODE, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("NULL input detected in arrangeSSA", err->errorMsg);
+  }
+}
+
+/**
  *  assignAllNodeSSA
  *
  *  BEFORE                  AFTER
@@ -314,4 +331,77 @@ void test_assignAllNodeSSA_with_muliple_Node(void){
   TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->node)->id);
   TEST_ASSERT_SUBSCRIPT(x, 0, &((Expression*)testExp->node)->oprdA);
   TEST_ASSERT_SUBSCRIPT(x, 0, &((Expression*)testExp->node)->oprdB);
+}
+
+/**
+ *  assignAllNodeSSA
+ *
+ *    NodeA:
+ *    x0 = 3
+ *    x0 = x0 + x0
+ *    goto NodeB
+ *
+ *    NodeB:
+ *    x0 = y0 * x0
+ *
+ *  As y0 is not declared anywhere, the function should throw ERR_UNDECLARE_VARIABLE
+ *
+ *************************************************************************/
+void test_assignAllNodeSSA_should_Throw_ERR_UNDECLARE_VARIABLE(void){
+  ErrorObject *err;
+  Try{
+    Expression* exp1 = createExpression(x, ASSIGN, 3, 0, 0);
+    Expression* exp2 = createExpression(x, ADDITION, x, x, 0);
+    Expression* exp3 = createExpression(x, MULTIPLICATION, y, x, 0);
+    Node* nodeA = createNode(0);
+    Node* nodeB = createNode(1);
+    addChild(&nodeA, &nodeB);
+    addListLast(nodeA->block, exp1);
+    addListLast(nodeA->block, exp2);
+    addListLast(nodeB->block, exp3);
+    setLastBrhDom(&nodeA);
+    setAllImdDom(&nodeA);
+  
+    assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
+    TEST_FAIL_MESSAGE("Expected ERR_UNDECLARE_VARIABLE but not error thrown")
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDECLARE_VARIABLE, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Subscript y not define yet!", err->errorMsg);
+  }
+}
+
+/**
+ *  assignAllNodeSSA
+ *
+ *    NodeA:
+ *    x0 = 3
+ *    x1 = x0 + x0
+ *    goto NodeB
+ *
+ *    NodeB:
+ *    y0 = x1 * x1
+ *
+ *  If LHS is undeclare, nothing should happen
+ *
+ *************************************************************************/
+void test_assignAllNodeSSA_should_not_change_thing_in_NodeB(void){
+  Expression* exp1 = createExpression(x, ASSIGN, 3, 0, 0);
+  Expression* exp2 = createExpression(x, ADDITION, x, x, 0);
+  Expression* exp3 = createExpression(y, MULTIPLICATION, x, x, 0);
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  addChild(&nodeA, &nodeB);
+  addListLast(nodeA->block, exp1);
+  addListLast(nodeA->block, exp2);
+  addListLast(nodeB->block, exp3);
+  setLastBrhDom(&nodeA);
+  setAllImdDom(&nodeA);
+  
+  assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
+  
+  LinkedList* testList = nodeB->block;
+  ListElement* testPtr = testList->head;
+  TEST_ASSERT_SUBSCRIPT(y, 0, &((Expression*)testPtr->node)->id);
+  TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testPtr->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testPtr->node)->oprdB);
 }

@@ -31,6 +31,9 @@ Expression* createExpression(int thisID, Operator oprt, int oprdA,\
  *
  ********************************************************************/
 void arrangeSSA(Node* inputNode){
+  if(inputNode == NULL)
+    ThrowError(ERR_NULL_NODE, "NULL input detected in arrangeSSA");
+  
   LinkedList* exprList  = inputNode->block;
   LinkedList* checkList = getSubsList(inputNode->block);
   ListElement* exprPtr  = exprList->head;
@@ -73,8 +76,8 @@ void arrangeSSA(Node* inputNode){
 void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevList){
   inputNode->visitFlag  = 1;
   arrangeSSA(inputNode);
-  LinkedList* lhsList   = getModifiedList(inputNode);
   LinkedList* liveList  = getLiveList(inputNode);
+  LinkedList* lhsList   = getModifiedList(inputNode);
   if(inputNode->rank == 0){
     liveList  = createLinkedList();
     lhsList  = createLinkedList();
@@ -97,7 +100,7 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevLis
       if(prevPtr->next != NULL)
         prevPtr = prevPtr->next;
       else
-        ThrowError(UNDECLARE_VARIABLE, "Subscript %c not define yet!", subsName);
+        ThrowError(ERR_UNDECLARE_VARIABLE, "Subscript %c not define yet!", subsName);
     }
     
     ((Subscript*)livePtr->node)->index = ((Subscript*)prevPtr->node)->index;
@@ -114,14 +117,12 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevLis
     subsName  = ((Subscript*)livePtr->node)->name;
     
     updtPtr  = updtList->head;
-    while(((Subscript*)updtPtr->node)->name != subsName){
-      if(updtPtr->next != NULL)
+    while(updtPtr != NULL && ((Subscript*)updtPtr->node)->name != subsName){
         updtPtr = updtPtr->next;
-      else
-        ThrowError(UNDECLARE_VARIABLE, "Undefine referrence to subscript %c", subsName);
     }
+    if(updtPtr != NULL)
+      ((Subscript*)livePtr->node)->index = ((Subscript*)updtPtr->node)->index + 1;
     
-    ((Subscript*)livePtr->node)->index = ((Subscript*)updtPtr->node)->index + 1;
     if(inputNode->parent != inputNode->imdDom){
       ((Subscript*)livePtr->node)->index++;
     }
