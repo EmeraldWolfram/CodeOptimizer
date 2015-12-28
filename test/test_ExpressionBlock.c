@@ -161,10 +161,10 @@ void test_arrangeSSA_with_IF_STATEMENT_and_ASSIGN(void){
  *    x0 = x0 * x0          x2 = x1 * x1;
  *
  *************************************************************************/
-void test_assignAllNodeSSA_(void){
+void test_assignAllNodeSSA_with_only_x(void){
   Expression* exp1 = createExpression(x, ASSIGN, 3, 0, 0);
   Expression* exp2 = createExpression(x, ADDITION, x, x, 0);
-  Expression* exp3 = createExpression(x, MULITPLICATION, x, x, 0);
+  Expression* exp3 = createExpression(x, MULTIPLICATION, x, x, 0);
   
   Node* nodeA = createNode(0);
   Node* nodeB = createNode(1);
@@ -213,7 +213,7 @@ void test_assignAllNodeSSA_with_muliple_variable(void){
   Expression* exp2 = createExpression(y, ASSIGN, 5, 0, 0);
   Expression* exp3 = createExpression(z, ASSIGN, 7, 0, 0);
   Expression* exp4 = createExpression(x, ADDITION, y, x, 0);
-  Expression* exp5 = createExpression(z, MULITPLICATION, y, x, 0);
+  Expression* exp5 = createExpression(z, MULTIPLICATION, y, x, 0);
   
   Node* nodeA = createNode(0);
   Node* nodeB = createNode(1);
@@ -273,7 +273,7 @@ void test_assignAllNodeSSA_with_muliple_Node(void){
   Expression* exp1 = createExpression(x, ASSIGN, 4, 0, 0);
   Expression* exp2 = createExpression(c, NOT_EQUAL_TO, x, x, 0);
   Expression* exp3 = createExpression(0, IF_STATEMENT, c, (int)&nodeC, 0);
-  Expression* exp4 = createExpression(x, MULITPLICATION, x, x, 0);
+  Expression* exp4 = createExpression(x, MULTIPLICATION, x, x, 0);
   Expression* exp5 = createExpression(x, ADDITION, x, x, 0);
   Expression* exp6 = createExpression(x, ADDITION, x, x, 0);
   

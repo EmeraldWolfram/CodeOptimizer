@@ -250,3 +250,30 @@ void test_getLiveList_given_Node_should_return_a_LinkedList_with_x_and_y(void){
   TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);
   TEST_ASSERT_SUBSCRIPT(y, 0, testList->head->next->node);  
 }
+
+/**
+ *  getLatestList
+ *
+ *  NodeA:
+ *  x = 3         x0 = 3
+ *  x = y + x     x1 = y0 + x0
+ *  x = x * x     x2 = x1 * z0
+ *
+ *  return x2
+ *************************************************************************************/
+void test_getLatestList_given_NodeA_above_should_return_x2(void){
+  Node* nodeA = createNode(0);
+  Expression* exp1 = createExpression(x, ASSIGN, 3, 0, 0);
+  Expression* exp2 = createExpression(x, ADDITION, y, x, 0);
+  Expression* exp3 = createExpression(x, MULTIPLICATION, x, z, 0);
+  
+  addListLast(nodeA->block, exp1);
+  addListLast(nodeA->block, exp2);
+  addListLast(nodeA->block, exp3);
+
+  arrangeSSA(nodeA);
+  
+  LinkedList* testList = getLatestList(nodeA);
+  TEST_ASSERT_EQUAL(1, testList->length);
+  TEST_ASSERT_SUBSCRIPT(x, 2, testList->head->node);  
+}
