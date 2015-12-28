@@ -1,6 +1,7 @@
 #include "unity.h"
 #include "PhiFunction.h"
 #include "ExpressionBlock.h"
+#include "GetList.h"
 #include "NodeChain.h"
 #include "ErrorObject.h"
 #include "customAssertion.h"

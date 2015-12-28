@@ -4,6 +4,7 @@
 #include "LinkedList.h"
 #include "ErrorObject.h"
 typedef struct Expression_t Expression;
+typedef struct Subscript_t Subscript;
 #include "GetList.h"
 #include "NodeChain.h"
 
@@ -60,10 +61,10 @@ typedef enum{
   IF_STATEMENT
 }Operator;
 
-typedef struct{
+struct Subscript_t{
   int name;
   int index;
-}Subscript;
+};
 
 struct Expression_t{
   Subscript id;
@@ -76,11 +77,6 @@ struct Expression_t{
 
 Expression* createExpression(int thisID, Operator oprt,        \
                             int oprdA, int oprdB, int condt);
-                            
-Subscript* getLargestIndex(LinkedList* exprList, Subscript* subsName);
-
-LinkedList* getSubsList(LinkedList* expression);
-LinkedList* getLiveList(Node* inputNode, LinkedList* prevLiveList);
 
 void arrangeSSA(Node* inputNode);
 void assignAllNodeSSA(Node* inputNode, LinkedList* liveList, LinkedList* prevList);
