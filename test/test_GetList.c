@@ -2,9 +2,10 @@
 #include "GetList.h"
 #include "ExpressionBlock.h"
 #include "LinkedList.h"
-#include "ErrorObject.h"
 #include "customAssertion.h"
 #include "NodeChain.h"
+#include "ErrorObject.h"
+#include "CException.h"
 #include <stdlib.h>
 
 int w = 119;
@@ -78,6 +79,23 @@ void test_getSubsList_should_arrange_the_subscript_list(void){
   TEST_ASSERT_EQUAL_PTR(&exp3->oprdB, testPtr->next->node);
   TEST_ASSERT_EQUAL_PTR(&exp3->id,    testPtr->next->next->node);
 }
+/**
+ *  getSubsList
+ *
+ *  when getSubsList receive NULL input
+ *  ERR_NULL_LIST shall be thrown
+ *
+ *****************************************************************************/
+void test_getSubsList_should_Throw_ERR_NULL_LIST(void){
+  ErrorObject* err;
+  Try{
+    LinkedList* testList = getSubsList(NULL);
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_LIST to be thrown, but nothing happen");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_NULL_LIST, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Input LinkedList to function getSubsList is NULL", err->errorMsg);
+  }
+}
 
 /**
  *  getLargestIndex
@@ -116,6 +134,44 @@ void test_getLargestIndex_given_list_shown_above_should_return_2(void){
 }
 
 /**
+ *  getLargestIndex
+ *
+ *  when getLargestIndex receive NULL LinkedList
+ *  ERR_NULL_LIST shall be thrown
+ *
+ *****************************************************************************/
+void test_getLargestIndex_should_Throw_ERR_NULL_LIST(void){
+  ErrorObject* err;
+  Try{
+    Subscript* emptySubs;
+    Subscript* testList = getLargestIndex(NULL, emptySubs);
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_LIST to be thrown, but nothing happen");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_NULL_LIST, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Input LinkedList to function getLargestIndex is NULL", err->errorMsg);
+  }
+}
+
+/**
+ *  getLargestIndex
+ *
+ *  when getLargestIndex receive NULL Subscript
+ *  ERR_NULL_SUBSCRIPT shall be thrown
+ *
+ *****************************************************************************/
+void test_getLargestIndex_should_Throw_ERR_NULL_SUBSCRIPT(void){
+  ErrorObject* err;
+  Try{
+    LinkedList* emptyList = createLinkedList();
+    Subscript* testList   = getLargestIndex(emptyList, NULL);
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_SUBSCRIPT to be thrown, but nothing happen");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_NULL_SUBSCRIPT, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Input Subscript to function getLargestIndex is NULL", err->errorMsg);
+  }
+}
+
+/**
  * getModifiedList
  *
  *  x0 = y0 + z0
@@ -148,6 +204,24 @@ void test_getModifiedList_should_return_x2_y2_when_the_expression_list_is_given(
   TEST_ASSERT_EQUAL(2, testList->length);
   TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);
   TEST_ASSERT_SUBSCRIPT(y, 1, testList->head->next->node);
+}
+
+/**
+ *  getModifiedList
+ *
+ *  when getModifiedList receive NULL LinkedList
+ *  ERR_NULL_NODE shall be thrown
+ *
+ *****************************************************************************/
+void test_getModifiedList_should_Throw_ERR_NULL_NODE(void){
+  ErrorObject* err;
+  Try{
+    LinkedList* testList = getModifiedList(NULL);
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_NODE to be thrown, but nothing happen");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_NULL_NODE, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Input Node to function getModifiedList is NULL", err->errorMsg);
+  }
 }
 
 /**
@@ -220,6 +294,42 @@ void test_updateList_should_return_prevList_and_add_on_x2_y2_when_the_expression
 }
 
 /**
+ *  updateList
+ *
+ *  when updateList receive NULL LinkedList
+ *  ERR_NULL_NODE shall be thrown
+ *
+ *****************************************************************************/
+void test_updateList_should_Throw_ERR_NULL_NODE(void){
+  ErrorObject* err;
+  Try{
+    updateList(NULL, createLinkedList());
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_NODE to be thrown, but nothing happen");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_NULL_NODE, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Input Node to function updateList is NULL", err->errorMsg);
+  }
+}
+
+/**
+ *  updateList
+ *
+ *  when updateList receive NULL LinkedList
+ *  ERR_NULL_LIST shall be thrown
+ *
+ *****************************************************************************/
+void test_updateList_should_Throw_ERR_NULL_LIST(void){
+  ErrorObject* err;
+  Try{
+    updateList(createNode(0), NULL);
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_LIST to be thrown, but nothing happen");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_NULL_LIST, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Input LinkedList to function updateList is NULL", err->errorMsg);
+  }
+}
+
+/**
  *  getLiveList(inputNode)
  *
  *  given input NodeA:  x = 0
@@ -252,6 +362,24 @@ void test_getLiveList_given_Node_should_return_a_LinkedList_with_x_and_y(void){
 }
 
 /**
+ *  getLiveList
+ *
+ *  when getLiveList receive NULL LinkedList
+ *  ERR_NULL_NODE shall be thrown
+ *
+ *****************************************************************************/
+void test_getLiveList_should_Throw_ERR_NULL_NODE(void){
+  ErrorObject* err;
+  Try{
+    LinkedList* testList = getLiveList(NULL);
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_NODE to be thrown, but nothing happen");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_NULL_NODE, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Input Node to function getLiveList is NULL", err->errorMsg);
+  }
+}
+
+/**
  *  getLatestList
  *
  *  NodeA:
@@ -276,4 +404,22 @@ void test_getLatestList_given_NodeA_above_should_return_x2(void){
   LinkedList* testList = getLatestList(nodeA);
   TEST_ASSERT_EQUAL(1, testList->length);
   TEST_ASSERT_SUBSCRIPT(x, 2, testList->head->node);  
+}
+
+/**
+ *  getLatestList
+ *
+ *  when getLatestList receive NULL LinkedList
+ *  ERR_NULL_NODE shall be thrown
+ *
+ *****************************************************************************/
+void test_getLatestList_should_Throw_ERR_NULL_NODE(void){
+  ErrorObject* err;
+  Try{
+    LinkedList* testList = getLatestList(NULL);
+    TEST_FAIL_MESSAGE("Expected ERR_NULL_NODE to be thrown, but nothing happen");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_NULL_NODE, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Input Node to function getLatestList is NULL", err->errorMsg);
+  }
 }

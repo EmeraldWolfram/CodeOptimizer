@@ -195,7 +195,7 @@ LinkedList* getLiveList(Node *inputNode){
  ***********************************************************************/
 LinkedList* getLatestList(Node* inputNode){
   if(inputNode == NULL)
-    ThrowError(ERR_NULL_NODE, "Input Node to function getModifiedList is NULL");
+    ThrowError(ERR_NULL_NODE, "Input Node to function getLatestList is NULL");
   
   LinkedList* modifyList  = getModifiedList(inputNode);
   ListElement*  newPtr = modifyList->head;
