@@ -5,7 +5,8 @@ typedef enum{
   ERR_NULL_ELEMENT,
   ERR_NULL_LIST,
   ERR_EMPTY_LIST,
-  ERR_NULL_NODE
+  ERR_NULL_NODE,
+  ERR_NULL_SUBSCRIPT
 } ErrorCode;
 
 

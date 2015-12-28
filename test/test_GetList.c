@@ -153,6 +153,30 @@ void test_getModifiedList_should_return_x2_y2_when_the_expression_list_is_given(
 /**
  *  updateList
  *
+ *  empty prevList
+ *
+ *  x1 = y0 + x0
+ *
+ *  updateList should update the prevList to x1
+ *
+ *************************************************************************/
+void test_updateList_to_check_if_empty_LinkedList_can_be_entered(void){
+  Expression* exp1 = createExpression(x, ADDITION, y, x, 0);
+  Node* testNode = createNode(1);
+  addListLast(testNode->block, exp1);
+  
+  LinkedList* testList = createLinkedList();
+  arrangeSSA(testNode);
+  updateList(testNode, testList);
+  
+  TEST_ASSERT_EQUAL(1, testList->length);
+  TEST_ASSERT_SUBSCRIPT(x, 1, testList->head->node);
+}
+
+
+/**
+ *  updateList
+ *
  *  prevList = w0->z0->x0
  *
  *  x1 = y0 + x0
@@ -163,7 +187,7 @@ void test_getModifiedList_should_return_x2_y2_when_the_expression_list_is_given(
  *  updateList should update the prevList to w0->z0->x2->y2
  *
  *************************************************************************/
-void test_getLiveList_should_return_prevList_and_add_on_x2_y2_when_the_expression_list_is_given(void){
+void test_updateList_should_return_prevList_and_add_on_x2_y2_when_the_expression_list_is_given(void){
   Expression* exp1 = createExpression(x, ADDITION, y, x, 0);
   Expression* exp2 = createExpression(y, ADDITION, z, x, 0);
   Expression* exp3 = createExpression(y, ADDITION, z, y, 0);
@@ -193,4 +217,36 @@ void test_getLiveList_should_return_prevList_and_add_on_x2_y2_when_the_expressio
   TEST_ASSERT_SUBSCRIPT(z, 0, prevList->head->next->node);
   TEST_ASSERT_SUBSCRIPT(x, 2, prevList->head->next->next->node);
   TEST_ASSERT_SUBSCRIPT(y, 2, prevList->head->next->next->next->node);
+}
+
+/**
+ *  getLiveList(inputNode)
+ *
+ *  given input NodeA:  x = 0
+ *                      y = 1
+ *                      x = x + y
+ *                      c = x > y
+ *                      if(c) goto &NodeC
+ *
+ *  getLiveList should return x->y
+ ************************************************************************************/
+void test_getLiveList_given_Node_should_return_a_LinkedList_with_x_and_y(void){
+  Node* nodeA = createNode(0);
+  Node* nodeC = createNode(1);
+  Expression* exp1 = createExpression(x, ASSIGN, 0, 0, 0);
+  Expression* exp2 = createExpression(y, ASSIGN, 1, 0, 0);
+  Expression* exp3 = createExpression(x, ADDITION, x, y, 0);
+  Expression* exp4 = createExpression(c, GREATER_THAN, x, y, 0);
+  Expression* exp5 = createExpression(c, IF_STATEMENT, x, (int)&nodeC, 0);
+
+  addListLast(nodeA->block, exp1);
+  addListLast(nodeA->block, exp2);
+  addListLast(nodeA->block, exp3);
+  addListLast(nodeA->block, exp4);
+  addListLast(nodeA->block, exp5);
+  
+  LinkedList* testList = getLiveList(nodeA);
+  TEST_ASSERT_EQUAL(2, testList->length);
+  TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);
+  TEST_ASSERT_SUBSCRIPT(y, 0, testList->head->next->node);  
 }
