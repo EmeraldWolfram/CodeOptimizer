@@ -5,6 +5,7 @@
 #include "ErrorObject.h"
 #include "customAssertion.h"
 #include "NodeChain.h"
+#include "CException.h"
 #include <stdlib.h>
 
 
@@ -157,8 +158,7 @@ void test_arrangeSSA_with_IF_STATEMENT_and_ASSIGN(void){
  *    goto NodeB            goto NodeB
  *
  *    NodeB:                NodeB:
- *    x0 = x0 * x0          x2 = x1
- *                          x3 = x2 * x2;
+ *    x0 = x0 * x0          x2 = x1 * x1;
  *
  *************************************************************************/
 void test_assignAllNodeSSA_(void){
@@ -188,9 +188,7 @@ void test_assignAllNodeSSA_(void){
   testExp = nodeB->block->head;
   TEST_ASSERT_SUBSCRIPT(x, 2, &((Expression*)testExp->node)->id);
   TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testExp->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 3, &((Expression*)testExp->next->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 2, &((Expression*)testExp->next->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 2, &((Expression*)testExp->next->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testExp->node)->oprdB);
 }
 
 
@@ -207,10 +205,7 @@ void test_assignAllNodeSSA_(void){
  *    goto NodeB                        goto NodeB
  *
  *    NodeB:                            NodeB:
- *    z0 = y0 * x0                      z1 = z0
- *                                      y1 = y0
- *                                      x2 = x1
- *                                      z2 = y1 * x2;
+ *    z0 = y0 * x0                      z1 = y0 * x1;
  *
  *************************************************************************/
 void test_assignAllNodeSSA_with_muliple_variable(void){
@@ -232,8 +227,9 @@ void test_assignAllNodeSSA_with_muliple_variable(void){
 
   setLastBrhDom(&nodeA);
   setAllImdDom(&nodeA);
-  
+
   assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
+
   ListElement* testExp = nodeA->block->head;
   TEST_ASSERT_SUBSCRIPT(x, 0, &((Expression*)testExp->node)->id);
   TEST_ASSERT_SUBSCRIPT(y, 0, &((Expression*)testExp->next->node)->id);
@@ -245,15 +241,8 @@ void test_assignAllNodeSSA_with_muliple_variable(void){
   
   testExp = nodeB->block->head;
   TEST_ASSERT_SUBSCRIPT(z, 1, &((Expression*)testExp->node)->id);
-  TEST_ASSERT_SUBSCRIPT(z, 0, &((Expression*)testExp->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(y, 1, &((Expression*)testExp->next->node)->id);
-  TEST_ASSERT_SUBSCRIPT(y, 0, &((Expression*)testExp->next->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 2, &((Expression*)testExp->next->next->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testExp->next->next->node)->oprdA);
-  testExpr = (Expression*)testExp->next->next->next->node;
-  TEST_ASSERT_SUBSCRIPT(z, 2, &testExpr->id);
-  TEST_ASSERT_SUBSCRIPT(y, 1, &testExpr->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 2, &testExpr->oprdB);
+  TEST_ASSERT_SUBSCRIPT(y, 0, &((Expression*)testExp->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testExp->node)->oprdB);
 }
 
 
@@ -268,12 +257,12 @@ void test_assignAllNodeSSA_with_muliple_variable(void){
  *          if(c0) goto Node C                if(c0) goto NodeC
  *          /         \                      /                  \
  *    NodeB:          NodeC:            NodeB:                  NodeC:
- *    x = x * x       x = x + x         x1 = x0                 x6 = x0
- *           \        /                 x2 = x1 * x1            x7 = x6 + x6
- *            NodeD:                            \             /
- *            x = x + x                             NodeD:
- *                                                x4 = x3         (reserved x3 for phiFunction)
- *                                                x5 = x4 + x4
+ *    x = x * x       x = x + x         x1 = x0 * x0            x4 = x0 + x0
+ *           \        /                        \             /     
+ *            NodeD:                              NodeD:
+ *            x = x + x                           x3 = x2 + x2
+ *                                              (reserved x2 for phiFunction)
+
  *
  *************************************************************************/
 void test_assignAllNodeSSA_with_muliple_Node(void){
@@ -314,21 +303,15 @@ void test_assignAllNodeSSA_with_muliple_Node(void){
   testExp = nodeB->block->head;
   TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testExp->node)->id);
   TEST_ASSERT_SUBSCRIPT(x, 0, &((Expression*)testExp->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 2, &((Expression*)testExp->next->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testExp->next->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 1, &((Expression*)testExp->next->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT(x, 0, &((Expression*)testExp->node)->oprdB);
   
   testExp = nodeD->block->head;
-  TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 3, &((Expression*)testExp->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 5, &((Expression*)testExp->next->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->next->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->next->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT(x, 3, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT(x, 2, &((Expression*)testExp->node)->oprdA);
+  TEST_ASSERT_SUBSCRIPT(x, 2, &((Expression*)testExp->node)->oprdB);
   
   testExp = nodeC->block->head;
-  TEST_ASSERT_SUBSCRIPT(x, 6, &((Expression*)testExp->node)->id);
+  TEST_ASSERT_SUBSCRIPT(x, 4, &((Expression*)testExp->node)->id);
   TEST_ASSERT_SUBSCRIPT(x, 0, &((Expression*)testExp->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 7, &((Expression*)testExp->next->node)->id);
-  TEST_ASSERT_SUBSCRIPT(x, 6, &((Expression*)testExp->next->node)->oprdA);
-  TEST_ASSERT_SUBSCRIPT(x, 6, &((Expression*)testExp->next->node)->oprdB);
+  TEST_ASSERT_SUBSCRIPT(x, 0, &((Expression*)testExp->node)->oprdB);
 }

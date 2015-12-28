@@ -70,41 +70,61 @@ void arrangeSSA(Node* inputNode){
  *  another group.
  *
  **********************************************************/
-void assignAllNodeSSA(Node* inputNode, LinkedList* liveList, LinkedList* prevList){
-  inputNode->visitFlag = 1;
-  ListElement* livePtr = liveList->head;
-  ListElement* prevPtr = prevList->head;
-  int subsName, i;
-  Expression* newExpr;
+// void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevList){
+  // inputNode->visitFlag  = 1;
+  // LinkedList* liveList  = getLiveList(inputNode);
+  // if(inputNode->rank == 0)
+    // liveList  = createLinkedList();
+  // ListElement* updtPtr  = updtList->head;
+  // ListElement* prevPtr  = prevList->head;
+  // ListElement* livePtr  = liveList->head;
   
-  while(livePtr != NULL){
-    subsName  = ((Subscript*)livePtr->node)->name;
-    newExpr   = createExpression(subsName, COPY, subsName, 0, 0);
-    
-    while(((Subscript*)prevPtr->node)->name != subsName)
-      prevPtr = prevPtr->next;
-    
-    newExpr->oprdA    = *(Subscript*)prevPtr->node;
-    newExpr->id.index = ((Subscript*)livePtr->node)->index + 1;
-    
-    if(inputNode->parent != inputNode->imdDom){
-      newExpr->oprdA.index ++;
-      newExpr->id.index ++;
-    }
-
-    addListFirst(inputNode->block, newExpr);
-    livePtr   = livePtr->next;
-  }
+  // int subsName, i;
+  // Expression* newExpr;
   
-  arrangeSSA(inputNode);
-  updateList(inputNode, liveList);
-  LinkedList* curList     = getModifiedList(inputNode);
+  
+  // while(livePtr != NULL){
+    // subsName  = ((Subscript*)livePtr->node)->name;
+    // newExpr   = createExpression(subsName, COPY, subsName, 0, 0);
+    
+    // prevPtr = prevList->head;
+    // while(((Subscript*)prevPtr->node)->name != subsName){
+      // if(prevPtr->next != NULL)
+        // prevPtr = prevPtr->next;
+      // else
+        // ThrowError(UNDECLARE_VARIABLE, "Subscript %c not define yet!", subsName);
+    // }
+    
+    // updtPtr  = updtList->head;
+    // while(((Subscript*)updtPtr->node)->name != subsName){
+      // if(updtPtr->next != NULL)
+        // updtPtr = updtPtr->next;
+      // else
+        // ThrowError(UNDECLARE_VARIABLE, "Undefine referrence to subscript %c", subsName);
+    // }
+    
+    // newExpr->oprdA    = *(Subscript*)prevPtr->node;
+    // newExpr->id.index = ((Subscript*)updtPtr->node)->index + 1;
+    
+    // if(inputNode->parent != inputNode->imdDom){
+      // newExpr->oprdA.index ++;
+      // newExpr->id.index ++;
+    // }
 
-  for(i=0; i < inputNode->numOfChild; i++){
-    if(inputNode->children[i]->visitFlag != 1)
-      assignAllNodeSSA(inputNode->children[i], liveList, curList);
-  }
-}
+    // addListFirst(inputNode->block, newExpr);
+    // livePtr = livePtr->next;
+  // }
+
+  // arrangeSSA(inputNode);
+  // updateList(inputNode, updtList);
+  // LinkedList* curList = getModifiedList(inputNode);
+
+  // for(i=0; i < inputNode->numOfChild; i++){
+    // printf("\nEntry\n");
+    // if(inputNode->children[i]->visitFlag != 1)
+      // assignAllNodeSSA(inputNode->children[i], updtList, curList);
+  // }
+// }
 
 
 //TO PRINT ELEMENT IN A LINKEDLIST
@@ -117,4 +137,65 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* liveList, LinkedList* prevLis
     // printPtr = printPtr->next;
   // }
 
+void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevList){
+  inputNode->visitFlag  = 1;
+  arrangeSSA(inputNode);
+  LinkedList* rhsList   = getModifiedList(inputNode);
+  LinkedList* liveList  = getLiveList(inputNode);
+  if(inputNode->rank == 0){
+    liveList  = createLinkedList();
+    rhsList  = createLinkedList();
+  }
+  ListElement* updtPtr  = updtList->head;
+  ListElement* prevPtr  = prevList->head;
+  ListElement* livePtr  = liveList->head;
+  
+  int subsName, i;
+  Expression* newExpr;
+  
+  while(livePtr != NULL){
+    subsName  = ((Subscript*)livePtr->node)->name;
+    
+    prevPtr = prevList->head;
+    while(((Subscript*)prevPtr->node)->name != subsName){
+      if(prevPtr->next != NULL)
+        prevPtr = prevPtr->next;
+      else
+        ThrowError(UNDECLARE_VARIABLE, "Subscript %c not define yet!", subsName);
+    }
+    
+    ((Subscript*)livePtr->node)->index = ((Subscript*)prevPtr->node)->index;
+    if(inputNode->parent != inputNode->imdDom)
+      ((Subscript*)livePtr->node)->index++;
+    
+    livePtr = livePtr->next;
+  }
+  
+  livePtr  = rhsList->head;
+  while(livePtr != NULL){
+    subsName  = ((Subscript*)livePtr->node)->name;
+    
+    updtPtr  = updtList->head;
+    while(((Subscript*)updtPtr->node)->name != subsName){
+      if(updtPtr->next != NULL)
+        updtPtr = updtPtr->next;
+      else
+        ThrowError(UNDECLARE_VARIABLE, "Undefine referrence to subscript %c", subsName);
+    }
+    
+    ((Subscript*)livePtr->node)->index = ((Subscript*)updtPtr->node)->index + 1;
+    if(inputNode->parent != inputNode->imdDom)
+      ((Subscript*)livePtr->node)->index++;
+    
+    livePtr = livePtr->next;
+  }
+  
+  arrangeSSA(inputNode);
+  updateList(inputNode, updtList);
+  LinkedList* curList = getLatestList(inputNode);
 
+  for(i=0; i < inputNode->numOfChild; i++){
+    if(inputNode->children[i]->visitFlag != 1)
+      assignAllNodeSSA(inputNode->children[i], updtList, curList);
+  }
+}

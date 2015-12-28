@@ -124,7 +124,7 @@ void test_getLargestIndex_given_list_shown_above_should_return_2(void){
  *  y2 = z0 + y1
  *  x2 = x1 + y2
  *
- *  should return x2->y2
+ *  should return x0->y1
  *
  *************************************************************************/
 void test_getModifiedList_should_return_x2_y2_when_the_expression_list_is_given(void){
@@ -146,8 +146,8 @@ void test_getModifiedList_should_return_x2_y2_when_the_expression_list_is_given(
   LinkedList* testList = getModifiedList(testNode);
 
   TEST_ASSERT_EQUAL(2, testList->length);
-  TEST_ASSERT_SUBSCRIPT(x, 2, testList->head->node);
-  TEST_ASSERT_SUBSCRIPT(y, 2, testList->head->next->node);
+  TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);
+  TEST_ASSERT_SUBSCRIPT(y, 1, testList->head->next->node);
 }
 
 /**

@@ -100,14 +100,6 @@ LinkedList* getModifiedList(Node* inputNode){
     }
     exprPtr = exprPtr->next;
   }
-  /******************************************************
-   *  Find the correct index index and assign to it
-   ******************************************************/
-  newPtr = modifyList->head;
-  while(newPtr != NULL){
-    newPtr->node = getLargestIndex(expList, (Subscript*)newPtr->node);
-    newPtr = newPtr->next;
-  }
   
   return modifyList;
 }
@@ -128,7 +120,7 @@ void updateList(Node* inputNode, LinkedList* prevList){
   
   ListElement *newPtr, *checkPtr;
 
-  LinkedList* modifiedList = getModifiedList(inputNode);
+  LinkedList* modifiedList = getLatestList(inputNode);
   /******************************************************
    *  Update the prevList with the modifiedList
    ******************************************************/
@@ -184,21 +176,36 @@ LinkedList* getLiveList(Node *inputNode){
   while(livePtr != NULL){
     checkPtr = filterList->head;
     while(checkPtr != NULL && ((Subscript*)livePtr->node)->name \
-                         !=  ((Subscript*)checkPtr->node)->name){
+                        !=  ((Subscript*)checkPtr->node)->name){
       checkPtr = checkPtr->next;
     }
-    
     if(checkPtr == NULL)
       addListLast(filterList, livePtr->node);
-    
     livePtr = livePtr->next;
   }
   
   return filterList;
 }
 
-
-
+/*
+ *  getLatestList(Node* inputNode)
+ *
+ *  This function return the latest modified value
+ *
+ ***********************************************************************/
+LinkedList* getLatestList(Node* inputNode){
+  if(inputNode == NULL)
+    ThrowError(ERR_NULL_NODE, "Input Node to function getModifiedList is NULL");
+  
+  LinkedList* modifyList  = getModifiedList(inputNode);
+  ListElement*  newPtr = modifyList->head;
+  while(newPtr != NULL){
+    newPtr->node = getLargestIndex(inputNode->block, (Subscript*)newPtr->node);
+    newPtr = newPtr->next;
+  }
+  
+  return modifyList;
+}
 
 
 
