@@ -12,14 +12,17 @@
  *  getCondition should return the condition expression
  *
  */
-Subscript* getCondition(Node* imdDomNode){
+Subscript getCondition(Node* imdDomNode){
   ListElement* ptrToCondition = imdDomNode->block->head;
   
   while(ptrToCondition->next->next != NULL){
     ptrToCondition = ptrToCondition->next;
   }
   
-  return (&((Expression*)ptrToCondition->next->node)->oprdA);
+  if(((Expression*)ptrToCondition->next->node)->opr != IF_STATEMENT)
+    ThrowError(ERR_INVALID_BRANCH, "This operator does not branch");
+  
+  return ((Expression*)ptrToCondition->next->node)->oprdA;
 }
 
 
@@ -37,24 +40,24 @@ Expression* getPhiFunction(LinkedList* listA, LinkedList* listB, Subscript* subs
   ptrB = listB->head;
   
   int subsName = subs->name;
-  
-  while(ptrA != NULL && ((Subscript*)ptrA->node)->name != subsName){
+  /*****************************************************************
+   *  Find the latest index for operand A and operand B at this point
+   *****************************************************************/
+  while(ptrA != NULL && ((Subscript*)ptrA->node)->name != subsName)
     ptrA = ptrA->next;
-  }
-
   if(ptrA != NULL)
     subsA = ptrA->node;
   else
     ThrowError(ERR_UNDECLARE_VARIABLE, "Undefine reference to Subscript %c", subsName);
   
-  while(ptrB != NULL && ((Subscript*)ptrB->node)->name != subsName){
+  while(ptrB != NULL && ((Subscript*)ptrB->node)->name != subsName)
     ptrB = ptrB->next;
-  }
   if(ptrB != NULL)
     subsB = ptrB->node;
   else
     ThrowError(ERR_UNDECLARE_VARIABLE, "Undefine reference to Subscript %c", subsName);
-    
+  
+  //Create the phifunction without the condition yet
   Expression* phiFunction   = createExpression(subs->name, PHI_FUNC, subsA->name, subsB->name, 0);
   phiFunction->id.index     = subs->index;
   phiFunction->oprdA.index  = subsA->index;

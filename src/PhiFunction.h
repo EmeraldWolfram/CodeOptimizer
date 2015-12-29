@@ -8,6 +8,6 @@
 
 void allocPhiFunc(Node* entryNode);
 Expression* getPhiFunction(LinkedList* listA, LinkedList* listB, Subscript* subs);
-Subscript* getCondition(Node* imdDomNode);
+Subscript getCondition(Node* imdDomNode);
 
 #endif // PhiFunction_H

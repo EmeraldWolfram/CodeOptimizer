@@ -113,18 +113,18 @@ void test_getPhiFunction_given_ListA_and_ListB_shoudl_throw_ERR_UNDECLARE_VARIAB
 /**
  *  ControlFlowGraph1
  *
- *       [A]
+ *       [A](x0)
  *      /   \
  *     \/   \/
- *    [B]   [C]
+ *(x1)[B]   [C](x5)
  *     |     |
  *     \/   \/
- *       [D]          <= PhiFunction(B,C)
- *
+ *       [D]    <=  (x3) = PhiFunction(x1,x6)
+ *        
  *  PhiFunction should allocated in D
  *
  **/
-// void test_getPhiFunction_allocation(void){
+// void test_getPhiFunction_allocation_after_assignAllNodeSSA(void){
 	// Node* nodeA = createNode(0);
   // Node* nodeB = createNode(1);
   // Node* nodeC = createNode(1);
@@ -144,6 +144,8 @@ void test_getPhiFunction_given_ListA_and_ListB_shoudl_throw_ERR_UNDECLARE_VARIAB
   // addChild(&nodeC, &nodeD);
   
   // setLastBrhDom(&nodeA);
+  // setAllImdDom(&nodeA);
+  // assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
 
   // allocPhiFunc(nodeA);
   // TEST_ASSERT_EQUAL(2, nodeD->block->length);
@@ -177,23 +179,21 @@ void test_getPhiFunction_given_ListA_and_ListB_shoudl_throw_ERR_UNDECLARE_VARIAB
  *  getCondition function should return condition
  *
  *****************************************************************************/
-// void test_getCondition_with_the_Block0_above_should_return_expr1(void){
-  // Node* nodeA = createNode(0);
-  // Node* nodeB = createNode(1);
-  // Expression* expr1 = createExpression('c', EQUAL_TO, 'x', 'y', 0);
-  // Expression* expr2 = createExpression(0, IF_STATEMENT, 'c', ((int)&nodeB), 0);
-  // addListLast(nodeA->block, expr1);
-  // addListLast(nodeA->block, expr2);
-  // arrangeSSA(nodeA);
+void test_getCondition_with_the_Block0_above_should_return_operandA_of_expr2(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Expression* expr1 = createExpression(c, EQUAL_TO, x, y, 0);
+  Expression* expr2 = createExpression(0, IF_STATEMENT, c, ((int)&nodeB), 0);
+  addListLast(nodeA->block, expr1);
+  addListLast(nodeA->block, expr2);
+  arrangeSSA(nodeA);
   
-  // Subscript* testExpr = getCondition(nodeA);
+  Subscript testSubs = getCondition(nodeA);
   
-  // TEST_ASSERT_EQUAL_PTR(&(expr2->oprdA), testExpr);
-// }
+  TEST_ASSERT_SUBSCRIPT(c, 0, &testSubs);
+}
 
 /**
- *  
- *
  *  Block1:
  *  x0 = 12;
  *  y0 = 1;
@@ -203,23 +203,23 @@ void test_getPhiFunction_given_ListA_and_ListB_shoudl_throw_ERR_UNDECLARE_VARIAB
  *  if(c0) goto nodeA
  *
  *****************************************************************************/
-// void test_getCondition_with_the_Block1_above_should_return_expr5(void){
-  // Node* nodeA = createNode(0);
-  // Expression* expr1 = createExpression('x', ASSIGN, 12, 0, 0);
-  // Expression* expr2 = createExpression('y', ASSIGN,  1, 0, 0);
-  // Expression* expr3 = createExpression('z', ASSIGN,  2, 0, 0);
-  // Expression* expr4 = createExpression('x', ADDITION, 'x', 'y', 0);
-  // Expression* expr5 = createExpression('c', GREATER_THAN, 'z', 'y', 0);
-  // Expression* expr6 = createExpression(0, IF_STATEMENT,  'c', (int)&nodeA, 0);
-  // addListLast(nodeA->block, expr1);
-  // addListLast(nodeA->block, expr2);
-  // addListLast(nodeA->block, expr3);
-  // addListLast(nodeA->block, expr4);
-  // addListLast(nodeA->block, expr5);
-  // addListLast(nodeA->block, expr6);
-  // arrangeSSA(nodeA);
+void test_getCondition_with_the_Block1_above_should_travel_all_the_way_down(void){
+  Node* nodeA = createNode(0);
+  Expression* expr1 = createExpression(x, ASSIGN, 12, 0, 0);
+  Expression* expr2 = createExpression(y, ASSIGN,  1, 0, 0);
+  Expression* expr3 = createExpression(z, ASSIGN,  2, 0, 0);
+  Expression* expr4 = createExpression(x, ADDITION, x, y, 0);
+  Expression* expr5 = createExpression(c, GREATER_THAN, z, y, 0);
+  Expression* expr6 = createExpression(0, IF_STATEMENT, c, (int)&nodeA, 0);
+  addListLast(nodeA->block, expr1);
+  addListLast(nodeA->block, expr2);
+  addListLast(nodeA->block, expr3);
+  addListLast(nodeA->block, expr4);
+  addListLast(nodeA->block, expr5);
+  addListLast(nodeA->block, expr6);
+  arrangeSSA(nodeA);
   
-  // Subscript* testExpr = getCondition(nodeA);
+  Subscript testSubs = getCondition(nodeA);
   
-  // TEST_ASSERT_EQUAL_PTR(&expr6->oprdA, testExpr);
-// }
+  TEST_ASSERT_SUBSCRIPT(c, 0, &testSubs);
+}
