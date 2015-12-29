@@ -15,8 +15,8 @@ LinkedList* getSubsList(LinkedList* expression);
 
 LinkedList* getModifiedList(Node* inputNode);
 LinkedList* getLiveList(Node *inputNode);
-LinkedList* getLatestList(Node* inputNode);
 
+LinkedList* getLatestList(Node* inputNode, LinkedList* prevList);
 void updateList(Node* inputNode, LinkedList* prevList);
 
 

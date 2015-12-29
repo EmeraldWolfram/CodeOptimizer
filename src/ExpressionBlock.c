@@ -132,7 +132,7 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevLis
   
   arrangeSSA(inputNode);
   updateList(inputNode, updtList);
-  LinkedList* curList = getLatestList(inputNode);
+  LinkedList* curList = getLatestList(inputNode, prevList);
 
   for(i=0; i < inputNode->numOfChild; i++){
     if(inputNode->children[i]->visitFlag != 1)

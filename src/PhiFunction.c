@@ -12,7 +12,6 @@
  *  getCondition should return the condition expression
  *
  */
-
 Subscript* getCondition(Node* imdDomNode){
   ListElement* ptrToCondition = imdDomNode->block->head;
   
@@ -24,32 +23,42 @@ Subscript* getCondition(Node* imdDomNode){
 }
 
 
-/**
+/*
  *  This function will compare the liveness list from two parent and 
  *
  *
  */
-Expression* getPhiFunction(){
-  Expression* phiFunction = NULL;
+Expression* getPhiFunction(LinkedList* listA, LinkedList* listB, Subscript* subs){
+  Subscript *subsA  = NULL;
+  Subscript *subsB  = NULL;
   
-  //Argument brought in InputNode
-  //Get the imdDom
-  //Get the condition from the imdDom
-  //TRAVELING TASK: Check modified Id(liveliness)
-  //TRAVELING TASK: Get the oprd1 & oprd2
+  ListElement *ptrA, *ptrB;
+  ptrA = listA->head;
+  ptrB = listB->head;
   
-  // LinkedList* idList       = getModifiedId(Node* domNode, Node* checkNode);
-  // ListElement* idElement   = idList->head;
-  // while(idList != NULL){
-    // char modID = idElement->node;
+  int subsName = subs->name;
+  
+  while(ptrA != NULL && ((Subscript*)ptrA->node)->name != subsName){
+    ptrA = ptrA->next;
+  }
+
+  if(ptrA != NULL)
+    subsA = ptrA->node;
+  else
+    ThrowError(ERR_UNDECLARE_VARIABLE, "Undefine reference to Subscript %c", subsName);
+  
+  while(ptrB != NULL && ((Subscript*)ptrB->node)->name != subsName){
+    ptrB = ptrB->next;
+  }
+  if(ptrB != NULL)
+    subsB = ptrB->node;
+  else
+    ThrowError(ERR_UNDECLARE_VARIABLE, "Undefine reference to Subscript %c", subsName);
     
-    
-    //                            modID
-    //                              |
-    phiFunction = createExpression('x', PHI_FUNC, 1, 2, 1);
-    // idElement = idElement->next;
-  // }
-  
+  Expression* phiFunction   = createExpression(subs->name, PHI_FUNC, subsA->name, subsB->name, 0);
+  phiFunction->id.index     = subs->index;
+  phiFunction->oprdA.index  = subsA->index;
+  phiFunction->oprdB.index  = subsB->index;
   
   return phiFunction;
 }
@@ -64,7 +73,8 @@ void allocPhiFunc(Node* entryNode){
   
   while(domFElement != NULL){
     domFNode  = domFElement->node;
-    phiFunction = getPhiFunction();
+    // phiFunction = getPhiFunction(listA, listB, x3);
+    phiFunction = getPhiFunction(createLinkedList(), createLinkedList(), NULL);
     
     if(phiFunction != NULL)
       addListFirst(domFNode->block, phiFunction);

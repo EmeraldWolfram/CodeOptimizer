@@ -120,7 +120,13 @@ void updateList(Node* inputNode, LinkedList* prevList){
   
   ListElement *newPtr, *checkPtr;
 
-  LinkedList* modifiedList = getLatestList(inputNode);
+  // LinkedList* modifiedList = getLatestList(inputNode);
+  LinkedList* modifiedList  = getModifiedList(inputNode);
+  newPtr  = modifiedList->head;
+  while(newPtr != NULL){
+    newPtr->node = getLargestIndex(inputNode->block, (Subscript*)newPtr->node);
+    newPtr = newPtr->next;
+  }
   /******************************************************
    *  Update the prevList with the modifiedList
    ******************************************************/
@@ -193,14 +199,32 @@ LinkedList* getLiveList(Node *inputNode){
  *  This function return the latest modified value
  *
  ***********************************************************************/
-LinkedList* getLatestList(Node* inputNode){
+LinkedList* getLatestList(Node* inputNode, LinkedList* prevList){
   if(inputNode == NULL)
     ThrowError(ERR_NULL_NODE, "Input Node to function getLatestList is NULL");
   
   LinkedList* modifyList  = getModifiedList(inputNode);
-  ListElement*  newPtr = modifyList->head;
+  
+  ListElement*  checkPtr;
+  ListElement*  newPtr    = modifyList->head;
   while(newPtr != NULL){
     newPtr->node = getLargestIndex(inputNode->block, (Subscript*)newPtr->node);
+    newPtr = newPtr->next;
+  }
+  /******************************************************
+   *  Update the prevList with the modifiedList
+   ******************************************************/
+  newPtr    = prevList->head;
+  while(newPtr != NULL){
+    checkPtr  = modifyList->head;
+    while(checkPtr != NULL && ((Subscript*)checkPtr->node)->name \
+                           != ((Subscript*)newPtr->node)->name){
+      checkPtr = checkPtr->next;
+    }
+  
+    if(checkPtr == NULL)
+      addListLast(modifyList, (Subscript*)newPtr->node);
+    
     newPtr = newPtr->next;
   }
   

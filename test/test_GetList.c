@@ -401,9 +401,47 @@ void test_getLatestList_given_NodeA_above_should_return_x2(void){
 
   arrangeSSA(nodeA);
   
-  LinkedList* testList = getLatestList(nodeA);
+  LinkedList* testList = getLatestList(nodeA, createLinkedList());
   TEST_ASSERT_EQUAL(1, testList->length);
   TEST_ASSERT_SUBSCRIPT(x, 2, testList->head->node);  
+}
+
+/**
+ *  getLatestList
+ *
+ *  NodeA:
+ *  x0 = 3
+ *  x1 = y0 + x0
+ *  x2 = x1 * z0
+ *
+ *  NodeB:        
+ *  w0 = x2 + y0
+ *  
+ *  prevList: x2
+ *  getLatestList(NodeB, prevList)
+ *  return x2->w0
+ *************************************************************************************/
+void test_getLatestList_given_NodeB_above_should_return_x2_and_z0(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Expression* exp1 = createExpression(x, ASSIGN, 3, 0, 0);
+  Expression* exp2 = createExpression(x, ADDITION, y, x, 0);
+  Expression* exp3 = createExpression(x, MULTIPLICATION, x, z, 0);
+  Expression* exp4 = createExpression(w, MULTIPLICATION, x, y, 0);
+  
+  addListLast(nodeA->block, exp1);
+  addListLast(nodeA->block, exp2);
+  addListLast(nodeA->block, exp3);
+  addListLast(nodeB->block, exp4);
+  
+  arrangeSSA(nodeA);
+  arrangeSSA(nodeB);
+  
+  LinkedList* prevList = getLatestList(nodeA, createLinkedList());
+  LinkedList* testList = getLatestList(nodeB, prevList);
+  TEST_ASSERT_EQUAL(2, testList->length);
+  TEST_ASSERT_SUBSCRIPT(w, 0, testList->head->node);  
+  TEST_ASSERT_SUBSCRIPT(x, 2, testList->head->next->node);  
 }
 
 /**
@@ -416,7 +454,7 @@ void test_getLatestList_given_NodeA_above_should_return_x2(void){
 void test_getLatestList_should_Throw_ERR_NULL_NODE(void){
   ErrorObject* err;
   Try{
-    LinkedList* testList = getLatestList(NULL);
+    LinkedList* testList = getLatestList(NULL, createLinkedList());
     TEST_FAIL_MESSAGE("Expected ERR_NULL_NODE to be thrown, but nothing happen");
   } Catch(err){
     TEST_ASSERT_EQUAL(ERR_NULL_NODE, err->errorCode);
