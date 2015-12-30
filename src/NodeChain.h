@@ -13,11 +13,10 @@ struct Node_t{
   Node* lastBrhDom;
   Node* imdDom;
   Node* parent;
-  int numOfDom;
-  Node** doms;
   int numOfChild;
   Node** children;
   LinkedList* domFrontiers;
+  LinkedList* directDom;
 };
 
 #define FIND_SAME_NODE(testRankNode_1, testRankNode_2)      \
@@ -35,6 +34,8 @@ void setLastBrhDom(Node** rootNode);
 
 void getImdDom(Node* nodeA);
 void setAllImdDom(Node** rootNode);
+
+void setAllDirectDom(Node** rootNode);
 
 LinkedList* getNodeDomFrontiers(Node* node);
 LinkedList* getAllDomFrontiers(Node** root);

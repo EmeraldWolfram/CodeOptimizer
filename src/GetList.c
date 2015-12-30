@@ -159,13 +159,13 @@ void updateList(Node* inputNode, LinkedList* prevList){
  *  that have no repeat subscript.
  *  
  ******************************************************************************/
-LinkedList* getLiveList(Node *inputNode){
+LinkedList* getLiveList(Node** inputNode){
   if(inputNode == NULL)
     ThrowError(ERR_NULL_NODE, "Input Node to function getLiveList is NULL");
   
-  LinkedList* allLiveList  = createLinkedList();
+  LinkedList* allLiveList = createLinkedList();
   LinkedList* filterList  = createLinkedList();
-  ListElement* checkPtr = inputNode->block->head;
+  ListElement* checkPtr   = (*inputNode)->block->head;
   int checkOpr;
   
   while(checkPtr != NULL){
@@ -231,8 +231,65 @@ LinkedList* getLatestList(Node* inputNode, LinkedList* prevList){
   return modifyList;
 }
 
+/*
+ *  getListTillNode(stopNode)
+ *
+ *  This function return the latest subscript list 
+ *  from the entry until the input stopNode
+ *
+ *****************************************************************/
+LinkedList* getListTillNode(Node* stopNode){
+  Node* rootNode = stopNode->imdDom;
+  while(rootNode->rank != 0)
+    rootNode = rootNode->imdDom;
+  
+  LinkedList* hereList = createLinkedList();
+  LinkedList* pathList = getPathToNode(&rootNode, stopNode);
+  ListElement* pathPtr = pathList->head;
+  
+  while(pathPtr != NULL){
+    updateList(pathPtr->node, hereList);
+    pathPtr = pathPtr->next;
+  }
+  
+  return hereList;
+}
 
-
+/*  
+ *  getPathToNode
+ *
+ *  This function recursively check the rank and wait for
+ *  the correct stopNode to appear in the tree and add the
+ *  Node into the LinkedList and return.
+ *
+ *  All node along the path will be added once the correct
+ *  stopNode have been found.
+ *
+ ***********************************************************/
+LinkedList* getPathToNode(Node** rootNode, Node* stopNode){
+  LinkedList* pathList = createLinkedList();
+  Node* childPtr;
+  int i;
+  
+  if((*rootNode)->rank < stopNode->rank){
+    for(i = 0; i < (*rootNode)->numOfChild; i++){
+      childPtr  = (*rootNode)->children[i];
+      if(pathList->length == 0 && childPtr->rank > (*rootNode)->rank)
+        pathList = getPathToNode(&childPtr, stopNode);
+    }
+    if(pathList->length != 0)
+      addListFirst(pathList, (*rootNode));
+    return pathList;
+  }
+  else{
+    if((*rootNode) == stopNode){
+      addListFirst(pathList, (*rootNode));
+      return pathList;
+    }
+    else
+      return createLinkedList();
+  }
+}
 
 
 

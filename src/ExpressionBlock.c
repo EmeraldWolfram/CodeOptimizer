@@ -14,7 +14,8 @@ Expression* createExpression(int thisID, Operator oprt, int oprdA,\
   newExp->oprdA.index = 0;
   newExp->oprdB.name  = oprdB;
   newExp->oprdB.index = 0;
-  newExp->condition   = condt;
+  newExp->condt.name  = condt;
+  newExp->condt.index = 0;
 
   return newExp;            
 }
@@ -75,8 +76,9 @@ void arrangeSSA(Node* inputNode){
  **********************************************************/
 void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevList){
   inputNode->visitFlag  = 1;
+  getImdDom(inputNode);
   arrangeSSA(inputNode);
-  LinkedList* liveList  = getLiveList(inputNode);
+  LinkedList* liveList  = getLiveList(&inputNode);
   LinkedList* lhsList   = getModifiedList(inputNode);
   if(inputNode->rank == 0){
     liveList  = createLinkedList();

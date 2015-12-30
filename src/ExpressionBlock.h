@@ -71,7 +71,7 @@ struct Expression_t{
   Operator opr;
   Subscript oprdA;
   Subscript oprdB;
-  int condition;
+  Subscript condt;
 };
 
 

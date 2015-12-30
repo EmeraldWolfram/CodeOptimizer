@@ -21,12 +21,13 @@ void test_createNode(void){
   TEST_ASSERT_EQUAL(0, testNode->rank);
   TEST_ASSERT_EQUAL(0, testNode->visitFlag);
   TEST_ASSERT_EQUAL(0, testNode->numOfChild);
-  TEST_ASSERT_EQUAL(0, testNode->numOfDom);
+  TEST_ASSERT_EQUAL(0, testNode->block->length);
+  TEST_ASSERT_EQUAL(0, testNode->directDom->length);
   TEST_ASSERT_NULL(testNode->parent);
   TEST_ASSERT_NULL(testNode->lastBrhDom);
   TEST_ASSERT_NULL(testNode->imdDom);
   TEST_ASSERT_NULL(testNode->children);
-  TEST_ASSERT_NULL(testNode->doms);
+  TEST_ASSERT_NULL(testNode->domFrontiers);
 }
 
 /**
@@ -1174,3 +1175,48 @@ void test_getAllDomFrontiers_given_CFG4_should_give_a_union_of_dominatorFrontier
   TEST_ASSERT_LINKED_LIST(expectUnionDomFrontiers, unionDomFrontiers);
 }
 
+/**
+ *  setAllDirectDom
+ *  
+ *      (A)     DD(A) = {}
+ *     /  \     DD(B) = {A}
+ *   (B)  (C)   DD(C) = {A}
+ *    \   /     DD{D} = {B, C}
+ *     (D)
+ *  
+ *  
+ ***************************************************/
+void test_setAllDirectDom_given_node_tree_above_should_assign_directDom(void){
+   ErrorObject *err;
+   Node* nodeA = createNode(0);
+   Node* nodeB = createNode(1);
+   Node* nodeC = createNode(1);
+   Node* nodeD = createNode(2);
+   
+   addChild(&nodeA, &nodeB);
+   addChild(&nodeA, &nodeC);
+   addChild(&nodeB, &nodeD);
+   addChild(&nodeC, &nodeD);
+
+   setAllDirectDom(&nodeA);
+   ListElement* testPtr;
+   TEST_ASSERT_EQUAL(0, nodeA->directDom->length);
+   
+   testPtr = nodeB->directDom->head;
+   TEST_ASSERT_EQUAL(1, nodeB->directDom->length);
+   TEST_ASSERT_NODE_ADDRESS(nodeA, testPtr->node);
+   
+   testPtr = nodeC->directDom->head;
+   TEST_ASSERT_EQUAL(1, nodeC->directDom->length);
+   TEST_ASSERT_NODE_ADDRESS(nodeA, testPtr->node);
+   
+   testPtr = nodeD->directDom->head;
+   TEST_ASSERT_EQUAL(2, nodeD->directDom->length);
+   TEST_ASSERT_NODE_ADDRESS(nodeB, testPtr->node);
+   TEST_ASSERT_NODE_ADDRESS(nodeC, testPtr->next->node);   
+}
+ 
+ 
+ 
+ 
+ 

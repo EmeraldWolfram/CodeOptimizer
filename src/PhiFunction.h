@@ -6,7 +6,7 @@
 #include "ExpressionBlock.h"
 #include "NodeChain.h"
 
-void allocPhiFunc(Node* entryNode);
+void allocPhiFunc(Node** thisNode);
 Expression* getPhiFunction(LinkedList* listA, LinkedList* listB, Subscript* subs);
 Subscript getCondition(Node* imdDomNode);
 

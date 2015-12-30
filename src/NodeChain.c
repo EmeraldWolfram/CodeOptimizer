@@ -11,10 +11,10 @@ Node* createNode(int thisRank){
   newNode->parent       = NULL;
   newNode->lastBrhDom   = NULL;
   newNode->imdDom       = NULL;
-  newNode->numOfDom     = 0;
-  newNode->doms         = NULL;
   newNode->numOfChild   = 0;
   newNode->children     = NULL;
+  newNode->domFrontiers = NULL;
+  newNode->directDom    = createLinkedList();
   
   return newNode;
 }
@@ -308,4 +308,20 @@ LinkedList* assembleList(Node **rootNode){
     }
     return tempList;
 }
+
+//This function assign directDominator to the node
+void setAllDirectDom(Node** rootNode){
+  LinkedList* nodeList  = assembleList(rootNode);
+  ListElement* nodePtr  = nodeList->head;
+  Node *childPtr, *selfNode;
+  int i;
   
+  while(nodePtr != NULL){
+    selfNode = nodePtr->node;
+    for(i = 0; i < selfNode->numOfChild; i++){
+      childPtr = selfNode->children[i];
+      addListLast(childPtr->directDom, selfNode);
+    }
+    nodePtr = nodePtr->next;
+  }
+}

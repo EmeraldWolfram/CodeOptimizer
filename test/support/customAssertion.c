@@ -26,16 +26,27 @@ void customTestAssertPhiFunction(Expression* expectedPhiFunction, Node** nodeToT
                         
     if(actualPhiFunc->oprdA.name != expectedPhiFunction->oprdA.name)
       CUSTOM_TEST_FAIL(lineNumber, "Expected operand A as %c but actual was %c", \
-                        expectedPhiFunction->oprdA, actualPhiFunc->oprdA);
+                        expectedPhiFunction->oprdA.name, actualPhiFunc->oprdA.name);
                         
+    if(actualPhiFunc->oprdA.index != expectedPhiFunction->oprdA.index)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected operand A with index %d but was %d", \
+                        expectedPhiFunction->oprdA.index, actualPhiFunc->oprdA.index);    
+    
     if(actualPhiFunc->oprdB.name != expectedPhiFunction->oprdB.name)
       CUSTOM_TEST_FAIL(lineNumber, "Expected operand B as %c but actual was %c", \
-                        expectedPhiFunction->oprdB, actualPhiFunc->oprdB);
+                        expectedPhiFunction->oprdB.name, actualPhiFunc->oprdB.name);
                         
-    if(actualPhiFunc->condition != expectedPhiFunction->condition)
-      CUSTOM_TEST_FAIL(lineNumber, "Expected condition is %d but actual was %d", \
-                        expectedPhiFunction->condition, actualPhiFunc->condition);
-  
+    if(actualPhiFunc->oprdB.index != expectedPhiFunction->oprdB.index)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected operand B with index %d but was %d", \
+                        expectedPhiFunction->oprdB.index, actualPhiFunc->oprdB.index);  
+                        
+    if(actualPhiFunc->condt.name != expectedPhiFunction->condt.name)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected condition is %c but actual was %c", \
+                        expectedPhiFunction->condt.name, actualPhiFunc->condt.name);
+                        
+    if(actualPhiFunc->condt.index != expectedPhiFunction->condt.index)
+      CUSTOM_TEST_FAIL(lineNumber, "Expected condition index is %d but actual was %d", \
+                        expectedPhiFunction->condt.index, actualPhiFunc->condt.index);
   }
 }
 //**********************************************************************************************
@@ -90,7 +101,5 @@ void customTestAssertSubscript(int expectName, int expectSub, Subscript* actual,
   
   if(actual->index != expectSub)
     CUSTOM_TEST_FAIL(lineNumber, "Expected subscript no. %d was %d", expectSub, actual->index);
-  
-  
   
 }

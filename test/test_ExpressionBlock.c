@@ -41,7 +41,7 @@ void test_createExpression(void){
   TEST_ASSERT_EQUAL(ADDITION, addExpress->opr);
   TEST_ASSERT_SUBSCRIPT(y, 0, &addExpress->oprdA);
   TEST_ASSERT_SUBSCRIPT(z, 0, &addExpress->oprdB);
-  TEST_ASSERT_EQUAL(0, addExpress->condition);
+  TEST_ASSERT_EQUAL(0, addExpress->condt.name);
 }
 
 
@@ -192,7 +192,6 @@ void test_assignAllNodeSSA_with_only_x(void){
   addListLast(nodeB->block, exp3);
 
   setLastBrhDom(&nodeA);
-  setAllImdDom(&nodeA);
   
   assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
   ListElement* testExp = nodeA->block->head;
@@ -243,7 +242,6 @@ void test_assignAllNodeSSA_with_muliple_variable(void){
   addListLast(nodeB->block, exp5);
 
   setLastBrhDom(&nodeA);
-  setAllImdDom(&nodeA);
 
   assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
 
@@ -271,7 +269,7 @@ void test_assignAllNodeSSA_with_muliple_variable(void){
  *          NodeA:                            NodeA:
  *          x = 4                             x0 = 4
  *          c = (x != x)                      c0 = (x0 != x0)
- *          if(c0) goto Node C                if(c0) goto NodeC
+ *          if(c0) goto NodeC                 if(c0) goto NodeC
  *          /         \                      /                  \
  *    NodeB:          NodeC:            NodeB:                  NodeC:
  *    x = x * x       x = x + x         x1 = x0 * x0            x4 = x0 + x0
@@ -307,7 +305,6 @@ void test_assignAllNodeSSA_with_muliple_Node(void){
   addListLast(nodeD->block, exp6);
 
   setLastBrhDom(&nodeA);
-  setAllImdDom(&nodeA);
   
   assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
   ListElement* testExp = nodeA->block->head;
@@ -360,7 +357,6 @@ void test_assignAllNodeSSA_should_Throw_ERR_UNDECLARE_VARIABLE(void){
     addListLast(nodeA->block, exp2);
     addListLast(nodeB->block, exp3);
     setLastBrhDom(&nodeA);
-    setAllImdDom(&nodeA);
   
     assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
     TEST_FAIL_MESSAGE("Expected ERR_UNDECLARE_VARIABLE but not error thrown")
@@ -394,9 +390,7 @@ void test_assignAllNodeSSA_should_not_change_thing_in_NodeB(void){
   addListLast(nodeA->block, exp1);
   addListLast(nodeA->block, exp2);
   addListLast(nodeB->block, exp3);
-  setLastBrhDom(&nodeA);
-  setAllImdDom(&nodeA);
-  
+  setLastBrhDom(&nodeA); 
   assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
   
   LinkedList* testList = nodeB->block;

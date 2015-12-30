@@ -355,7 +355,7 @@ void test_getLiveList_given_Node_should_return_a_LinkedList_with_x_and_y(void){
   addListLast(nodeA->block, exp4);
   addListLast(nodeA->block, exp5);
   
-  LinkedList* testList = getLiveList(nodeA);
+  LinkedList* testList = getLiveList(&nodeA);
   TEST_ASSERT_EQUAL(2, testList->length);
   TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);
   TEST_ASSERT_SUBSCRIPT(y, 0, testList->head->next->node);  
@@ -461,3 +461,121 @@ void test_getLatestList_should_Throw_ERR_NULL_NODE(void){
     TEST_ASSERT_EQUAL_STRING("Input Node to function getLatestList is NULL", err->errorMsg);
   }
 }
+
+/**
+ *  getPathToNode(A, C)
+ *    (A)
+ *    / \
+ *  (B) (C)
+ *
+ *  should return A->C
+ *****************************************************************/
+void test_getPathToNode_should_return_the_path_to_that_nodeC(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  LinkedList* checkList = createLinkedList();
+  addListLast(checkList, nodeA);
+  addListLast(checkList, nodeC);
+  
+  LinkedList* testList = getPathToNode(&nodeA, nodeC);
+  TEST_ASSERT_LINKED_LIST(checkList, testList);
+}
+
+
+/**
+ *  getPathToNode(A, D)
+ *    (A)
+ *    / \
+ *  (B) (C)
+ *       |
+ *      (D)
+ *
+ *
+ *  should return A->C->D without ending at nodeB
+ *****************************************************************/
+void test_getPathToNode_should_return_the_path_to_that_nodeD(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeC, &nodeD);
+  LinkedList* checkList = createLinkedList();
+  addListLast(checkList, nodeA);
+  addListLast(checkList, nodeC);
+  addListLast(checkList, nodeD);
+  
+  LinkedList* testList = getPathToNode(&nodeA, nodeD);
+  TEST_ASSERT_LINKED_LIST(checkList, testList);
+}
+
+/**
+ *  getPathToNode(A, D)
+ *    (A)
+ *    / \
+ * >(B) (C)
+ * <<    |
+ *      (D)
+ *
+ *
+ *  should return A->C->D without enter infinity loop at nodeB
+ *****************************************************************/
+void test_getPathToNode_should_not_enter_infinity_loop(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeB, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeC, &nodeD);
+  LinkedList* checkList = createLinkedList();
+  addListLast(checkList, nodeA);
+  addListLast(checkList, nodeC);
+  addListLast(checkList, nodeD);
+  
+  LinkedList* testList = getPathToNode(&nodeA, nodeD);
+  TEST_ASSERT_LINKED_LIST(checkList, testList);
+}
+
+/**
+ *  getListTillNode(B)
+ *
+ *  NodeA:
+ *  x = 3         x0 = 3
+ *  y = 4         y0 = 4
+ *
+ *  NodeB:
+ *  y = 6         y1 = x0 + y0
+ *  
+ *  should return a LinkedList with x0->y1
+ *
+ ***************************************************************/
+void test_getListTillNode_given_NodeB_above_should_return_x2_and_y0(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Expression* exp1 = createExpression(x, ASSIGN, 3, 0, 0);
+  Expression* exp2 = createExpression(y, ASSIGN, 4, 0, 0);
+  Expression* exp3 = createExpression(y, ADDITION, x, y, 0);
+  
+  addChild(&nodeA, &nodeB);
+  
+  addListLast(nodeA->block, exp1);
+  addListLast(nodeA->block, exp2);
+  addListLast(nodeA->block, exp3);
+  setLastBrhDom(&nodeA);
+  assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
+  
+  LinkedList* testList = getListTillNode(nodeB);
+  TEST_ASSERT_EQUAL(2, testList->length);
+  TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);  
+  TEST_ASSERT_SUBSCRIPT(y, 1, testList->head->next->node);  
+}
+

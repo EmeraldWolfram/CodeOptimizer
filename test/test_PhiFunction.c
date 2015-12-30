@@ -106,56 +106,10 @@ void test_getPhiFunction_given_ListA_and_ListB_shoudl_throw_ERR_UNDECLARE_VARIAB
   } Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDECLARE_VARIABLE, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("Undefine reference to Subscript w", err->errorMsg);
+    free(err);
   }
   
 }
-
-/**
- *  ControlFlowGraph1
- *
- *       [A](x0)
- *      /   \
- *     \/   \/
- *(x1)[B]   [C](x5)
- *     |     |
- *     \/   \/
- *       [D]    <=  (x3) = PhiFunction(x1,x6)
- *        
- *  PhiFunction should allocated in D
- *
- **/
-// void test_getPhiFunction_allocation_after_assignAllNodeSSA(void){
-	// Node* nodeA = createNode(0);
-  // Node* nodeB = createNode(1);
-  // Node* nodeC = createNode(1);
-  // Node* nodeD = createNode(2);
-  // Expression* expA = createExpression('x', ASSIGN, 'z', 'z', 0);
-  // Expression* expB = createExpression('x', ADDITION, 'y', 'z', 0);
-  // Expression* expC = createExpression('x', ADDITION, 'x', 'y', 0);
-  // Expression* expD = createExpression('x', ADDITION, 'x', 'z', 0);
-  // addListFirst(nodeA->block, expA);
-  // addListFirst(nodeB->block, expB);
-  // addListFirst(nodeC->block, expC);
-  // addListFirst(nodeD->block, expD);
-  
-  // addChild(&nodeA, &nodeB);
-  // addChild(&nodeA, &nodeC);
-  // addChild(&nodeB, &nodeD);
-  // addChild(&nodeC, &nodeD);
-  
-  // setLastBrhDom(&nodeA);
-  // setAllImdDom(&nodeA);
-  // assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
-
-  // allocPhiFunc(nodeA);
-  // TEST_ASSERT_EQUAL(2, nodeD->block->length);
-  // TEST_ASSERT_EQUAL(1, nodeA->block->length);
-  // TEST_ASSERT_EQUAL(1, nodeB->block->length);
-  // TEST_ASSERT_EQUAL(1, nodeC->block->length);
-
-  // Expression* testPhi = createExpression('x', PHI_FUNC, 1, 2, 1);
-  // TEST_ASSERT_PHIFUNC(testPhi, &nodeD);
-// }
 
 /**
  *  getCondition
@@ -222,4 +176,89 @@ void test_getCondition_with_the_Block1_above_should_travel_all_the_way_down(void
   Subscript testSubs = getCondition(nodeA);
   
   TEST_ASSERT_SUBSCRIPT(c, 0, &testSubs);
+}
+
+/**
+ *  Block2:
+ *  x0 = 12;
+ *  c0 = y0 == y0
+ *  if(c0) goto nodeA
+ *  x1 = x0 + y0;
+ *  
+ *****************************************************************************/
+void test_getCondition_with_the_Block2_above_should_throw_ERR_INVALID_BRANCH(void){
+  ErrorObject *err;
+  Try{
+    Node* nodeA = createNode(0);
+    Expression* expr1 = createExpression(x, ASSIGN, 12, 0, 0);
+    Expression* expr2 = createExpression(c, EQUAL_TO, y, y, 0);
+    Expression* expr3 = createExpression(0, IF_STATEMENT, c, (int)&nodeA, 0);
+    Expression* expr4 = createExpression(x, ADDITION, x, y, 0);
+    addListLast(nodeA->block, expr1);
+    addListLast(nodeA->block, expr2);
+    addListLast(nodeA->block, expr3);
+    addListLast(nodeA->block, expr4);
+    arrangeSSA(nodeA);
+  
+    Subscript testSubs = getCondition(nodeA);
+    TEST_FAIL_MESSAGE("Expected ERR_INVALID_BRANCH but none thrown");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_INVALID_BRANCH, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("This operator does not branch", err->errorMsg);
+    free(err);
+  }
+}
+
+
+/**
+ *  ControlFlowGraph1
+ *          
+ *       [A](x0) 
+ *      /   \
+ *     \/   \/          
+ *(x1)[B]   [C](x4)   
+ *     |     |
+ *     \/   \/
+ *       [D]    <=  (x2) = PhiFunction(x1,x4,a)
+ *        
+ *  PhiFunction should allocated in D
+ *
+ **/
+void test_allocPhiFunc_allocation_after_assignAllNodeSSA(void){
+	Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  Expression* expA1 = createExpression(x, ASSIGN, 14, 0, 0);
+  Expression* expA2 = createExpression(a, EQUAL_TO, x, x, 0);
+  Expression* expA3 = createExpression(0, IF_STATEMENT, a, (int)&nodeC, 0);
+  Expression* expB  = createExpression(x, ADDITION, x, x, 0);
+  Expression* expC  = createExpression(x, MULTIPLICATION, x, x, 0);
+  Expression* expD  = createExpression(x, ADDITION, x, x, 0);
+  addListLast(nodeA->block, expA1);
+  addListLast(nodeA->block, expA2);
+  addListLast(nodeA->block, expA3);
+  addListLast(nodeB->block, expB);
+  addListLast(nodeC->block, expC);
+  addListLast(nodeD->block, expD);
+  
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeC, &nodeD);
+  
+  setLastBrhDom(&nodeA);
+  setAllDirectDom(&nodeA);
+  assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
+  ErrorObject* err;
+  allocPhiFunc(&nodeA);
+
+  TEST_ASSERT_EQUAL(3, nodeA->block->length);
+  TEST_ASSERT_EQUAL(1, nodeB->block->length);
+  TEST_ASSERT_EQUAL(1, nodeC->block->length);
+  TEST_ASSERT_EQUAL(2, nodeD->block->length);
+
+  Expression* testPhi = createExpression(x, PHI_FUNC, x, x, a);
+  setExpression(testPhi, 2, 1, 4);
+  TEST_ASSERT_PHIFUNC(testPhi, &nodeD);
 }
