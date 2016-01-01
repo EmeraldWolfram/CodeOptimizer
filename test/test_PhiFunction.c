@@ -258,6 +258,7 @@ void test_allocPhiFunc_allocation_after_assignAllNodeSSA(void){
   TEST_ASSERT_EQUAL(1, nodeC->block->length);
   TEST_ASSERT_EQUAL(2, nodeD->block->length);
 
+
   Expression* testPhi = createExpression(x, PHI_FUNC, x, x, a);
   setExpression(testPhi, 2, 1, 4);
   TEST_ASSERT_PHIFUNC(testPhi, &nodeD);

@@ -1,6 +1,7 @@
 #include "GetList.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 /*
  *  getSubsList is a simple function that extract all the
@@ -239,6 +240,7 @@ LinkedList* getLatestList(Node* inputNode, LinkedList* prevList){
  *
  *****************************************************************/
 LinkedList* getListTillNode(Node* stopNode){
+  assert(stopNode != NULL);
   Node* rootNode = stopNode->imdDom;
   while(rootNode->rank != 0)
     rootNode = rootNode->imdDom;
@@ -265,8 +267,13 @@ LinkedList* getListTillNode(Node* stopNode){
  *  All node along the path will be added once the correct
  *  stopNode have been found.
  *
+ *  An empty LinkedList* will be returned if the stopNode was
+ *  not in the node tree.
+ *
  ***********************************************************/
 LinkedList* getPathToNode(Node** rootNode, Node* stopNode){
+  assert(rootNode != NULL);
+  assert(stopNode != NULL);
   LinkedList* pathList = createLinkedList();
   Node* childPtr;
   int i;
@@ -290,6 +297,47 @@ LinkedList* getPathToNode(Node** rootNode, Node* stopNode){
       return createLinkedList();
   }
 }
+
+/*
+ *  getAllLiveList 
+ *  Basically, this function call getLiveList recursively to obtain
+ *  ALL living subscript in the input node itself and all the children 
+ *  of the input node instead of only living subscripts in the input node.
+ *
+ *
+ *  @inputNode      the node that starting node to traverse down the tree
+ *
+ *  @prevLiveList   this is a parameter used to pass down during recursive call
+ *                  Caller just have to place an empty LinkedList*
+ **********************************************************************/
+LinkedList* getAllLiveList(Node** inputNode, LinkedList* prevLiveList){
+  assert(inputNode != NULL);
+  if(prevLiveList == NULL)
+    prevLiveList = createLinkedList();
+  
+  (*inputNode)->visitFlag |= 4;
+  LinkedList* thisLiveList = getLiveList(inputNode);
+  ListElement *prevPtr = prevLiveList->head; 
+  ListElement *thisPtr = thisLiveList->head;
+  int i;
+  
+  while(thisPtr != NULL){
+    prevPtr = prevLiveList->head;
+    while(prevPtr != NULL && ((Subscript*)prevPtr->node)->name \
+                          != ((Subscript*)thisPtr->node)->name)
+      prevPtr = prevPtr->next;
+    if(prevPtr == NULL)
+      addListLast(prevLiveList, (Subscript*)thisPtr->node);
+    thisPtr = thisPtr->next;
+  }
+  
+  for(i = 0; i < (*inputNode)->numOfChild; i++)
+    if(((*inputNode)->children[i]->visitFlag & 4) == 0)
+      prevLiveList = getAllLiveList(&(*inputNode)->children[i], prevLiveList); 
+  
+  return prevLiveList;
+}
+
 
 
 

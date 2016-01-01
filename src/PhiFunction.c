@@ -75,13 +75,13 @@ Expression* getPhiFunction(LinkedList* listA, LinkedList* listB, Subscript* subs
 /**
  *  allocPhiFunc
  *
- *
- *
+ *  This function recursively check the node that require more than
+ *  a phiFunction and place the required phiFunction for these subscript
  *
  *****************************************************/
 void allocPhiFunc(Node** thisNode){
-  (*thisNode)->visitFlag = 2;
-  LinkedList* liveList = getLiveList(thisNode);
+  (*thisNode)->visitFlag |= 2;
+  LinkedList* liveList     = getAllLiveList(thisNode, createLinkedList());
   LinkedList* listA, *listB;
   ListElement* livePtr = liveList->head;; 
   Node *nodeAPtr, *nodeBPtr, *rootPtr;
@@ -107,7 +107,7 @@ void allocPhiFunc(Node** thisNode){
   }
   
   for(i = 0; i < (*thisNode)->numOfChild; i++){
-    if((*thisNode)->children[i]->visitFlag != 2)
+    if(((*thisNode)->children[i]->visitFlag & 2) == 0)
       allocPhiFunc(&(*thisNode)->children[i]);
   }
 }

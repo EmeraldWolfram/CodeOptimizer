@@ -579,3 +579,51 @@ void test_getListTillNode_given_NodeB_above_should_return_x2_and_y0(void){
   TEST_ASSERT_SUBSCRIPT(y, 1, testList->head->next->node);  
 }
 
+/**
+ *          
+ *     (A)        NodeA:                  NodeB:
+ *     / \        x = 3                   x = x + x
+ *   (B) (C)      z = 6                   y = 5
+ *     \ /        c = x != x 
+ *     (D)        if(c0) goto NodeC
+ *        
+ *                NodeC:                  NodeD:
+ *                x = x * x               x = z + x
+ *        
+ *  getAllLiveList(NodeA, empty LinkedList) should return x->z
+ *
+ **/
+void test_getAllLiveList_given_NodeD_that_read_z0_should_return_x_z(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  Expression* expA1 = createExpression(x, ASSIGN, 3, 0, 0);
+  Expression* expA2 = createExpression(z, ASSIGN, 6, 0, 0);
+  Expression* expA3 = createExpression(c, NOT_EQUAL_TO, x, x, 0);
+  Expression* expA4 = createExpression(0, IF_STATEMENT, c, (int)&nodeC, 0);
+  Expression* expB1 = createExpression(x, ADDITION, x, x, 0);
+  Expression* expB2 = createExpression(y, ASSIGN, 5, 0, 0);
+  Expression* expC  = createExpression(x, MULTIPLICATION, x, x, 0);
+  Expression* expD  = createExpression(x, ADDITION, z, x, 0);
+  addListLast(nodeA->block, expA1);
+  addListLast(nodeA->block, expA2);
+  addListLast(nodeA->block, expA3);
+  addListLast(nodeA->block, expA4);
+  addListLast(nodeB->block, expB1);
+  addListLast(nodeB->block, expB2);
+  addListLast(nodeC->block, expC);
+  addListLast(nodeD->block, expD);
+  
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeC, &nodeD);
+  
+  setLastBrhDom(&nodeA);
+  
+  LinkedList* testList = getAllLiveList(&nodeA, NULL);
+  TEST_ASSERT_EQUAL(2, testList->length);
+  TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);
+  TEST_ASSERT_SUBSCRIPT(z, 0, testList->head->next->node);
+}

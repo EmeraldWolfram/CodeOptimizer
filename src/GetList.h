@@ -15,6 +15,8 @@ LinkedList* getSubsList(LinkedList* expression);
 
 LinkedList* getModifiedList(Node* inputNode);
 LinkedList* getLiveList(Node** inputNode);
+LinkedList* getAllLiveList(Node** inputNode, LinkedList* prevLiveList);
+
 
 LinkedList* getLatestList(Node* inputNode, LinkedList* prevList);
 LinkedList* getPathToNode(Node** rootNode, Node* stopNode);

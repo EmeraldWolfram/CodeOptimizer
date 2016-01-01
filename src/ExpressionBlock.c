@@ -75,10 +75,10 @@ void arrangeSSA(Node* inputNode){
  *
  **********************************************************/
 void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevList){
-  inputNode->visitFlag  = 1;
+  inputNode->visitFlag  |= 1;
   getImdDom(inputNode);
   arrangeSSA(inputNode);
-  LinkedList* liveList  = getLiveList(&inputNode);
+  LinkedList* liveList  = getAllLiveList(&inputNode, createLinkedList());
   LinkedList* lhsList   = getModifiedList(inputNode);
   if(inputNode->rank == 0){
     liveList  = createLinkedList();
@@ -137,7 +137,7 @@ void assignAllNodeSSA(Node* inputNode, LinkedList* updtList, LinkedList* prevLis
   LinkedList* curList = getLatestList(inputNode, prevList);
 
   for(i=0; i < inputNode->numOfChild; i++){
-    if(inputNode->children[i]->visitFlag != 1)
+    if((inputNode->children[i]->visitFlag & 1) == 0)
       assignAllNodeSSA(inputNode->children[i], updtList, curList);
   }
 }
