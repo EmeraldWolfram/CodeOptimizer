@@ -85,7 +85,7 @@ void allocPhiFunc(Node** thisNode){
   LinkedList* listA, *listB;
   ListElement* livePtr = liveList->head;; 
   Node *nodeAPtr, *nodeBPtr, *rootPtr;
-  Subscript* subsPtr, subs;
+  Subscript* subsPtr, condtSubs;
   int i;
   
   if((*thisNode)->directDom->length == 2){
@@ -95,10 +95,12 @@ void allocPhiFunc(Node** thisNode){
     listB = getListTillNode(nodeBPtr);
     Expression* phiFunction;
     while(livePtr != NULL){
-      subsPtr = livePtr->node;
+      subsPtr     = livePtr->node;
       phiFunction = getPhiFunction(listA, listB, subsPtr);
-      subs = getCondition((*thisNode)->imdDom);
-      phiFunction->condt = subs;
+      if((*thisNode)->block->length == 0)
+        phiFunction->id.index--;
+      condtSubs   = getCondition((*thisNode)->imdDom);
+      phiFunction->condt = condtSubs;
       if(phiFunction != NULL)
         addListFirst((*thisNode)->block, phiFunction);
       
