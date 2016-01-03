@@ -1,0 +1,34 @@
+This program have to be run in multiple section
+
+
+//**************************************
+First section (Assemble the tree)
+---------------------------------
+1. createNode(int rank)
+2. addChild(Node** parent, Node** child)
+
+use these 2 function to form the tree
+//***************************************
+
+
+
+
+//***************************************
+Second section (Get the tree ready)
+-----------------------------------
+Calling sequence
+1. SPLIT NODE (Louise <<< injection)
+2. setLastBrhDom()
+3. getAllDomFrontiers()
+4. setAllDirectDom()
+
+//***************************************
+
+
+
+
+//***************************************
+Third Section (Manage the Expression)
+-------------------------------------
+1. assignAllNodeSSA		>>	This step will set all ImdDom
+2. allocPhiFunction
