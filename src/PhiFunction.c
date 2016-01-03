@@ -66,7 +66,7 @@ Expression* getPhiFunction(LinkedList* listA, LinkedList* listB, Subscript* subs
   
   //Create the phifunction without the condition yet
   Expression* phiFunction   = createExpression(subs->name, PHI_FUNC, subsA->name, subsB->name, 0);
-  phiFunction->id.index     = subs->index;
+  phiFunction->id.index     = subs->index + 1;
   phiFunction->oprdA.index  = subsA->index;
   phiFunction->oprdB.index  = subsB->index;
   
@@ -81,35 +81,49 @@ Expression* getPhiFunction(LinkedList* listA, LinkedList* listB, Subscript* subs
  *****************************************************/
 void allocPhiFunc(Node** thisNode){
   (*thisNode)->visitFlag |= 2;
-  LinkedList* liveList     = getAllLiveList(thisNode, createLinkedList());
+  LinkedList* liveList    = getAllLiveList(thisNode, NULL);
+  resetFlag(thisNode, 2);
+  
+  ListElement* livePtr    = liveList->head;
   LinkedList* listA, *listB;
-  ListElement* livePtr = liveList->head;; 
   Node *nodeAPtr, *nodeBPtr, *rootPtr;
   Subscript* subsPtr, condtSubs;
   int i;
-  
   if((*thisNode)->directDom->length == 2){
-    nodeAPtr = (*thisNode)->directDom->head->node;
-    nodeBPtr = (*thisNode)->directDom->head->next->node;
+    nodeBPtr = (*thisNode)->directDom->head->node;
+    nodeAPtr = (*thisNode)->directDom->head->next->node;
     listA = getListTillNode(nodeAPtr);
     listB = getListTillNode(nodeBPtr);
     Expression* phiFunction;
     while(livePtr != NULL){
-      subsPtr     = livePtr->node;
+      subsPtr     = getLargestIndex(listB, livePtr->node);
       phiFunction = getPhiFunction(listA, listB, subsPtr);
-      if((*thisNode)->block->length == 0)
-        phiFunction->id.index--;
       condtSubs   = getCondition((*thisNode)->imdDom);
       phiFunction->condt = condtSubs;
-      if(phiFunction != NULL)
-        addListFirst((*thisNode)->block, phiFunction);
+      addListFirst((*thisNode)->block, phiFunction);
       
       livePtr = livePtr->next;
     }
   }
   
-  for(i = 0; i < (*thisNode)->numOfChild; i++){
+  for(i = 0; i < (*thisNode)->numOfChild; i++)
     if(((*thisNode)->children[i]->visitFlag & 2) == 0)
       allocPhiFunc(&(*thisNode)->children[i]);
+}
+
+
+
+void resetFlag(Node** anyNode, int bitNumber){
+  Node **rootNode, *nodePtr;
+  nodePtr = (*anyNode);
+  while(nodePtr->rank != 0)
+    nodePtr = nodePtr->parent;
+  rootNode = &nodePtr;
+  
+  LinkedList* nodeList = assembleList(rootNode);
+  ListElement* elmPtr = nodeList->head;
+  while(elmPtr != NULL){
+    ((Node*)elmPtr->node)->visitFlag &= ~(1 << bitNumber);
+    elmPtr = elmPtr->next;
   }
 }

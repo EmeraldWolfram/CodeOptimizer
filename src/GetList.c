@@ -324,16 +324,18 @@ LinkedList* getAllLiveList(Node** inputNode, LinkedList* prevLiveList){
   while(thisPtr != NULL){
     prevPtr = prevLiveList->head;
     while(prevPtr != NULL && ((Subscript*)prevPtr->node)->name \
-                          != ((Subscript*)thisPtr->node)->name)
+                          != ((Subscript*)thisPtr->node)->name){
       prevPtr = prevPtr->next;
+    } 
     if(prevPtr == NULL)
       addListLast(prevLiveList, (Subscript*)thisPtr->node);
     thisPtr = thisPtr->next;
   }
   
-  for(i = 0; i < (*inputNode)->numOfChild; i++)
+  for(i = 0; i < (*inputNode)->numOfChild; i++){
     if(((*inputNode)->children[i]->visitFlag & 4) == 0)
       prevLiveList = getAllLiveList(&(*inputNode)->children[i], prevLiveList); 
+  }
   
   return prevLiveList;
 }

@@ -28,18 +28,19 @@ struct Node_t{
           }
 
 Node* createNode(int thisRank);
-
 void addChild(Node** parentNode, Node** childNode);
 void setLastBrhDom(Node** rootNode);
+
+LinkedList* assembleList(Node **rootNode);
 
 void getImdDom(Node* nodeA);
 void setAllImdDom(Node** rootNode);
 
 void setAllDirectDom(Node** rootNode);
+// void splitNode(Node** rootNode);
 
 LinkedList* getNodeDomFrontiers(Node* node);
 LinkedList* getAllDomFrontiers(Node** root);
 
-LinkedList* assembleList(Node **rootNode);
 
 #endif // NodeChain_H

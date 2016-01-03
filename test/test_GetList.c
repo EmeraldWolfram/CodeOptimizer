@@ -627,3 +627,26 @@ void test_getAllLiveList_given_NodeD_that_read_z0_should_return_x_z(void){
   TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);
   TEST_ASSERT_SUBSCRIPT(z, 0, testList->head->next->node);
 }
+
+/**
+ *  ControlFlowGraph2
+ *          
+ *         [A]        NodeB
+ *          |         x = x + x
+ *         [B]
+ *
+ **/
+void test_getAllLiveList_given_empty_nodeA_should_return_x0(void){
+	Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Expression* expB  = createExpression(x, ADDITION, x, x, 0);
+  addListLast(nodeB->block, expB);
+  
+  addChild(&nodeA, &nodeB);
+  
+  setLastBrhDom(&nodeA);
+  LinkedList* testList = getAllLiveList(&nodeA, NULL);
+  
+  TEST_ASSERT_EQUAL(1, testList->length);
+  TEST_ASSERT_SUBSCRIPT(x, 0, testList->head->node);
+}

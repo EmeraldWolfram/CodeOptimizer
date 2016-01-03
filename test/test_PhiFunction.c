@@ -43,8 +43,9 @@ void tearDown(void){}
  *  ListA : x4->y3->z1
  *  ListB : w0->y2->x1
  *
- *  getPhiFunction(ListA, ListB, x3) should return 
+ *  getPhiFunction(ListA, ListB, x2) should return 
  *  x3 = Phi(x4, x1, 0)
+ *  y4 = Phi(y3, y2, 0)
  *  
  *************************************************************/
 void test_getPhiFunction_given_ListA_and_ListB_shoudl_return_PhiFunction_of_x(void){
@@ -61,14 +62,13 @@ void test_getPhiFunction_given_ListA_and_ListB_shoudl_return_PhiFunction_of_x(vo
   LinkedList* listA = getSubsList(nodeA->block);
   LinkedList* listB = getSubsList(nodeB->block);
   
-  Subscript* subs = createSubscript(x, 3);
-  
+  Subscript* subs = createSubscript(x, 2);
   Expression* phiFunction = getPhiFunction(listA, listB, subs);
   TEST_ASSERT_SUBSCRIPT(x, 3, &phiFunction->id);
   TEST_ASSERT_SUBSCRIPT(x, 4, &phiFunction->oprdA);
   TEST_ASSERT_SUBSCRIPT(x, 1, &phiFunction->oprdB);
   
-  subs = createSubscript(y, 4);
+  subs = createSubscript(y, 3);
   phiFunction = getPhiFunction(listA, listB, subs);
   TEST_ASSERT_SUBSCRIPT(y, 4, &phiFunction->id);
   TEST_ASSERT_SUBSCRIPT(y, 3, &phiFunction->oprdA);
@@ -219,7 +219,7 @@ void test_getCondition_with_the_Block2_above_should_throw_ERR_INVALID_BRANCH(voi
  *(x1)[B]   [C](x4)   
  *     |     |
  *     \/   \/
- *       [D]    <=  (x2) = PhiFunction(x1,x4,a)
+ *       [D]    <=  (x2) = PhiFunction(x4,x1,a)
  *        
  *  PhiFunction should allocated in D
  *
@@ -260,6 +260,87 @@ void test_allocPhiFunc_allocation_after_assignAllNodeSSA(void){
 
 
   Expression* testPhi = createExpression(x, PHI_FUNC, x, x, a);
-  setExpression(testPhi, 2, 1, 4);
+  setExpression(testPhi, 2, 4, 1);
   TEST_ASSERT_PHIFUNC(testPhi, &nodeD);
+}
+
+
+/**
+ *  ControlFlowGraph2
+ *          
+ *         [A](x0) 
+ *        /   \          
+ *  (x1)[B]   [C](x6)   
+ *      / \    |
+ *(x2)[D] [E]  |
+ *      \  |   |         
+ *       [F]   | 
+ *          \ /
+ *          [G]
+ *
+ *  PhiFunction should allocated in F and G
+ *  Node F: x3 = PhiFunction(x2, x5)
+ *  Node G: x5 = PhiFunction(x3, x6)
+ *
+ **/
+void test_allocPhiFunc_allocation_after_assignAllNodeSSA_with_empty_nodeF(void){
+	Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  Node* nodeE = createNode(2);
+  Node* nodeF = createNode(3);
+  Node* nodeG = createNode(2);
+  Expression* expA1 = createExpression(x, ASSIGN, 14, 0, 0);
+  Expression* expA2 = createExpression(a, EQUAL_TO, x, x, 0);
+  Expression* expA3 = createExpression(0, IF_STATEMENT, a, (int)&nodeC, 0);
+  Expression* expB1 = createExpression(x, ADDITION, x, x, 0);
+  Expression* expB2 = createExpression(b, EQUAL_TO, x, x, 0);
+  Expression* expB3 = createExpression(0, IF_STATEMENT, b, (int)&nodeE, 0);
+  Expression* expC  = createExpression(x, MULTIPLICATION, x, x, 0);
+  Expression* expD  = createExpression(x, ADDITION, x, x, 0);
+  Expression* expE  = createExpression(x, ADDITION, x, x, 0);
+  Expression* expG  = createExpression(x, MULTIPLICATION, x, x, 0);
+  addListLast(nodeA->block, expA1);
+  addListLast(nodeA->block, expA2);
+  addListLast(nodeA->block, expA3);
+  addListLast(nodeB->block, expB1);
+  addListLast(nodeB->block, expB2);
+  addListLast(nodeB->block, expB3);
+  addListLast(nodeC->block, expC);
+  addListLast(nodeD->block, expD);
+  addListLast(nodeE->block, expE);
+  addListLast(nodeG->block, expG);
+  
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeB, &nodeE);
+  addChild(&nodeD, &nodeF);
+  addChild(&nodeE, &nodeF);
+  addChild(&nodeF, &nodeG);
+  addChild(&nodeC, &nodeG);
+  
+  setLastBrhDom(&nodeA);
+  setAllDirectDom(&nodeA);
+  
+  assignAllNodeSSA(nodeA, createLinkedList(), createLinkedList());
+  ErrorObject* err;
+  allocPhiFunc(&nodeA);
+
+  TEST_ASSERT_EQUAL(3, nodeA->block->length);
+  TEST_ASSERT_EQUAL(3, nodeB->block->length);
+  TEST_ASSERT_EQUAL(1, nodeC->block->length);
+  TEST_ASSERT_EQUAL(1, nodeD->block->length);
+  TEST_ASSERT_EQUAL(1, nodeE->block->length);
+  TEST_ASSERT_EQUAL(1, nodeF->block->length);
+  TEST_ASSERT_EQUAL(2, nodeG->block->length);
+
+  Expression* testPhi = createExpression(x, PHI_FUNC, x, x, b);
+  setExpression(testPhi, 3, 5, 2);
+  TEST_ASSERT_PHIFUNC(testPhi, &nodeF);
+
+  testPhi = createExpression(x, PHI_FUNC, x, x, a);
+  setExpression(testPhi, 4, 6, 3);
+  TEST_ASSERT_PHIFUNC(testPhi, &nodeG);
 }

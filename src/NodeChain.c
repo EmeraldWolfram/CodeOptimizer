@@ -311,17 +311,27 @@ LinkedList* assembleList(Node **rootNode){
 
 //This function assign directDominator to the node
 void setAllDirectDom(Node** rootNode){
-  LinkedList* nodeList  = assembleList(rootNode);
-  ListElement* nodePtr  = nodeList->head;
-  Node *childPtr, *selfNode;
+  (*rootNode)->visitFlag |= 8;
+  Node *childPtr;
   int i;
   
-  while(nodePtr != NULL){
-    selfNode = nodePtr->node;
-    for(i = 0; i < selfNode->numOfChild; i++){
-      childPtr = selfNode->children[i];
-      addListLast(childPtr->directDom, selfNode);
-    }
-    nodePtr = nodePtr->next;
+  for(i = 0; i < (*rootNode)->numOfChild; i++){
+    childPtr = (*rootNode)->children[i];
+    addListLast(childPtr->directDom, (*rootNode));
+    if((childPtr->visitFlag & 8) == 0)
+      setAllDirectDom(&childPtr);
   }
 }
+// void splitNode(Node** rootNode){
+  // LinkedList* nodeList = assembleList(rootNode);
+  // ListElement* nodePtr = nodeList->head;
+  
+  // while(nodePtr != NULL){
+    // if
+      
+      
+    // }
+    // else
+      // nodePtr = nodePtr->next;
+  // }
+// }

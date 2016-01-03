@@ -1181,7 +1181,7 @@ void test_getAllDomFrontiers_given_CFG4_should_give_a_union_of_dominatorFrontier
  *      (A)     DD(A) = {}
  *     /  \     DD(B) = {A}
  *   (B)  (C)   DD(C) = {A}
- *    \   /     DD{D} = {B, C}
+ *     \  /     DD{D} = {B, C}
  *     (D)
  *  
  *  
@@ -1215,7 +1215,41 @@ void test_setAllDirectDom_given_node_tree_above_should_assign_directDom(void){
    TEST_ASSERT_NODE_ADDRESS(nodeB, testPtr->node);
    TEST_ASSERT_NODE_ADDRESS(nodeC, testPtr->next->node);   
 }
- 
+
+/**
+ *  splitNode
+ *  
+ *      TREE A:           TREE B:
+ *         (A)              (A)    
+ *        /   \            /   \
+ *      (B)   (C)   =>   (B)   (C)
+ *      / \    |    =>   / \    |
+ *    (D) (E)  |    => (D) (E)  |
+ *      \  |  /          \ /    |
+ *        (F)            (F)    |
+ *                         \   /
+ *                          (G)
+ *                
+ *  This function should make sure none of the node in the node
+ *  tree have more than 2 parents. If case Tree A happens,              
+ *  splitNode shall create NodeG and form Tree B.
+ *                
+ *  The expression block in NodeF will be moved to NodeG
+ *  The expression block in NodeF become empty then
+ *                
+ ************************************************************/
+// void test_splitNode_given_treeA_should_form_treeB(void){
+  // Node* nodeA = createNode(0);
+  // Node* nodeB = createNode(1);
+  // Node* nodeC = createNode(1);
+  // Node* nodeD = createNode(2);
+  // Node* nodeE = createNode(2);
+  // Node* nodeF = createNode(2);
+
+   
+   
+   
+ // }
  
  
  
