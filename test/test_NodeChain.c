@@ -154,8 +154,25 @@ void test_assembleList_given_node_tree_X_above_should_move_into_ListX(void){
   addChild(&nodeK, &nodeH);
   
   LinkedList* testList  = assembleList(&nodeA);
-  ListElement* testPtr  = testList->head;
+
+  LinkedList* expectedList = createLinkedList();
   
+  addListLast(expectedList, nodeA);
+  addListLast(expectedList, nodeB);
+  addListLast(expectedList, nodeC);
+  addListLast(expectedList, nodeD);
+  addListLast(expectedList, nodeE);
+  addListLast(expectedList, nodeF);
+  addListLast(expectedList, nodeG);
+  addListLast(expectedList, nodeH);
+  addListLast(expectedList, nodeI);
+  addListLast(expectedList, nodeJ);
+  addListLast(expectedList, nodeK);
+  
+  TEST_ASSERT_LINKED_LIST(expectedList, testList);
+  
+  /*
+  ListElement* testPtr  = testList->head;
   TEST_ASSERT_EQUAL_PTR(nodeA, testPtr->node);
   TEST_ASSERT_EQUAL_PTR(nodeB, testPtr->next->node);
   TEST_ASSERT_EQUAL_PTR(nodeC, testPtr->next->next->node);
@@ -173,6 +190,7 @@ void test_assembleList_given_node_tree_X_above_should_move_into_ListX(void){
   testPtr = testPtr->next->next->next;
   TEST_ASSERT_EQUAL_PTR(nodeJ, testPtr->node);
   TEST_ASSERT_EQUAL_PTR(nodeK, testPtr->next->node);
+  */
 }
 
 

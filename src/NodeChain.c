@@ -143,7 +143,7 @@ void setAllImdDom(Node** rootNode){
 
 
 /*
- * brief @ To get The dominatorFrontiers of a node.
+ * brief @ To get the dominatorFrontiers of a node.
  * Example:
  *
  *          | Entry                 DF(A) = { A }
@@ -222,42 +222,37 @@ LinkedList* getNodeDomFrontiers(Node* node){
   return domFrontiers;
 }
 
+/** 
+ * brief @ To get all the dominatorFrontiers of a tree by using the getNodeDomFrontiers() function.
+ * Example:
+ *        ControlFlowGraph1         Union of DomFrontiers
+ *      
+ *                | Entry                 DF(A) = { A }
+ *               \/                       DF(B) = { D }
+ *              [ A ]<<<<                 DF(C) = { D }
+ *             |   |    /\                DF(D) = { A }
+ *            \/  \/    /\                UDF = { A , D}
+ *           [B]  [C]   /\
+ *            |    |    /\
+ *           \/   \/    /\
+ *             [D] >>>>>>>
+ *
+ * param @ Node* node  - The tree that is going to use this function to find all the domFrontiers of it.
+ *
+ * retval@ LinkedList* - The union of domFrontiers of the input argument, 'Node** root' is going to return.
+ **/
 LinkedList* getAllDomFrontiers(Node** root){
   
   LinkedList* domFrontiers = createLinkedList();
-  LinkedList* checklist = createLinkedList();
+  LinkedList* checklist = assembleList(root);
   ListElement* tempCheckList = NULL;
   ListElement* tempDFList = NULL;
   ListElement* tempCLElement = NULL;
   ListElement* tempNodeDF = NULL;
   int i;
   
-  addListLast(checklist, *root);
   tempCheckList = checklist->head;
-
-  //Assemble the tree into a LinkedList 
-  while(tempCheckList){
-    
-    for( i = 0; i < ((Node*)tempCheckList->node)->numOfChild; i++){
-      tempCLElement = checklist->head;
-      
-      //checking is the children already put in the checklist
-      while(tempCLElement){
-        if( ((Node*)tempCheckList->node)->children[i] == tempCLElement->node )
-          break;
-
-        tempCLElement = tempCLElement->next;
-      }
-     
-     if(!tempCLElement)
-        addListLast(checklist, ((Node*)tempCheckList->node)->children[i]);
-    }
-    
-    tempCheckList = tempCheckList->next;
-  }
   
-  
-  tempCheckList = checklist->head;
   //get domFs of each node and add in the list, compare between DFlist and nodeDFlist, if already inside DFlist, just skip
   while(tempCheckList){
     ((Node*)tempCheckList->node)->domFrontiers = getNodeDomFrontiers(tempCheckList->node);

@@ -37,7 +37,7 @@ void getImdDom(Node* nodeA);
 void setAllImdDom(Node** rootNode);
 
 void setAllDirectDom(Node** rootNode);
-// void splitNode(Node** rootNode);
+void splitNode(Node** rootNode);
 
 LinkedList* getNodeDomFrontiers(Node* node);
 LinkedList* getAllDomFrontiers(Node** root);
