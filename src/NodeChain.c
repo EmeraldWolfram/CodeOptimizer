@@ -318,6 +318,35 @@ void setAllDirectDom(Node** rootNode){
   }
 }
 
+/**
+ *  This function should make sure none of the node in the node
+ *  tree have more than 2 parents. If case Tree A happens,
+ *  splitNode shall create NodeG and form Tree B.
+ *
+
+ *
+ *
+/**
+ * brief @ To split the node that had more than 2 parents.
+ * Example:
+ *               TREE A:           TREE B:
+ *                 (A)              (A)
+ *                /   \            /   \
+ *              (B)   (C)   =>   (B)   (C)
+ *              / \    |    =>   / \     \
+ *            (D) (E)  |    => (D)  (E)  |
+ *              \  |  /         \    |   |
+ *  split Node>> (F)            (F)<-+----    * C is pointing to F while E is pointing to (newNode)
+ *                                 \ |
+ *                                  (newNode) << Expression of F passed to newNode
+ *
+ * brief @ The expression block in NodeF will be moved to newNode
+ * brief @ The expression block in NodeF become empty then
+ *
+ * param @ Node* node  - The tree that is going to use this function to find all the domFrontiers of it.
+ *
+ * retval@ LinkedList* - The union of domFrontiers of the input argument, 'Node** root' is going to return.
+ **/
 void splitNode(Node** rootNode){
   LinkedList*   splitList = createLinkedList();
   LinkedList*   nodeList  = assembleList(rootNode);
@@ -393,6 +422,10 @@ void splitNode(Node** rootNode){
   for(i = 0; i < ((Node*)checkListHead->node)->numOfChild; i++)
     addChild(&newNode, &((Node*)checkListHead->node)->children[i]);
 
+  /*  pass the expression block of splitNode to newNode  */
+  newNode->block = ((Node*)checkListHead->node)->block;
+  ((Node*)checkListHead->node)->block = NULL;
+  
   /* add the newNode created in the children list of the splitNode(had >2 parent at the first) and its parent */
   ((Node*)checkListHead->node)->parent->children[positionOfSplitNode] = newNode;
   addChild(((Node**)&checkListHead->node), &newNode);

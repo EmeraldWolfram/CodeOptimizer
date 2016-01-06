@@ -952,8 +952,6 @@ void test_getNodeDomFrontiers_given_CFG4_then_find_domFrontiers_of_each_node_sho
   setLastBrhDom(&nodeA);
   setAllImdDom(&nodeA);
 
-
-
   LinkedList* domFrontiersA = createLinkedList();
   LinkedList* domFrontiersB = createLinkedList();
   LinkedList* domFrontiersC = createLinkedList();
@@ -1179,7 +1177,6 @@ void test_getAllDomFrontiers_given_CFG4_should_give_a_union_of_dominatorFrontier
   setLastBrhDom(&nodeA);
   setAllImdDom(&nodeA);
 
-
   LinkedList* unionDomFrontiers = createLinkedList();
   LinkedList* expectUnionDomFrontiers = createLinkedList();
 
@@ -1244,18 +1241,11 @@ void test_setAllDirectDom_given_node_tree_above_should_assign_directDom(void){
  *      / \    |    =>   / \     \
  *    (D) (E)  |    => (D)  (E)  |
  *      \  |  /          \   |   |
- *        (F)           (F)<-+----       * (C) is pointing to F while E is pointing to new node (G)
+ *        (F)           (F)<-+----       * C is pointing to F while E is pointing to (newNode)
  *                         \ |
- *                          (newNode)
+ *                          (newNode) << Expression of F passed to newNode
  *
- *  This function should make sure none of the node in the node
- *  tree have more than 2 parents. If case Tree A happens,
- *  splitNode shall create NodeG and form Tree B.
- *
- *  The expression block in NodeF will be moved to NodeG
- *  The expression block in NodeF become empty then
- *
- ************************************************************/
+ */
 void test_splitNode_given_treeA_should_form_treeB(void){
   Node* nodeA = createNode(0);
   Node* nodeB = createNode(1);
@@ -1264,6 +1254,9 @@ void test_splitNode_given_treeA_should_form_treeB(void){
   Node* nodeE = createNode(2);
   Node* nodeF = createNode(2);
 
+  LinkedList* expectedBlock = createLinkedList();
+  nodeF->block = expectedBlock;
+  
   addChild(&nodeA, &nodeB);
   addChild(&nodeA, &nodeC);
   addChild(&nodeB, &nodeD);
@@ -1287,6 +1280,8 @@ void test_splitNode_given_treeA_should_form_treeB(void){
   addListLast(expectedList, nodeF->children[0]);
 
   TEST_ASSERT_LINKED_LIST(expectedList, testList);
+  TEST_ASSERT_LINKED_LIST(expectedBlock, nodeF->children[0]->block);
+  TEST_ASSERT_NULL(nodeF->block);
   TEST_ASSERT_EQUAL_PTR(nodeD, nodeF->parent);
   TEST_ASSERT_EQUAL(1,nodeC->numOfChild);
   TEST_ASSERT_EQUAL(1,nodeD->numOfChild);
