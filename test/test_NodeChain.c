@@ -152,11 +152,11 @@ void test_assembleList_given_node_tree_X_above_should_move_into_ListX(void){
   addChild(&nodeG, &nodeJ);
   addChild(&nodeJ, &nodeK);
   addChild(&nodeK, &nodeH);
-  
+
   LinkedList* testList  = assembleList(&nodeA);
 
   LinkedList* expectedList = createLinkedList();
-  
+
   addListLast(expectedList, nodeA);
   addListLast(expectedList, nodeB);
   addListLast(expectedList, nodeC);
@@ -168,25 +168,25 @@ void test_assembleList_given_node_tree_X_above_should_move_into_ListX(void){
   addListLast(expectedList, nodeI);
   addListLast(expectedList, nodeJ);
   addListLast(expectedList, nodeK);
-  
+
   TEST_ASSERT_LINKED_LIST(expectedList, testList);
-  
+
   /*
   ListElement* testPtr  = testList->head;
   TEST_ASSERT_EQUAL_PTR(nodeA, testPtr->node);
   TEST_ASSERT_EQUAL_PTR(nodeB, testPtr->next->node);
   TEST_ASSERT_EQUAL_PTR(nodeC, testPtr->next->next->node);
-  
+
   testPtr = testPtr->next->next->next;
   TEST_ASSERT_EQUAL_PTR(nodeD, testPtr->node);
   TEST_ASSERT_EQUAL_PTR(nodeE, testPtr->next->node);
   TEST_ASSERT_EQUAL_PTR(nodeF, testPtr->next->next->node);
-  
+
   testPtr = testPtr->next->next->next;
   TEST_ASSERT_EQUAL_PTR(nodeG, testPtr->node);
   TEST_ASSERT_EQUAL_PTR(nodeH, testPtr->next->node);
   TEST_ASSERT_EQUAL_PTR(nodeI, testPtr->next->next->node);
-  
+
   testPtr = testPtr->next->next->next;
   TEST_ASSERT_EQUAL_PTR(nodeJ, testPtr->node);
   TEST_ASSERT_EQUAL_PTR(nodeK, testPtr->next->node);
@@ -195,7 +195,7 @@ void test_assembleList_given_node_tree_X_above_should_move_into_ListX(void){
 
 
 /**
- *  setLastBrhDom 
+ *  setLastBrhDom
  *  This function will assign lastBrhDom to the node in the tree
  *
  *      [parent]
@@ -410,7 +410,7 @@ void test_setLastBrhDom_with_treeD_shown_above(void){
   TEST_ASSERT_NODE_ADDRESS(childNodeG, childNodeK->lastBrhDom);
 }
 
-/**       
+/**
  *  setLastBrhDom
  *  This is to test when there is node point back to the root Node.
  *  Check whether setLastBrhDom can handle this case.
@@ -447,7 +447,7 @@ void test_setLastBrhDom_give_CFG1_should_assign_lastBranchDominator_of_each_node
   TEST_ASSERT_NODE_ADDRESS(nodeA, nodeD->lastBrhDom);
 }
 
-/**       
+/**
  *  setLastBrhDom
  *  This test is to check if the function can handle the case when the Node point to itself
  *
@@ -522,7 +522,7 @@ void test_getImdDom_given_nodeC_should_return_nodeB(void){
 
 
 /**
- *  getImdDom 
+ *  getImdDom
  *  This test check if NodeD can get the imdDom as parent using getImdDom function
  *
  *       TREE A:  ImdDom
@@ -605,7 +605,7 @@ void test_getImdDom_given_nodeJ_and_nodeH_should_return_nodeG_and_node_A_respect
 }
 
 /**
- *  setAllImdDom 
+ *  setAllImdDom
  *  This test check if setAllImdDom funcion will call getImdDom function iteratively
  *  to assign all the imdDom to every Node in the Tree.
  *
@@ -650,7 +650,7 @@ void test_setAllImdDom_will_set_all_imdDom_to_every_Node(void){
   addChild(&childNodeK, &childNodeH);
   setLastBrhDom(&parentNode);
   setAllImdDom(&parentNode);
-  
+
   TEST_ASSERT_NULL(parentNode->imdDom);
   TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeB->imdDom);
   TEST_ASSERT_NODE_ADDRESS(parentNode, childNodeC->imdDom);
@@ -664,19 +664,19 @@ void test_setAllImdDom_will_set_all_imdDom_to_every_Node(void){
   TEST_ASSERT_NODE_ADDRESS(childNodeJ, childNodeK->imdDom);
 }
 
-/**      
+/**
  *  setAllImdDom
  *  This test check setAllImdDom can handle the scenario when
  *  1. Self poiting Node (Node C)
  *  2. Lower rank too higher rank Node (Node H -> Node E)
  *
  *
- *      TREE A                     
+ *      TREE A
  *
  *          | Entry                 imdD(A) = {NULL}
  *         \/                       imdD(B) = { A }
  *       [  A  ]                    imdD(C) = { B }
- *        |    |                    imdD(D) = { A }  
+ *        |    |                    imdD(D) = { A }
  *       \/   \/                    imdD(E) = { A }
  *     [B]   [ E ]<<<<<             imdD(F) = { E }
  *      |     |   |   /\            imdD(G) = { E }
@@ -909,7 +909,7 @@ void test_getNodeDomFrontiers_given_CFG3_then_find_domFrontiers_of_each_node_sho
  *          | Entry                 DF(A) = { }
  *         \/                       DF(B) = { D }
  *       [  A  ]                    DF(C) = { C, D }
- *        |    |                    DF(D) = { I }  
+ *        |    |                    DF(D) = { I }
  *       \/   \/                    DF(E) = { D, I, E }
  *     [B]   [ E ]<<<<<             DF(F) = { D, H }
  *      |     |   |   /\            DF(G) = { H }
@@ -963,7 +963,7 @@ void test_getNodeDomFrontiers_given_CFG4_then_find_domFrontiers_of_each_node_sho
   LinkedList* domFrontiersG = createLinkedList();
   LinkedList* domFrontiersH = createLinkedList();
   LinkedList* domFrontiersI = createLinkedList();
-  
+
   addListLast(domFrontiersB, nodeD);
   addListLast(domFrontiersC, nodeC);
   addListLast(domFrontiersC, nodeD);
@@ -986,7 +986,7 @@ void test_getNodeDomFrontiers_given_CFG4_then_find_domFrontiers_of_each_node_sho
   nodeG->domFrontiers = getNodeDomFrontiers(nodeG);
   nodeH->domFrontiers = getNodeDomFrontiers(nodeH);
   nodeI->domFrontiers = getNodeDomFrontiers(nodeI);
-  
+
   TEST_ASSERT_LINKED_LIST(domFrontiersA, nodeA->domFrontiers);
   TEST_ASSERT_LINKED_LIST(domFrontiersB, nodeB->domFrontiers);
   TEST_ASSERT_LINKED_LIST(domFrontiersC, nodeC->domFrontiers);
@@ -1136,7 +1136,7 @@ void test_getAllDomFrontiers_given_CFG3_should_give_a_union_of_dominatorFrontier
  *          | Entry                 DF(A) = { }
  *         \/                       DF(B) = { D }
  *       [  A  ]                    DF(C) = { C, D }
- *        |    |                    DF(D) = { I }  
+ *        |    |                    DF(D) = { I }
  *       \/   \/                    DF(E) = { D, I, E }
  *     [B]   [ E ]<<<<<             DF(F) = { D, H }
  *      |     |   |   /\            DF(G) = { H }
@@ -1179,7 +1179,7 @@ void test_getAllDomFrontiers_given_CFG4_should_give_a_union_of_dominatorFrontier
   setLastBrhDom(&nodeA);
   setAllImdDom(&nodeA);
 
-    
+
   LinkedList* unionDomFrontiers = createLinkedList();
   LinkedList* expectUnionDomFrontiers = createLinkedList();
 
@@ -1195,14 +1195,14 @@ void test_getAllDomFrontiers_given_CFG4_should_give_a_union_of_dominatorFrontier
 
 /**
  *  setAllDirectDom
- *  
+ *
  *      (A)     DD(A) = {}
  *     /  \     DD(B) = {A}
  *   (B)  (C)   DD(C) = {A}
  *     \  /     DD{D} = {B, C}
  *     (D)
- *  
- *  
+ *
+ *
  ***************************************************/
 void test_setAllDirectDom_given_node_tree_above_should_assign_directDom(void){
    ErrorObject *err;
@@ -1210,7 +1210,7 @@ void test_setAllDirectDom_given_node_tree_above_should_assign_directDom(void){
    Node* nodeB = createNode(1);
    Node* nodeC = createNode(1);
    Node* nodeD = createNode(2);
-   
+
    addChild(&nodeA, &nodeB);
    addChild(&nodeA, &nodeC);
    addChild(&nodeB, &nodeD);
@@ -1219,56 +1219,84 @@ void test_setAllDirectDom_given_node_tree_above_should_assign_directDom(void){
    setAllDirectDom(&nodeA);
    ListElement* testPtr;
    TEST_ASSERT_EQUAL(0, nodeA->directDom->length);
-   
+
    testPtr = nodeB->directDom->head;
    TEST_ASSERT_EQUAL(1, nodeB->directDom->length);
    TEST_ASSERT_NODE_ADDRESS(nodeA, testPtr->node);
-   
+
    testPtr = nodeC->directDom->head;
    TEST_ASSERT_EQUAL(1, nodeC->directDom->length);
    TEST_ASSERT_NODE_ADDRESS(nodeA, testPtr->node);
-   
+
    testPtr = nodeD->directDom->head;
    TEST_ASSERT_EQUAL(2, nodeD->directDom->length);
    TEST_ASSERT_NODE_ADDRESS(nodeB, testPtr->node);
-   TEST_ASSERT_NODE_ADDRESS(nodeC, testPtr->next->node);   
+   TEST_ASSERT_NODE_ADDRESS(nodeC, testPtr->next->node);
 }
 
 /**
  *  splitNode
- *  
+ *
  *      TREE A:           TREE B:
- *         (A)              (A)    
+ *         (A)              (A)
  *        /   \            /   \
  *      (B)   (C)   =>   (B)   (C)
- *      / \    |    =>   / \    |
- *    (D) (E)  |    => (D) (E)  |
- *      \  |  /          \ /    |
- *        (F)            (F)    |
- *                         \   /
- *                          (G)
- *                
+ *      / \    |    =>   / \     \
+ *    (D) (E)  |    => (D)  (E)  |
+ *      \  |  /          \   |   |
+ *        (F)           (F)<-+----       * (C) is pointing to F while E is pointing to new node (G)
+ *                         \ |
+ *                          (newNode)
+ *
  *  This function should make sure none of the node in the node
- *  tree have more than 2 parents. If case Tree A happens,              
+ *  tree have more than 2 parents. If case Tree A happens,
  *  splitNode shall create NodeG and form Tree B.
- *                
+ *
  *  The expression block in NodeF will be moved to NodeG
  *  The expression block in NodeF become empty then
- *                
+ *
  ************************************************************/
-// void test_splitNode_given_treeA_should_form_treeB(void){
-  // Node* nodeA = createNode(0);
-  // Node* nodeB = createNode(1);
-  // Node* nodeC = createNode(1);
-  // Node* nodeD = createNode(2);
-  // Node* nodeE = createNode(2);
-  // Node* nodeF = createNode(2);
+void test_splitNode_given_treeA_should_form_treeB(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  Node* nodeE = createNode(2);
+  Node* nodeF = createNode(2);
 
-   
-   
-   
- // }
- 
- 
- 
- 
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeB, &nodeE);
+  addChild(&nodeC, &nodeF);
+  addChild(&nodeD, &nodeF);
+  addChild(&nodeE, &nodeF);
+
+  splitNode(&nodeA);
+
+  LinkedList* testList  = assembleList(&nodeA);
+
+  LinkedList* expectedList = createLinkedList();
+
+  addListLast(expectedList, nodeA);
+  addListLast(expectedList, nodeB);
+  addListLast(expectedList, nodeC);
+  addListLast(expectedList, nodeD);
+  addListLast(expectedList, nodeE);
+  addListLast(expectedList, nodeF);
+  addListLast(expectedList, nodeF->children[0]);
+
+  TEST_ASSERT_LINKED_LIST(expectedList, testList);
+  TEST_ASSERT_EQUAL_PTR(nodeD, nodeF->parent);
+  TEST_ASSERT_EQUAL(1,nodeC->numOfChild);
+  TEST_ASSERT_EQUAL(1,nodeD->numOfChild);
+  TEST_ASSERT_EQUAL(1,nodeE->numOfChild);
+  TEST_ASSERT_EQUAL(1,nodeF->numOfChild);
+  TEST_ASSERT_EQUAL(0,nodeF->children[0]->numOfChild);
+  TEST_ASSERT_EQUAL(3,nodeF->children[0]->rank);
+  TEST_ASSERT_EQUAL_PTR(nodeF->children[0], nodeE->children[0]);
+}
+
+
+
+
