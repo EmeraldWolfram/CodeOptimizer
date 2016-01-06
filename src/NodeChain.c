@@ -376,7 +376,6 @@ void splitNode(Node** rootNode){
     tempNode = tempHead->node; // store the current pointing node
 
     while(checkListHead){
-
       if(checkListHead->node == tempNode)
         count++;
 
@@ -422,13 +421,21 @@ void splitNode(Node** rootNode){
   for(i = 0; i < ((Node*)checkListHead->node)->numOfChild; i++)
     addChild(&newNode, &((Node*)checkListHead->node)->children[i]);
 
+  /*  break the children of the splitNode */
+  if(((Node*)checkListHead->node)->numOfChild){
+    ((Node*)checkListHead->node)->numOfChild   = 0;
+    ((Node*)checkListHead->node)->children     = NULL;
+  }
+
+  /* link the splitNode to the newNode */
+  addChild(((Node**)&checkListHead->node), &newNode);
+  
   /*  pass the expression block of splitNode to newNode  */
   newNode->block = ((Node*)checkListHead->node)->block;
   ((Node*)checkListHead->node)->block = NULL;
   
   /* add the newNode created in the children list of the splitNode(had >2 parent at the first) and its parent */
   ((Node*)checkListHead->node)->parent->children[positionOfSplitNode] = newNode;
-  addChild(((Node**)&checkListHead->node), &newNode);
 
   /* re-assign parent */
   nodeList  = assembleList(rootNode);
@@ -440,5 +447,46 @@ void splitNode(Node** rootNode){
     }
     tempHead = tempHead->next;
   }
+  
+  //check is any node's parent >2
+  nodeList  = assembleList(rootNode);
+  tempHead  = nodeList->head;
+  while(tempHead){
+    for(i = 0; i < ((Node*)tempHead->node)->numOfChild; i++){
+      if(((Node*) tempHead->node)->children[i]->parent != tempHead->node && \
+          ((Node*) tempHead->node)->children[i]->imdDom != tempHead->node)
+        addListLast(splitList, ((Node*) tempHead->node)->children[i]);
+    }
+    tempHead = tempHead->next;
+  }
+
+  tempHead = splitList->head;
+  while(tempHead){
+    count = 0;
+    checkListHead = tempHead;
+    tempNode = tempHead->node; // store the current pointing node
+
+    while(checkListHead){
+      if(checkListHead->node == tempNode)
+        count++;
+
+      //more than 2 parent for (checkListHead->node), so need to separate the parents out
+      if(count == 2)
+        break;
+
+      checkListHead = checkListHead->next;
+    }
+
+    if(count == 2)
+      break;
+    
+    tempHead = tempHead->next;
+  }
+  
+  if(!tempHead)
+    return;
+  
+  //recursive
+  splitNode(rootNode);
 
 }
