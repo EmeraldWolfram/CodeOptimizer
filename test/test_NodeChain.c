@@ -1234,7 +1234,7 @@ void test_setAllDirectDom_given_node_tree_above_should_assign_directDom(void){
 /**
  *  splitNode
  *
- *      TREE A:           TREE B:
+ *      TREE A:           TREE Expected:
  *         (A)              (A)
  *        /   \            /   \
  *      (B)   (C)   =>   (B)   (C)
@@ -1246,7 +1246,7 @@ void test_setAllDirectDom_given_node_tree_above_should_assign_directDom(void){
  *                          (newNode) << Expression of F passed to newNode
  *
  */
-void test_splitNode_given_treeA_should_form_treeB(void){
+void test_splitNode_given_treeA_should_form_treeExpected(void){
   Node* nodeA = createNode(0);
   Node* nodeB = createNode(1);
   Node* nodeC = createNode(1);
@@ -1256,7 +1256,7 @@ void test_splitNode_given_treeA_should_form_treeB(void){
 
   LinkedList* expectedBlock = createLinkedList();
   nodeF->block = expectedBlock;
-  
+
   addChild(&nodeA, &nodeB);
   addChild(&nodeA, &nodeC);
   addChild(&nodeB, &nodeD);
@@ -1283,6 +1283,7 @@ void test_splitNode_given_treeA_should_form_treeB(void){
   TEST_ASSERT_LINKED_LIST(expectedBlock, nodeF->children[0]->block);
   TEST_ASSERT_NULL(nodeF->block);
   TEST_ASSERT_EQUAL_PTR(nodeD, nodeF->parent);
+  TEST_ASSERT_EQUAL_PTR(nodeF, nodeF->children[0]->parent);
   TEST_ASSERT_EQUAL(1,nodeC->numOfChild);
   TEST_ASSERT_EQUAL(1,nodeD->numOfChild);
   TEST_ASSERT_EQUAL(1,nodeE->numOfChild);
@@ -1292,6 +1293,218 @@ void test_splitNode_given_treeA_should_form_treeB(void){
   TEST_ASSERT_EQUAL_PTR(nodeF->children[0], nodeE->children[0]);
 }
 
+/**
+ *
+ *      TREE B:               TREE Expected:
+ *          (A)                   (A)
+ *        /     \               /     \
+ *      (B)     (C)           (B)      (C)
+ *      / \     / \           / \     /    \
+ *    (D) (E) (F) (G)       (D) (E) (F)     (G)
+ *      \  |  /    |          \  |   \        |
+ *        (H)      |          (H) > (newNode) |
+ *         \>>>>> (I)                   \     |
+ *                                         (I)
+ *
+ */
+void test_splitNode_given_treeB_should_form_treeExpected(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  Node* nodeE = createNode(2);
+  Node* nodeF = createNode(2);
+  Node* nodeG = createNode(2);
+  Node* nodeH = createNode(3);
+  Node* nodeI = createNode(3);
 
+  LinkedList* expectedBlock = createLinkedList();
+  nodeH->block = expectedBlock;
 
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeB, &nodeE);
+  addChild(&nodeC, &nodeF);
+  addChild(&nodeC, &nodeG);
+  addChild(&nodeD, &nodeH);
+  addChild(&nodeE, &nodeH);
+  addChild(&nodeF, &nodeH);
+  addChild(&nodeG, &nodeI);
+  addChild(&nodeH, &nodeI);
 
+  splitNode(&nodeA);
+
+  LinkedList* testList  = assembleList(&nodeA);
+
+  LinkedList* expectedList = createLinkedList();
+
+  addListLast(expectedList, nodeA);
+  addListLast(expectedList, nodeB);
+  addListLast(expectedList, nodeC);
+  addListLast(expectedList, nodeD);
+  addListLast(expectedList, nodeE);
+  addListLast(expectedList, nodeF);
+  addListLast(expectedList, nodeG);
+  addListLast(expectedList, nodeH);
+  addListLast(expectedList, nodeH->children[0]);
+  addListLast(expectedList, nodeI);
+
+  TEST_ASSERT_LINKED_LIST(expectedList, testList);
+  TEST_ASSERT_LINKED_LIST(expectedBlock, nodeH->children[0]->block);
+  TEST_ASSERT_NULL(nodeH->block);
+  TEST_ASSERT_EQUAL_PTR(nodeE, nodeH->parent);
+  TEST_ASSERT_EQUAL_PTR(nodeH, nodeH->children[0]->parent);
+  TEST_ASSERT_EQUAL(1,nodeH->numOfChild);
+  TEST_ASSERT_EQUAL(1,nodeH->children[0]->numOfChild);
+  TEST_ASSERT_EQUAL(3,nodeH->children[0]->rank);
+  TEST_ASSERT_EQUAL_PTR(nodeH->children[0], nodeF->children[0]);
+}
+
+/**
+ *
+ *      TREE C:               Processing
+ *          (A)                   (A)                   TREE Expected:
+ *        /     \               /     \                     (A)
+ *      (B)     (C)           (B)      (C)                /     \
+ *      / \     / \           / \     /    \            (B)      (C)
+ *    (D) (E) (F) (G)       (D) (E) (F)     (G)         / \     /    \
+ *      \  |  /   /           \  |  /       /         (D) (E) (F)     (G)
+ *       (  H  )               (H)         /            \  |   |       |
+ *                                \       /              (H)   |       |
+ *                                 (newNode1)               \  |       |
+ *                                                         (newNode2)  |
+ *                                                            \       /
+ *                                                           (newNode1)
+ *
+ */
+void test_splitNode_given_treeC_should_form_treeExpected(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  Node* nodeE = createNode(2);
+  Node* nodeF = createNode(2);
+  Node* nodeG = createNode(2);
+  Node* nodeH = createNode(3);
+
+  LinkedList* expectedBlock = createLinkedList();
+  nodeH->block = expectedBlock;
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeB, &nodeE);
+  addChild(&nodeC, &nodeF);
+  addChild(&nodeC, &nodeG);
+  addChild(&nodeD, &nodeH);
+  addChild(&nodeE, &nodeH);
+  addChild(&nodeF, &nodeH);
+  addChild(&nodeG, &nodeH);
+
+  splitNode(&nodeA);
+
+  LinkedList* testList  = assembleList(&nodeA);
+
+  LinkedList* expectedList = createLinkedList();
+
+  addListLast(expectedList, nodeA);
+  addListLast(expectedList, nodeB);
+  addListLast(expectedList, nodeC);
+  addListLast(expectedList, nodeD);
+  addListLast(expectedList, nodeE);
+  addListLast(expectedList, nodeF);
+  addListLast(expectedList, nodeG);
+  addListLast(expectedList, nodeH);
+  addListLast(expectedList, nodeH->children[0]);
+  addListLast(expectedList, nodeH->children[0]->children[0]);
+
+  TEST_ASSERT_LINKED_LIST(expectedList, testList);
+  TEST_ASSERT_LINKED_LIST(expectedBlock, nodeH->children[0]->children[0]->block);
+  TEST_ASSERT_NULL(nodeH->block);
+  TEST_ASSERT_EQUAL_PTR(nodeH, nodeH->children[0]->parent);
+  TEST_ASSERT_EQUAL_PTR(nodeH->children[0], nodeH->children[0]->children[0]->parent);
+  TEST_ASSERT_EQUAL(1,nodeH->numOfChild);
+  TEST_ASSERT_EQUAL(1,nodeH->children[0]->numOfChild);
+  TEST_ASSERT_EQUAL(3,nodeH->children[0]->rank);
+  TEST_ASSERT_EQUAL(3,nodeH->children[0]->children[0]->rank);
+  TEST_ASSERT_EQUAL_PTR(nodeH->children[0], nodeF->children[0]);
+  TEST_ASSERT_EQUAL_PTR(nodeH->children[0]->children[0], nodeG->children[0]);
+}
+
+/**
+ *
+ *      TREE D:               TREE Expected:
+ *          (A)                   (A)
+ *        /     \               /     \
+ *      (B)     (C)           (B)      (C)>>>>>>>>>>>>>
+ *      / \     / \           / \     /                |
+ *    (D) (E) (F) (G)       (D) (E) (F)>>>>>>>>>>>    (G)
+ *      \  | /  \  |          \  |   |            \   /
+ *        (H)>>>>(I)          (H)>>(newNode1)    ( I )
+ *                                     \         /
+ *                                      (newNode2)
+ */
+void test_splitNode_given_treeD_should_form_treeExpected(void){
+  Node* nodeA = createNode(0);
+  Node* nodeB = createNode(1);
+  Node* nodeC = createNode(1);
+  Node* nodeD = createNode(2);
+  Node* nodeE = createNode(2);
+  Node* nodeF = createNode(2);
+  Node* nodeG = createNode(2);
+  Node* nodeH = createNode(3);
+  Node* nodeI = createNode(3);
+
+  LinkedList* expectedBlock1 = createLinkedList();
+  LinkedList* expectedBlock2 = createLinkedList();
+  nodeH->block = expectedBlock1;
+  nodeI->block = expectedBlock2;
+
+  addChild(&nodeA, &nodeB);
+  addChild(&nodeA, &nodeC);
+  addChild(&nodeB, &nodeD);
+  addChild(&nodeB, &nodeE);
+  addChild(&nodeC, &nodeF);
+  addChild(&nodeC, &nodeG);
+  addChild(&nodeD, &nodeH);
+  addChild(&nodeE, &nodeH);
+  addChild(&nodeF, &nodeH);
+  addChild(&nodeF, &nodeI);
+  addChild(&nodeG, &nodeI);
+  addChild(&nodeH, &nodeI);
+
+  splitNode(&nodeA);
+
+  LinkedList* testList  = assembleList(&nodeA);
+
+  LinkedList* expectedList = createLinkedList();
+
+  addListLast(expectedList, nodeA);
+  addListLast(expectedList, nodeB);
+  addListLast(expectedList, nodeC);
+  addListLast(expectedList, nodeD);
+  addListLast(expectedList, nodeE);
+  addListLast(expectedList, nodeF);
+  addListLast(expectedList, nodeG);
+  addListLast(expectedList, nodeH);
+  addListLast(expectedList, nodeH->children[0]);
+  addListLast(expectedList, nodeI);
+  addListLast(expectedList, nodeI->children[0]);
+
+  TEST_ASSERT_LINKED_LIST(expectedList, testList);
+  TEST_ASSERT_LINKED_LIST(expectedBlock1, nodeH->children[0]->block);
+  TEST_ASSERT_LINKED_LIST(expectedBlock2, nodeI->children[0]->block);
+  TEST_ASSERT_NULL(nodeH->block);
+  TEST_ASSERT_NULL(nodeI->block);
+  TEST_ASSERT_EQUAL_PTR(nodeH, nodeH->children[0]->parent);
+  TEST_ASSERT_EQUAL_PTR(nodeI, nodeI->children[0]->parent);
+  TEST_ASSERT_EQUAL(1,nodeH->numOfChild);
+  TEST_ASSERT_EQUAL(1,nodeH->children[0]->numOfChild);
+  TEST_ASSERT_EQUAL(3,nodeH->children[0]->rank);
+  TEST_ASSERT_EQUAL(1,nodeI->numOfChild);
+  TEST_ASSERT_EQUAL(0,nodeI->children[0]->numOfChild);
+  TEST_ASSERT_EQUAL(4,nodeI->children[0]->rank);
+  TEST_ASSERT_EQUAL_PTR(nodeH->children[0], nodeF->children[0]);
+  TEST_ASSERT_EQUAL_PTR(nodeI->children[0], nodeF->children[0]->children[0]);
+}
