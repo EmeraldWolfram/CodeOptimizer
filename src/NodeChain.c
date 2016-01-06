@@ -4,7 +4,7 @@
 
 Node* createNode(int thisRank){
   Node* newNode = malloc(sizeof(Node));
-  
+
   newNode->rank         = thisRank;
   newNode->visitFlag    = 0;
   newNode->block        = createLinkedList();
@@ -15,7 +15,7 @@ Node* createNode(int thisRank){
   newNode->children     = NULL;
   newNode->domFrontiers = NULL;
   newNode->directDom    = createLinkedList();
-  
+
   return newNode;
 }
 
@@ -40,7 +40,7 @@ Node* createNode(int thisRank){
 void addChild(Node** parentNode, Node** childNode){
   if(*parentNode == NULL)
     ThrowError(ERR_NULL_NODE, "Input parent node is NULL!");
-  
+
   if(*childNode == NULL)
     ThrowError(ERR_NULL_NODE, "Input child node is NULL!");
 
@@ -50,20 +50,20 @@ void addChild(Node** parentNode, Node** childNode){
   (*parentNode)->numOfChild++;
   (*parentNode)->children = (Node**)realloc((*parentNode)->children, \
                             (sizeof(Node*) * ((*parentNode)->numOfChild)));
-                            
+
   (*parentNode)->children[((*parentNode)->numOfChild) - 1] = *childNode;
-  
+
   /***************************************************
   *  Link Parent to childNode                       *
   ***************************************************/
   (*childNode)->parent = *parentNode;
-  
+
 }
 
 void setLastBrhDom(Node** rootNode){
   if(*rootNode == NULL)
     ThrowError(ERR_NULL_NODE, "Empty Tree input detected!");
-  
+
   LinkedList* tempList      = assembleList(rootNode);
   ListElement* tempElement  = tempList->head;
   Node* tempNode            = tempElement->node;
@@ -118,7 +118,7 @@ void getImdDom(Node* nodeA){
             nodeA->imdDom = tempNode;
           else{
             if(tempNode != nodeA)
-              nodeA->imdDom = nodeA->lastBrhDom; 
+              nodeA->imdDom = nodeA->lastBrhDom;
           }
         }
       }
@@ -143,11 +143,11 @@ void setAllImdDom(Node** rootNode){
 
 
 /*
- * brief @ To get The dominatorFrontiers of a node.
+ * brief @ To get the dominatorFrontiers of a node.
  * Example:
  *
  *          | Entry                 DF(A) = { A }
- *         \/                       DF(B) = { D } 
+ *         \/                       DF(B) = { D }
  *        [ A ]<<<<                 DF(C) = { D }
  *       |   |    /\                DF(D) = { A }
  *      \/  \/    /\
@@ -167,7 +167,7 @@ void setAllImdDom(Node** rootNode){
  * retval@ LinkedList* - The list of domFrontiers of the 'Node* node' is going to return.
  */
 LinkedList* getNodeDomFrontiers(Node* node){
-  
+
   LinkedList* domFrontiers = createLinkedList();
   LinkedList* checklist = createLinkedList();
   ListElement* tempCLElement = NULL;
@@ -177,114 +177,109 @@ LinkedList* getNodeDomFrontiers(Node* node){
 
   if(!node->numOfChild)
     return domFrontiers;
-  
+
   addListLast(checklist, node);
   tempHeadCL = checklist->head;
 
- while(tempHeadCL){
-    
+  while(tempHeadCL){
+
     for( i = 0; i < ((Node*)tempHeadCL->node)->numOfChild; i++){
-      
+
       tempImdDom = ((Node*)tempHeadCL->node)->children[i]->imdDom;
-      
+
       //checking the imdDom of the child isn't the parentNode; imdDom of the parentNode is NULL
       if(tempImdDom){
         while(tempImdDom->rank > node->rank){
           tempImdDom = tempImdDom->imdDom;
         }
       }
-      
+
       //the child is not strictly dominated by the node
       if(tempImdDom != node || !tempImdDom){
         addListLast(domFrontiers, ((Node*)tempHeadCL->node)->children[i]);
         continue; //any grandchild need to be dominated by node, otherwise the child of grandchild cannot be DF of node
       }
-      
+
       tempCLElement = checklist->head;
-      
+
       //checking is the children already put in the checklist
       while(tempCLElement){
-       
+
         if( ((Node*)tempHeadCL->node)->children[i] == tempCLElement->node )
           break;
 
         tempCLElement = tempCLElement->next;
       }
-     
+
      if(!tempCLElement)
         addListLast(checklist, ((Node*)tempHeadCL->node)->children[i]);
     }
-    
+
     tempHeadCL = tempHeadCL->next;
 
   }
-  
+
   return domFrontiers;
 }
 
+/**
+ * brief @ To get all the dominatorFrontiers of a tree by using the getNodeDomFrontiers() function.
+ * Example:
+ *        ControlFlowGraph1         Union of DomFrontiers
+ *
+ *                | Entry                 DF(A) = { A }
+ *               \/                       DF(B) = { D }
+ *              [ A ]<<<<                 DF(C) = { D }
+ *             |   |    /\                DF(D) = { A }
+ *            \/  \/    /\                UDF = { A , D}
+ *           [B]  [C]   /\
+ *            |    |    /\
+ *           \/   \/    /\
+ *             [D] >>>>>>>
+ *
+ * param @ Node* node  - The tree that is going to use this function to find all the domFrontiers of it.
+ *
+ * retval@ LinkedList* - The union of domFrontiers of the input argument, 'Node** root' is going to return.
+ **/
 LinkedList* getAllDomFrontiers(Node** root){
-  
+
   LinkedList* domFrontiers = createLinkedList();
-  LinkedList* checklist = createLinkedList();
+  LinkedList* checklist = assembleList(root);
   ListElement* tempCheckList = NULL;
   ListElement* tempDFList = NULL;
   ListElement* tempCLElement = NULL;
-  ListElement* tempNodeDF = NULL;
+  ListElement* tempHeadDF = NULL;
   int i;
-  
-  addListLast(checklist, *root);
+
   tempCheckList = checklist->head;
 
-  //Assemble the tree into a LinkedList 
-  while(tempCheckList){
-    
-    for( i = 0; i < ((Node*)tempCheckList->node)->numOfChild; i++){
-      tempCLElement = checklist->head;
-      
-      //checking is the children already put in the checklist
-      while(tempCLElement){
-        if( ((Node*)tempCheckList->node)->children[i] == tempCLElement->node )
-          break;
-
-        tempCLElement = tempCLElement->next;
-      }
-     
-     if(!tempCLElement)
-        addListLast(checklist, ((Node*)tempCheckList->node)->children[i]);
-    }
-    
-    tempCheckList = tempCheckList->next;
-  }
-  
-  
-  tempCheckList = checklist->head;
   //get domFs of each node and add in the list, compare between DFlist and nodeDFlist, if already inside DFlist, just skip
   while(tempCheckList){
     ((Node*)tempCheckList->node)->domFrontiers = getNodeDomFrontiers(tempCheckList->node);
-    tempNodeDF = ((Node*)tempCheckList->node)->domFrontiers->head;
-    
-    while(tempNodeDF){
-      
+    tempHeadDF = ((Node*)tempCheckList->node)->domFrontiers->head;
+
+    while(tempHeadDF){
+
       tempDFList = domFrontiers->head;
       while(tempDFList){
-        
-          if(tempDFList->node == tempNodeDF->node )
+
+          if(tempDFList->node == tempHeadDF->node )
             break;
-  
+
           tempDFList = tempDFList->next;
         }
-      
+
       if(!tempDFList)
-          addListLast(domFrontiers, tempNodeDF->node);
-        
-      tempNodeDF = tempNodeDF->next;
+        addListLast(domFrontiers, tempHeadDF->node);
+
+      tempHeadDF = tempHeadDF->next;
     }
-    
+
     tempCheckList = tempCheckList->next;
   }
-    
+
   return domFrontiers;
-    
+
 }
 
 //ASSEMBLE ALL THE NODE THAT HAVE A RANK EQUAL OR LOWER THAN THE ROOT INTO A LINKEDLIST
@@ -302,7 +297,7 @@ LinkedList* assembleList(Node **rootNode){
           addListLast(tempList, tempNode->children[i]);
       }
       tempElement = tempElement->next;
-      
+
       if(tempElement != NULL)
         tempNode = tempElement->node;
     }
@@ -314,7 +309,7 @@ void setAllDirectDom(Node** rootNode){
   (*rootNode)->visitFlag |= 8;
   Node *childPtr;
   int i;
-  
+
   for(i = 0; i < (*rootNode)->numOfChild; i++){
     childPtr = (*rootNode)->children[i];
     addListLast(childPtr->directDom, (*rootNode));
@@ -322,16 +317,128 @@ void setAllDirectDom(Node** rootNode){
       setAllDirectDom(&childPtr);
   }
 }
-// void splitNode(Node** rootNode){
-  // LinkedList* nodeList = assembleList(rootNode);
-  // ListElement* nodePtr = nodeList->head;
+
+/**
+ *  This function should make sure none of the node in the node
+ *  tree have more than 2 parents. If case Tree A happens,
+ *  splitNode shall create NodeG and form Tree B.
+ *
+
+ *
+ *
+/**
+ * brief @ To split the node that had more than 2 parents.
+ * Example:
+ *               TREE A:           TREE B:
+ *                 (A)              (A)
+ *                /   \            /   \
+ *              (B)   (C)   =>   (B)   (C)
+ *              / \    |    =>   / \     \
+ *            (D) (E)  |    => (D)  (E)  |
+ *              \  |  /         \    |   |
+ *  split Node>> (F)            (F)<-+----    * C is pointing to F while E is pointing to (newNode)
+ *                                 \ |
+ *                                  (newNode) << Expression of F passed to newNode
+ *
+ * brief @ The expression block in NodeF will be moved to newNode
+ * brief @ The expression block in NodeF become empty then
+ *
+ * param @ Node* node  - The tree that is going to use this function to find all the domFrontiers of it.
+ *
+ * retval@ LinkedList* - The union of domFrontiers of the input argument, 'Node** root' is going to return.
+ **/
+void splitNode(Node** rootNode){
+  LinkedList*   splitList = createLinkedList();
+  LinkedList*   nodeList  = assembleList(rootNode);
+  ListElement*  checkListHead = NULL;
+  ListElement*  tempNode   = NULL;
+  int i, count, rank, positionOfSplitNode;
+
+  /* build a list for the children those have more than 1 parent */
+  ListElement*  tempHead  = nodeList->head;
+  while(tempHead){
+    for(i = 0; i < ((Node*)tempHead->node)->numOfChild; i++){
+      if(((Node*) tempHead->node)->children[i]->parent != tempHead->node && \
+          ((Node*) tempHead->node)->children[i]->imdDom != tempHead->node)
+        addListLast(splitList, ((Node*) tempHead->node)->children[i]);
+    }
+    tempHead = tempHead->next;
+  }
+
+  tempHead = splitList->head;
+
+  /* check each element inside the split list,
+     if one of the elements appear twice, that means it had more than 2 parents.
+  */
+  while(tempHead){
+    count = 0;
+    checkListHead = tempHead;
+    tempNode = tempHead->node; // store the current pointing node
+
+    while(checkListHead){
+
+      if(checkListHead->node == tempNode)
+        count++;
+
+      //more than 2 parent for (checkListHead->node), so need to separate the parents out
+      if(count == 2)
+        break;
+
+      checkListHead = checkListHead->next;
+    }
+
+    if(count == 2)
+      break;
+
+    tempHead = tempHead->next;
+  }
+
+  if(!tempHead)
+    return;
+
+  /* compare the rank of both of the nodes that is going to be the parents of newNode */
+  if(((Node*)checkListHead->node)->rank > ((Node*)checkListHead->node)->parent->rank)
+    rank = ((Node*)checkListHead->node)->parent->rank + 1;
+  else
+    rank = ((Node*)checkListHead->node)->rank + 1;
+
+  Node* newNode = createNode(rank);
+
+  positionOfSplitNode = 0;
+
+  /*  find the place of the Node(that is more than 2 parent & going to be splitted) in its parent
+      its parent may own more than 1 child
+   */
+  while(positionOfSplitNode < ((Node*)checkListHead->node)->parent->numOfChild && \
+        ((Node*)checkListHead->node)->parent->children[positionOfSplitNode] != ((Node*)checkListHead->node))
+    positionOfSplitNode++;
+
+  if(!((Node*)checkListHead->node)->parent->children[positionOfSplitNode])
+    ThrowError(ERR_UNHANDLE_ERROR, "There was a unhandled exception error");
+
+  /*  in case the splitNode(had >2 parent at the first) had any children
+      link the newNode with the children of splitNode
+  */  
+  for(i = 0; i < ((Node*)checkListHead->node)->numOfChild; i++)
+    addChild(&newNode, &((Node*)checkListHead->node)->children[i]);
+
+  /*  pass the expression block of splitNode to newNode  */
+  newNode->block = ((Node*)checkListHead->node)->block;
+  ((Node*)checkListHead->node)->block = NULL;
   
-  // while(nodePtr != NULL){
-    // if
-      
-      
-    // }
-    // else
-      // nodePtr = nodePtr->next;
-  // }
-// }
+  /* add the newNode created in the children list of the splitNode(had >2 parent at the first) and its parent */
+  ((Node*)checkListHead->node)->parent->children[positionOfSplitNode] = newNode;
+  addChild(((Node**)&checkListHead->node), &newNode);
+
+  /* re-assign parent */
+  nodeList  = assembleList(rootNode);
+  tempHead  = nodeList->head;
+  while(tempHead){
+    for(i = 0; i < ((Node*)tempHead->node)->numOfChild; i++){
+      if(((Node*)tempHead->node)->children[i]->parent != tempHead->node)
+        ((Node*)tempHead->node)->children[i]->parent = tempHead->node;
+    }
+    tempHead = tempHead->next;
+  }
+
+}
